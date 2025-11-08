@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { getApiUrl } from '../config/api'
 import './AdminDashboard.css'
 
 export default function AdminDashboard() {
@@ -23,13 +24,13 @@ export default function AdminDashboard() {
   }, [])
 
   async function loadMenu() {
-    const res = await fetch('/api/menu')
+    const res = await fetch(getApiUrl('/api/menu'))
     const data = await res.json()
     setMenu(data)
   }
 
   async function loadUsers() {
-    const res = await fetch('/api/superadmin/users', {
+    const res = await fetch(getApiUrl('/api/superadmin/users'), {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (res.ok) {

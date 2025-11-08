@@ -11,6 +11,7 @@ import Checkout from './pages/Checkout'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
 import RoleSwitcher from './components/RoleSwitcher'
+import { getApiUrl } from './config/api'
 import './App.css'
 
 function MainApp() {
@@ -26,7 +27,7 @@ function MainApp() {
   const [currentRoute, setCurrentRoute] = useState('home')
 
   useEffect(() => {
-    fetch('/api/menu')
+    fetch(getApiUrl('/api/menu'))
       .then(r => r.json())
       .then(setMenu)
       .catch(() => setMessage('Could not load menu from server'))
