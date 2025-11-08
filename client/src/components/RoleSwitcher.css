@@ -1,0 +1,137 @@
+.role-switcher {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.current-role-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: white;
+  border: 2px solid #667eea;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: all 0.3s;
+}
+
+.current-role-btn:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+.role-icon {
+  font-size: 20px;
+}
+
+.role-text {
+  color: #333;
+}
+
+.role-text strong {
+  color: #667eea;
+}
+
+.dropdown-arrow {
+  color: #667eea;
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.role-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  min-width: 250px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  overflow: hidden;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-header {
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  font-weight: 600;
+  color: #666;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.role-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 15px 20px;
+  border: none;
+  background: white;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.role-option:hover {
+  background: #f8f9fa;
+  padding-left: 25px;
+}
+
+.role-option.active {
+  background: #e7f0ff;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.role-option .check-mark {
+  margin-left: auto;
+  color: #28a745;
+  font-size: 18px;
+}
+
+/* Click outside to close */
+.role-switcher-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+}
+
+@media (max-width: 768px) {
+  .role-switcher {
+    top: 10px;
+    right: 10px;
+  }
+
+  .current-role-btn {
+    padding: 10px 15px;
+    font-size: 12px;
+  }
+
+  .role-text {
+    display: none;
+  }
+
+  .role-dropdown {
+    min-width: 200px;
+  }
+}

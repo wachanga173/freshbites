@@ -1,0 +1,429 @@
+{
+  "appetizers": [
+    { 
+      "id": "a1", 
+      "name": "Buffalo Wings", 
+      "price": 1430,
+      "description": "Crispy chicken wings with blue cheese dip",
+      "image": "https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "a2", 
+      "name": "Mozzarella Sticks", 
+      "price": 1170,
+      "description": "Golden fried mozzarella with marinara sauce",
+      "image": "https://images.unsplash.com/photo-1531749668029-2db88e4276c7?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "a3", 
+      "name": "Nachos Supreme", 
+      "price": 1560,
+      "description": "Loaded tortilla chips with cheese, jalapeños, and sour cream",
+      "image": "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "a4", 
+      "name": "Spring Rolls", 
+      "price": 1040,
+      "description": "Crispy vegetable spring rolls with sweet chili sauce",
+      "image": "https://images.unsplash.com/photo-1520218465755-47f62c854b24?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "a5", 
+      "name": "Calamari Rings", 
+      "price": 1690,
+      "description": "Fried squid rings with aioli and lemon",
+      "image": "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "a6", 
+      "name": "Bruschetta", 
+      "price": 1170,
+      "description": "Toasted bread with tomatoes, basil, and garlic",
+      "image": "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=400&h=300&fit=crop"
+    }
+  ],
+  "breakfast": [
+    { 
+      "id": "b1", 
+      "name": "Classic Eggs Benedict", 
+      "price": 1690,
+      "description": "Poached eggs on English muffin with hollandaise sauce",
+      "image": "https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "b2", 
+      "name": "Avocado Toast & Eggs", 
+      "price": 1560,
+      "description": "Smashed avocado on sourdough with poached eggs",
+      "image": "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "b3", 
+      "name": "Belgian Waffles", 
+      "price": 1430,
+      "description": "Golden waffles with fresh berries and maple syrup",
+      "image": "https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "b4", 
+      "name": "Pancake Stack", 
+      "price": 1300,
+      "description": "Fluffy buttermilk pancakes with butter and syrup",
+      "image": "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "b5", 
+      "name": "French Toast", 
+      "price": 1490,
+      "description": "Brioche French toast with cinnamon and cream",
+      "image": "https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "b6", 
+      "name": "Breakfast Burrito", 
+      "price": 1620,
+      "description": "Scrambled eggs, bacon, cheese, and salsa wrapped",
+      "image": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "b7", 
+      "name": "Acai Bowl", 
+      "price": 1360,
+      "description": "Acai blend topped with granola and fresh fruit",
+      "image": "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "b8", 
+      "name": "Croissant Sandwich", 
+      "price": 1230,
+      "description": "Buttery croissant with ham, egg, and cheese",
+      "image": "https://images.unsplash.com/photo-1623334044303-241021148842?w=400&h=300&fit=crop"
+    }
+  ],
+  "lunch": [
+    { 
+      "id": "l1", 
+      "name": "Grilled Chicken Salad", 
+      "price": 1950,
+      "description": "Mixed greens with grilled chicken and vinaigrette",
+      "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "l2", 
+      "name": "Classic Burger & Fries", 
+      "price": 2080,
+      "description": "Angus beef patty with lettuce, tomato, and fries",
+      "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "l3", 
+      "name": "Mediterranean Bowl", 
+      "price": 1820,
+      "description": "Quinoa, falafel, hummus, and fresh vegetables",
+      "image": "https://images.unsplash.com/photo-1623428187969-5da2dcea5ebf?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "l4", 
+      "name": "Caesar Wrap", 
+      "price": 1620,
+      "description": "Grilled chicken Caesar salad in a tortilla wrap",
+      "image": "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "l5", 
+      "name": "Margherita Pizza", 
+      "price": 1880,
+      "description": "Fresh mozzarella, tomatoes, and basil on thin crust",
+      "image": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "l6", 
+      "name": "Salmon Teriyaki", 
+      "price": 2470,
+      "description": "Grilled salmon with teriyaki glaze and rice",
+      "image": "https://images.unsplash.com/photo-1580959375944-57c6ee5d6e98?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "l7", 
+      "name": "Chicken Tacos", 
+      "price": 1750,
+      "description": "Three soft tacos with grilled chicken and toppings",
+      "image": "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "l8", 
+      "name": "Pasta Carbonara", 
+      "price": 2010,
+      "description": "Creamy pasta with bacon and parmesan",
+      "image": "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "l9", 
+      "name": "Steak Sandwich", 
+      "price": 2340,
+      "description": "Sliced ribeye with caramelized onions on ciabatta",
+      "image": "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "l10", 
+      "name": "Veggie Stir Fry", 
+      "price": 1690,
+      "description": "Mixed vegetables in teriyaki sauce with rice",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop"
+    }
+  ],
+  "dinner": [
+    { 
+      "id": "dn1", 
+      "name": "Ribeye Steak", 
+      "price": 3250,
+      "description": "12oz grilled ribeye with mashed potatoes and vegetables",
+      "image": "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "dn2", 
+      "name": "Grilled Salmon Fillet", 
+      "price": 2860,
+      "description": "Atlantic salmon with lemon butter and asparagus",
+      "image": "https://images.unsplash.com/photo-1485921325833-c519f76c4927?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "dn3", 
+      "name": "Chicken Parmesan", 
+      "price": 2340,
+      "description": "Breaded chicken with marinara and melted cheese",
+      "image": "https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "dn4", 
+      "name": "Beef Lasagna", 
+      "price": 2210,
+      "description": "Layered pasta with beef, cheese, and tomato sauce",
+      "image": "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "dn5", 
+      "name": "Shrimp Scampi", 
+      "price": 2730,
+      "description": "Garlic butter shrimp over linguine pasta",
+      "image": "https://images.unsplash.com/photo-1633504581786-316c8002b1b2?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "dn6", 
+      "name": "BBQ Pork Ribs", 
+      "price": 2990,
+      "description": "Slow-cooked ribs with BBQ sauce and coleslaw",
+      "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "dn7", 
+      "name": "Vegetable Curry", 
+      "price": 1950,
+      "description": "Mixed vegetables in coconut curry sauce with rice",
+      "image": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "dn8", 
+      "name": "Lamb Chops", 
+      "price": 3510,
+      "description": "Herb-crusted lamb chops with mint sauce",
+      "image": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=400&h=300&fit=crop"
+    }
+  ],
+  "desserts": [
+    { 
+      "id": "ds1", 
+      "name": "Chocolate Lava Cake", 
+      "price": 1040,
+      "description": "Warm chocolate cake with molten center and vanilla ice cream",
+      "image": "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "ds2", 
+      "name": "Cheesecake", 
+      "price": 910,
+      "description": "New York style cheesecake with berry compote",
+      "image": "https://images.unsplash.com/photo-1533134486753-c833f0ed4866?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "ds3", 
+      "name": "Tiramisu", 
+      "price": 1040,
+      "description": "Classic Italian coffee-flavored dessert",
+      "image": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "ds4", 
+      "name": "Apple Pie", 
+      "price": 910,
+      "description": "Homemade apple pie with cinnamon and ice cream",
+      "image": "https://images.unsplash.com/photo-1535920527002-b35e96722eb9?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "ds5", 
+      "name": "Brownie Sundae", 
+      "price": 1040,
+      "description": "Warm chocolate brownie with ice cream and hot fudge",
+      "image": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "ds6", 
+      "name": "Crème Brûlée", 
+      "price": 1170,
+      "description": "Vanilla custard with caramelized sugar top",
+      "image": "https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "ds7", 
+      "name": "Ice Cream Trio", 
+      "price": 780,
+      "description": "Three scoops: chocolate, vanilla, and strawberry",
+      "image": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "ds8", 
+      "name": "Fruit Tart", 
+      "price": 910,
+      "description": "Buttery crust filled with custard and fresh fruit",
+      "image": "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?w=400&h=300&fit=crop"
+    }
+  ],
+  "snacks": [
+    { 
+      "id": "sn1", 
+      "name": "French Fries", 
+      "price": 520,
+      "description": "Crispy golden fries with ketchup",
+      "image": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "sn2", 
+      "name": "Onion Rings", 
+      "price": 650,
+      "description": "Beer-battered onion rings with ranch dip",
+      "image": "https://images.unsplash.com/photo-1639024471283-03518883512d?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "sn3", 
+      "name": "Chicken Nuggets", 
+      "price": 910,
+      "description": "Crispy chicken nuggets with BBQ sauce",
+      "image": "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "sn4", 
+      "name": "Samosas", 
+      "price": 650,
+      "description": "Spiced potato and pea filled pastries",
+      "image": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "sn5", 
+      "name": "Chips & Guacamole", 
+      "price": 780,
+      "description": "Tortilla chips with fresh guacamole",
+      "image": "https://images.unsplash.com/photo-1625243733223-1bdc36d90abc?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "sn6", 
+      "name": "Pretzel Bites", 
+      "price": 710,
+      "description": "Warm pretzel bites with cheese dip",
+      "image": "https://images.unsplash.com/photo-1566307893806-925e6dac5e9b?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "sn7", 
+      "name": "Popcorn Chicken", 
+      "price": 910,
+      "description": "Bite-sized crispy chicken pieces",
+      "image": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=300&fit=crop"
+    }
+  ],
+  "drinks": [
+    { 
+      "id": "d1", 
+      "name": "Espresso", 
+      "price": 450,
+      "description": "Rich and bold Italian espresso shot",
+      "image": "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "d2", 
+      "name": "Cappuccino", 
+      "price": 580,
+      "description": "Espresso with steamed milk and foam",
+      "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "d3", 
+      "name": "Latte", 
+      "price": 650,
+      "description": "Smooth espresso with steamed milk",
+      "image": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "d4", 
+      "name": "Iced Coffee", 
+      "price": 520,
+      "description": "Cold brew coffee over ice",
+      "image": "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "d5", 
+      "name": "Green Smoothie", 
+      "price": 780,
+      "description": "Spinach, banana, mango, and coconut water",
+      "image": "https://images.unsplash.com/photo-1638176066666-ffb2f013c7dd?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "d6", 
+      "name": "Berry Blast", 
+      "price": 780,
+      "description": "Mixed berries, yogurt, and honey smoothie",
+      "image": "https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "d7", 
+      "name": "Fresh Orange Juice", 
+      "price": 580,
+      "description": "Freshly squeezed oranges",
+      "image": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "d8", 
+      "name": "Matcha Latte", 
+      "price": 710,
+      "description": "Premium matcha green tea with steamed milk",
+      "image": "https://images.unsplash.com/photo-1536013731705-0f7c6d6d5afd?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "d9", 
+      "name": "Herbal Tea", 
+      "price": 450,
+      "description": "Selection of organic herbal teas",
+      "image": "https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "d10", 
+      "name": "Chocolate Milkshake", 
+      "price": 780,
+      "description": "Rich chocolate ice cream blended to perfection",
+      "image": "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "d11", 
+      "name": "Mango Lassi", 
+      "price": 650,
+      "description": "Creamy mango yogurt drink",
+      "image": "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=400&h=300&fit=crop"
+    },
+    { 
+      "id": "d12", 
+      "name": "Mojito Mocktail", 
+      "price": 780,
+      "description": "Fresh mint, lime, and soda water",
+      "image": "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop"
+    }
+  ]
+}

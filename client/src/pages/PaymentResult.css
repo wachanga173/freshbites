@@ -1,0 +1,151 @@
+.payment-result-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+}
+
+.payment-result-card {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.processing, .success, .error, .cancelled {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.spinner {
+  width: 80px;
+  height: 80px;
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.success-icon {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: white;
+  font-weight: bold;
+  animation: scaleIn 0.5s ease;
+}
+
+.error-icon {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: white;
+  font-weight: bold;
+  animation: scaleIn 0.5s ease;
+}
+
+.cancel-icon {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: white;
+  font-weight: bold;
+  animation: scaleIn 0.5s ease;
+}
+
+@keyframes scaleIn {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.payment-result-card h2 {
+  font-size: 2rem;
+  color: #333;
+  margin: 0;
+}
+
+.payment-result-card p {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+}
+
+.order-details {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.order-id {
+  font-weight: bold;
+  color: #667eea;
+  font-size: 1.2rem;
+}
+
+.order-date {
+  color: #888;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.home-btn {
+  padding: 1rem 2.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.home-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+@media (max-width: 600px) {
+  .payment-result-card {
+    padding: 2rem;
+  }
+
+  .payment-result-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .success-icon, .error-icon, .cancel-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 3rem;
+  }
+}

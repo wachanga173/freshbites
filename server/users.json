@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "id": "superadmin",
+      "username": "superadmin",
+      "email": "admin@freshbites.com",
+      "password": "$2a$10$C1GMo/WDP1MjWzSZ2UywA.VsBIMO0wCNJdKVrIBr9Vt7V31D/IzLe",
+      "role": "superadmin",
+      "createdAt": "2025-11-08T10:55:12.662Z"
+    }
+  ]
+}

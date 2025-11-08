@@ -1,0 +1,565 @@
+.admin-dashboard {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.admin-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.admin-header h1 {
+  margin: 0 0 8px 0;
+}
+
+.admin-header p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.admin-nav {
+  background: white;
+  padding: 16px 24px;
+  display: flex;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.admin-nav button {
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.admin-nav button.active {
+  background: #667eea;
+  color: white;
+}
+
+.admin-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.admin-toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.admin-toolbar select {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.add-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.menu-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.admin-item-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.admin-item-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.item-info {
+  padding: 16px;
+}
+
+.item-info h4 {
+  margin: 0 0 8px 0;
+}
+
+.item-info p {
+  margin: 0 0 8px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.item-info .price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ff6347;
+}
+
+.item-actions {
+  padding: 16px;
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.item-actions button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.item-actions button:first-child {
+  background: #667eea;
+  color: white;
+}
+
+.item-actions button:last-child {
+  background: #fee;
+  color: #c00;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal-content h3 {
+  margin: 0 0 24px 0;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-content input,
+.modal-content textarea {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-buttons button[type="submit"] {
+  background: #667eea;
+  color: white;
+}
+
+.admin-panel {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 32px;
+}
+
+.admin-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-form input {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.admin-form button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.users-list {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+}
+
+.users-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.users-list th,
+.users-list td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.role-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.role-badge.superadmin {
+  background: #fee;
+  color: #c00;
+}
+
+.role-badge.admin {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.role-badge.ordermanager {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.role-badge.delivery {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.role-badge.customer {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.protected-badge {
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.self-badge {
+  color: #999;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.delete-btn:hover {
+  background: #c82333;
+}
+
+.role-select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 10px;
+  background: white;
+}
+
+.roles-section {
+  margin: 15px 0;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.section-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.role-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.role-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.role-checkbox-label:hover {
+  border-color: #667eea;
+  background: #f5f7ff;
+}
+
+.role-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.role-checkbox-label span {
+  font-size: 14px;
+  color: #333;
+}
+
+.roles-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.info-note {
+  margin-top: 10px;
+  padding: 10px;
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #1565c0;
+}
+
+.image-upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.image-upload-section label {
+  font-weight: 600;
+  color: #333;
+}
+
+.image-upload-section span {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}
+
+.image-upload-section input[type="file"] {
+  padding: 8px;
+  border: 2px dashed #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.image-preview {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 300px;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-buttons button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Settings Tab Styles */
+.settings-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.settings-section {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-section h3 {
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.account-info {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.account-info p {
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+.account-info strong {
+  color: #667eea;
+  margin-right: 8px;
+}
+
+.change-password-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.change-password-btn:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.password-form {
+  margin-top: 16px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.password-message {
+  padding: 12px;
+  border-radius: 8px;
+  margin: 16px 0;
+  font-weight: 600;
+}
+
+.password-message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.password-message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.form-buttons button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.form-buttons button[type="submit"] {
+  background: #667eea;
+  color: white;
+}
+
+.form-buttons button[type="submit"]:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+}
+
+.form-buttons button[type="button"] {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.form-buttons button[type="button"]:hover {
+  background: #dee2e6;
+}
+
+.settings-section ul {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+.settings-section ul li {
+  margin: 8px 0;
+  color: #666;
+}

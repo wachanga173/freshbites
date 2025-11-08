@@ -1,0 +1,249 @@
+.order-mgmt-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.dashboard-header {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.dashboard-header h1 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.dashboard-header p {
+  margin: 0;
+  color: #666;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-bar button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.filter-bar button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.filter-bar button.active {
+  background: #667eea;
+  color: white;
+}
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.orders-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.order-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.order-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.order-card.selected {
+  border: 3px solid #667eea;
+  background: #f0f4ff;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.order-info p {
+  margin: 5px 0;
+}
+
+.order-time {
+  font-size: 12px;
+  color: #999;
+}
+
+.order-details-panel {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.order-details-panel h2 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+
+.detail-section {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.detail-section h3 {
+  margin-top: 0;
+  color: #667eea;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.instructions {
+  padding: 10px;
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+
+.status-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.status-actions button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background: #667eea;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.status-actions button:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+}
+
+.status-actions button.cancel-btn {
+  background: #dc3545;
+  grid-column: span 2;
+}
+
+.status-actions button.cancel-btn:hover {
+  background: #c82333;
+}
+
+.status-actions button.complete-pickup-btn {
+  background: #28a745;
+  grid-column: span 2;
+  font-weight: 700;
+  font-size: 1.05rem;
+  box-shadow: 0 4px 6px rgba(40, 167, 69, 0.3);
+}
+
+.status-actions button.complete-pickup-btn:hover {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
+}
+
+.order-locked-message {
+  grid-column: span 2;
+  background: #d4edda;
+  border: 3px solid #28a745;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.order-locked-message strong {
+  display: block;
+  font-size: 1.2rem;
+  color: #155724;
+  margin-bottom: 10px;
+}
+
+.order-locked-message p {
+  margin: 5px 0;
+  color: #155724;
+}
+
+.completion-details {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.delivery-select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #667eea;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .status-actions {
+    grid-template-columns: 1fr;
+  }
+}
