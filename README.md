@@ -115,6 +115,7 @@ This app supports **PayPal** and **M-Pesa** payment methods.
 ---
 
 
+
 ## Notes
 
 - Background images are in `client/public/` and served by Vite
