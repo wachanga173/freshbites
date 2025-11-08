@@ -114,14 +114,7 @@ This app supports **PayPal** and **M-Pesa** payment methods.
 
 ---
 
-## Super Admin Account
 
-**Username:** `superadmin`  
-**Password:** `admin123`
-
-Use this account to access the admin panel and create additional admin users.
-
----
 
 ## Notes
 
