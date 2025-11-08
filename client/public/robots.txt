@@ -1,0 +1,11 @@
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin
+Disallow: /delivery
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://cafeteria-eta-khaki.vercel.app/sitemap.xml
