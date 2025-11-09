@@ -28,27 +28,30 @@ function MainApp() {
 
   useEffect(() => {
     fetch(getApiUrl('/api/menu'))
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error('Menu endpoint not found');
+        return r.json();
+      })
       .then(setMenu)
-      .catch(() => setMessage('Could not load menu from server'))
+      .catch(() => setMessage('Could not load menu from server'));
 
     // Simple routing based on URL path
-    const path = window.location.pathname
+    const path = window.location.pathname;
     if (path.includes('/payment/success')) {
-      setCurrentRoute('payment-success')
+      setCurrentRoute('payment-success');
     } else if (path.includes('/payment/cancel')) {
-      setCurrentRoute('payment-cancel')
+      setCurrentRoute('payment-cancel');
     } else if (path === '/admin') {
-      setCurrentRoute('admin')
-      setShowAdminPanel(true)
+      setCurrentRoute('admin');
+      setShowAdminPanel(true);
     } else if (path === '/order-management') {
-      setCurrentRoute('order-management')
+      setCurrentRoute('order-management');
     } else if (path === '/delivery') {
-      setCurrentRoute('delivery')
+      setCurrentRoute('delivery');
     } else {
-      setCurrentRoute('home')
+      setCurrentRoute('home');
     }
-  }, [])
+  }, []);
 
   if (loading) {
     return <div className="loading-screen">Loading...</div>
