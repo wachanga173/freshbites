@@ -59,15 +59,19 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
     setError('')
 
     try {
-      const token = localStorage.getItem('token')
-  const response = await fetch(getApiUrl('/api/payment/mpesa/stkpush'), {
+      let formattedPhone = mpesaPhone;
+      if (/^07\d{8}$/.test(mpesaPhone)) {
+        formattedPhone = '254' + mpesaPhone.slice(1);
+      }
+      const token = localStorage.getItem('token');
+      const response = await fetch(getApiUrl('/api/payment/mpesa/stkpush'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          phoneNumber: mpesaPhone,
+          phoneNumber: formattedPhone,
           amount: Math.round(total),
           items: items.map(item => ({
             id: item.id,
@@ -75,22 +79,22 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
             quantity: item.quantity
           }))
         })
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
       
       if (data.success) {
         // Show success message
-        alert('Payment request sent! Please check your phone to complete the M-Pesa payment.')
+        alert('Payment request sent! Please check your phone to complete the M-Pesa payment.');
         // Poll for payment status
-        pollMpesaStatus(data.checkoutRequestID)
+        pollMpesaStatus(data.checkoutRequestID);
       } else {
-        setError(data.error || 'Failed to initiate M-Pesa payment')
+        setError(data.error || 'Failed to initiate M-Pesa payment');
       }
     } catch (err) {
-      setError('Payment initialization failed. Please try again.')
+      setError('Payment initialization failed. Please try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
