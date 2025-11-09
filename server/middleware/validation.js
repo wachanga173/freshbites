@@ -40,11 +40,11 @@ const validateRegister = [
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
     .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
   
-  body('phone')
-    .optional()
-    .trim()
-    .matches(/^\+?[0-9]{10,15}$/)
-    .withMessage('Please provide a valid phone number'),
+    body('phone')
+      .optional()
+      .trim()
+      .matches(/^(\+254|254|07)[0-9]{8}$/)
+      .withMessage('Please provide a valid phone number'),
   
   handleValidationErrors
 ];
