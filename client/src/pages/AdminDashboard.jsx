@@ -47,7 +47,7 @@ export default function AdminDashboard() {
     formData.append('image', file)
 
     try {
-      const res = await fetch('/api/admin/upload', {
+  const res = await fetch(getApiUrl('/api/admin/upload'), {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
       image: imageUrl
     }
 
-    const res = await fetch(`/api/admin/menu/${selectedCategory}`, {
+  const res = await fetch(getApiUrl(`/api/admin/menu/${selectedCategory}`), {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
   }
 
   async function handleUpdateItem(category, id, item) {
-    const res = await fetch(`/api/admin/menu/${category}/${id}`, {
+  const res = await fetch(getApiUrl(`/api/admin/menu/${category}/${id}`), {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -159,7 +159,7 @@ export default function AdminDashboard() {
   async function handleDeleteItem(category, id) {
     if (!confirm('Are you sure you want to delete this item?')) return
 
-    const res = await fetch(`/api/admin/menu/${category}/${id}`, {
+  const res = await fetch(getApiUrl(`/api/admin/menu/${category}/${id}`), {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -183,7 +183,7 @@ export default function AdminDashboard() {
       return
     }
     
-    const res = await fetch('/api/superadmin/create-admin', {
+  const res = await fetch(getApiUrl('/api/superadmin/create-admin'), {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -212,7 +212,7 @@ export default function AdminDashboard() {
   async function handleDeleteUser(id) {
     if (!confirm('Are you sure you want to delete this user?')) return
 
-    const res = await fetch(`/api/superadmin/users/${id}`, {
+  const res = await fetch(getApiUrl(`/api/superadmin/users/${id}`), {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -246,7 +246,7 @@ export default function AdminDashboard() {
       return
     }
 
-    const res = await fetch('/api/auth/change-password', {
+    const res = await fetch(getApiUrl('/api/auth/change-password'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

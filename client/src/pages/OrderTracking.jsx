@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { getApiUrl } from '../config/api'
 import DeliveryMap from '../components/DeliveryMap'
 import './OrderTracking.css'
 
@@ -29,7 +30,8 @@ export default function OrderTracking() {
   const fetchMyOrders = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('/api/orders/my-orders', {
+      const url = getApiUrl('/api/orders/my-orders')
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -46,7 +48,8 @@ export default function OrderTracking() {
   const fetchTrackingInfo = async (orderId) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/delivery/track/${orderId}`, {
+      const url = getApiUrl(`/api/delivery/track/${orderId}`)
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -61,7 +64,8 @@ export default function OrderTracking() {
   const handleConfirmCompletion = async (orderId) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/orders/${orderId}/confirm-completion`, {
+      const url = getApiUrl(`/api/orders/${orderId}/confirm-completion`)
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

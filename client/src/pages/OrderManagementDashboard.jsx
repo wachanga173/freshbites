@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { getApiUrl } from '../config/api'
 import './OrderManagementDashboard.css'
 
 export default function OrderManagementDashboard() {
@@ -20,7 +21,8 @@ export default function OrderManagementDashboard() {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token')
-      const url = filter === 'all' ? '/api/orders/manage' : `/api/orders/manage?status=${filter}`
+      const endpoint = filter === 'all' ? '/api/orders/manage' : `/api/orders/manage?status=${filter}`
+      const url = getApiUrl(endpoint)
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
@@ -36,7 +38,8 @@ export default function OrderManagementDashboard() {
   const fetchDeliveryPersonnel = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('/api/superadmin/users', {
+      const url = getApiUrl('/api/superadmin/users')
+      const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       const data = await response.json()
@@ -51,7 +54,8 @@ export default function OrderManagementDashboard() {
   const updateOrderStatus = async (orderId, newStatus, note = '') => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/orders/${orderId}/status`, {
+      const url = getApiUrl(`/api/orders/${orderId}/status`)
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +80,8 @@ export default function OrderManagementDashboard() {
   const assignDelivery = async (orderId, deliveryPersonId) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/orders/${orderId}/assign`, {
+      const url = getApiUrl(`/api/orders/${orderId}/assign`)
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +109,8 @@ export default function OrderManagementDashboard() {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/orders/${orderId}/mark-pickup-done`, {
+      const url = getApiUrl(`/api/orders/${orderId}/mark-pickup-done`)
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

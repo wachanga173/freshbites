@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { getApiUrl } from '../config/api'
 import DeliveryMap from '../components/DeliveryMap'
 import './DeliveryDashboard.css'
 
@@ -40,7 +41,8 @@ export default function DeliveryDashboard() {
   const fetchMyDeliveries = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('/api/delivery/my-deliveries', {
+      const url = getApiUrl('/api/delivery/my-deliveries')
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -121,7 +123,8 @@ export default function DeliveryDashboard() {
 
     try {
       const token = localStorage.getItem('token')
-      await fetch('/api/delivery/update-location', {
+      const url = getApiUrl('/api/delivery/update-location')
+      await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -144,7 +147,8 @@ export default function DeliveryDashboard() {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/delivery/${selectedDelivery.orderId}/arrive`, {
+      const url = getApiUrl(`/api/delivery/${selectedDelivery.orderId}/arrive`)
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -175,7 +179,8 @@ export default function DeliveryDashboard() {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/delivery/${selectedDelivery.orderId}/mark-done`, {
+      const url = getApiUrl(`/api/delivery/${selectedDelivery.orderId}/mark-done`)
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

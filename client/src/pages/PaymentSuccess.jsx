@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { getApiUrl } from '../config/api'
 import './PaymentResult.css'
 
 export default function PaymentSuccess() {
@@ -24,7 +25,8 @@ export default function PaymentSuccess() {
   const executePayment = async (paymentId, PayerID) => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`/api/payment/paypal/execute?paymentId=${paymentId}&PayerID=${PayerID}`, {
+      const url = getApiUrl(`/api/payment/paypal/execute?paymentId=${paymentId}&PayerID=${PayerID}`)
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
