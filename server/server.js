@@ -154,31 +154,34 @@ const upload = multer({
 
 // Helper function to organize menu by category
 async function getMenuByCategory() {
-  const items = await MenuItem.find({ available: true });
-  const menu = {
-    appetizers: [],
-    breakfast: [],
-    lunch: [],
-    dinner: [],
-    desserts: [],
-    snacks: [],
-    drinks: []
-  };
-  
-  items.forEach(item => {
-    if (menu[item.category]) {
-      menu[item.category].push({
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        price: item.price,
-        image: item.image,
-        deliverable: item.deliverable || false
-      });
-    }
-  });
-  
-  return menu;
+  try {
+    const items = await MenuItem.find({ available: true });
+    const menu = {
+      appetizers: [],
+      breakfast: [],
+      lunch: [],
+      dinner: [],
+      desserts: [],
+      snacks: [],
+      drinks: []
+    };
+    items.forEach(item => {
+      if (menu[item.category]) {
+        menu[item.category].push({
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          price: item.price,
+          image: item.image,
+          deliverable: item.deliverable || false
+        });
+      }
+    });
+    return menu;
+  } catch (err) {
+    console.error('getMenuByCategory error:', err);
+    throw err;
+  }
 }
 
 // M-Pesa: Get access token
@@ -372,7 +375,7 @@ app.get('/api/menu', async (req, res) => {
     res.json(menu);
   } catch (err) {
     console.error('Menu fetch error:', err);
-    res.status(500).json({ error: 'Failed to load menu' });
+    res.status(500).json({ error: 'Failed to load menu', details: err.message || err });
   }
 });
 
