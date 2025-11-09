@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getApiUrl } from '../config/api';
 import { useAuth } from '../context/AuthContext'
 import './Checkout.css'
 
@@ -16,7 +17,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
     try {
       // Create PayPal payment
       const token = localStorage.getItem('token')
-      const response = await fetch('/api/payment/paypal/create', {
+  const response = await fetch(getApiUrl('/api/payment/paypal/create'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,7 +60,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('/api/payment/mpesa/stkpush', {
+  const response = await fetch(getApiUrl('/api/payment/mpesa/stkpush'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -105,7 +106,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
 
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch(`/api/payment/mpesa/status/${checkoutRequestID}`, {
+  const response = await fetch(getApiUrl(`/api/payment/mpesa/status/${checkoutRequestID}`), {
           headers: {
             'Authorization': `Bearer ${token}`
           }
