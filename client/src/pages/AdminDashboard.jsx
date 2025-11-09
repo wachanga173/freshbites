@@ -369,7 +369,7 @@ export default function AdminDashboard() {
 
           {editingItem && (
             <div className="modal-overlay" onClick={() => { setEditingItem(null); setImagePreview(null); }}>
-              <div className="modal-content" onClick={e => e.stopPropagation()}>
+              <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxHeight: '80vh', overflowY: 'auto' }}>
                 <h3>Edit Item</h3>
                 <form onSubmit={handleEditItem}>
                   <input name="name" defaultValue={editingItem.name} placeholder="Item name" required />
