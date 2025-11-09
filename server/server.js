@@ -58,6 +58,8 @@ const {
 } = require('./middleware/validation');
 
 const app = express();
+// Trust first proxy (required for correct IP detection on Render)
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 // Handle uncaught exceptions early
