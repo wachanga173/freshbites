@@ -80,7 +80,8 @@ export default function AdminDashboard() {
       name: formData.get('name'),
       description: formData.get('description'),
       price: parseFloat(formData.get('price')),
-      image: imageUrl
+      image: imageUrl,
+      available: formData.get('available') !== 'false' // default true unless unchecked
     }
 
   const res = await fetch(getApiUrl(`/api/admin/menu/${selectedCategory}`), {
@@ -117,7 +118,8 @@ export default function AdminDashboard() {
       name: formData.get('name'),
       description: formData.get('description'),
       price: parseFloat(formData.get('price')),
-      image: imageUrl
+      image: imageUrl,
+      available: formData.get('available') !== 'false' // default true unless unchecked
     }
 
     await handleUpdateItem(editingItem.category, editingItem.id, item)
@@ -330,7 +332,6 @@ export default function AdminDashboard() {
                   <input name="name" placeholder="Item name" required />
                   <textarea name="description" placeholder="Description" required />
                   <input name="price" type="number" step="0.01" placeholder="Price (KSH)" required />
-                  
                   <div className="image-upload-section">
                     <label>Upload Image:</label>
                     <input 
@@ -347,7 +348,12 @@ export default function AdminDashboard() {
                       </div>
                     )}
                   </div>
-
+                  <div className="availability-section">
+                    <label>
+                      <input type="checkbox" name="available" defaultChecked />
+                      Available (uncheck to mark unavailable)
+                    </label>
+                  </div>
                   <div className="modal-buttons">
                     <button type="submit" disabled={uploadingImage}>
                       {uploadingImage ? 'Uploading...' : 'Add Item'}
@@ -369,7 +375,6 @@ export default function AdminDashboard() {
                   <input name="name" defaultValue={editingItem.name} placeholder="Item name" required />
                   <textarea name="description" defaultValue={editingItem.description} placeholder="Description" required />
                   <input name="price" type="number" step="0.01" defaultValue={editingItem.price} placeholder="Price (KSH)" required />
-                  
                   <div className="image-upload-section">
                     <label>Upload New Image:</label>
                     <input 
@@ -386,7 +391,12 @@ export default function AdminDashboard() {
                       </div>
                     )}
                   </div>
-
+                  <div className="availability-section">
+                    <label>
+                      <input type="checkbox" name="available" defaultChecked={editingItem.available !== false} />
+                      Available (uncheck to mark unavailable)
+                    </label>
+                  </div>
                   <div className="modal-buttons">
                     <button type="submit" disabled={uploadingImage}>
                       {uploadingImage ? 'Uploading...' : 'Update Item'}
