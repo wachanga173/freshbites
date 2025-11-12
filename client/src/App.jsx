@@ -7,6 +7,7 @@ import Register from './pages/Register'
 import AdminDashboard from './pages/AdminDashboard'
 import OrderManagementDashboard from './pages/OrderManagementDashboard'
 import DeliveryDashboard from './pages/DeliveryDashboard'
+import OrderTracking from './pages/OrderTracking'
 import Checkout from './pages/Checkout'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
@@ -48,10 +49,15 @@ function MainApp() {
       setCurrentRoute('order-management');
     } else if (path === '/delivery') {
       setCurrentRoute('delivery');
+    } else if (path === '/my-orders') {
+      setCurrentRoute('my-orders');
     } else {
       setCurrentRoute('home');
     }
   }, []);
+  if (currentRoute === 'my-orders' && user) {
+    return <OrderTracking />
+  }
 
   if (loading) {
     return <div className="loading-screen">Loading...</div>
@@ -236,6 +242,10 @@ function MainApp() {
                   window.history.pushState({}, '', '/delivery')
                 }}>Delivery Dashboard</button>
               )}
+              <button onClick={() => {
+                setCurrentRoute('my-orders');
+                window.history.pushState({}, '', '/my-orders');
+              }}>My Orders</button>
               <button onClick={logout}>Logout</button>
             </div>
           ) : (
