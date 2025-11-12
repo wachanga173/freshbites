@@ -122,7 +122,7 @@ export default function OrderTracking() {
 
       {error && <div className="error-message">{error}</div>}
 
-      {orders.length === 0 ? (
+  {!Array.isArray(orders) || orders.length === 0 ? (
         <div className="no-orders">
           <p>You haven't placed any orders yet.</p>
         </div>
@@ -130,7 +130,7 @@ export default function OrderTracking() {
         <div className="orders-layout">
           {/* Orders List */}
           <div className="orders-list">
-            {orders.map((order) => (
+            {(Array.isArray(orders) ? orders : []).map((order) => (
               <div
                 key={order.orderId}
                 className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
@@ -188,7 +188,7 @@ export default function OrderTracking() {
               <div className="detail-section">
                 <h3>Items</h3>
                 <div className="order-items-list">
-                  {selectedOrder.items.map((item, idx) => (
+                  {(selectedOrder && Array.isArray(selectedOrder.items) ? selectedOrder.items : []).map((item, idx) => (
                     <div key={idx} className="order-item-row">
                       <img src={item.image} alt={item.name} />
                       <div className="item-info">
@@ -244,7 +244,7 @@ export default function OrderTracking() {
                 <div className="detail-section">
                   <h3>Status History</h3>
                   <div className="status-timeline">
-                    {selectedOrder.statusHistory.map((history, idx) => (
+                    {(selectedOrder && Array.isArray(selectedOrder.statusHistory) ? selectedOrder.statusHistory : []).map((history, idx) => (
                       <div key={idx} className="timeline-item">
                         <div className="timeline-dot" style={{ backgroundColor: getStatusColor(history.status) }}></div>
                         <div className="timeline-content">

@@ -10,6 +10,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
   const [error, setError] = useState('')
   const [mpesaPhone, setMpesaPhone] = useState('')
 
+  const safeItems = Array.isArray(items) ? items : []
   const handlePayPalPayment = async () => {
     setLoading(true)
     setError('')
@@ -24,7 +25,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          items: items.map(item => ({
+          items: safeItems.map(item => ({
             id: item.id,
             name: item.name,
             price: item.price,
@@ -73,7 +74,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
         body: JSON.stringify({
           phoneNumber: formattedPhone,
           amount: Math.round(total),
-          items: items.map(item => ({
+          items: safeItems.map(item => ({
             id: item.id,
             name: item.name,
             quantity: item.quantity
@@ -162,7 +163,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
           <section className="checkout-section">
             <h2>Order Summary</h2>
             <div className="order-items">
-              {items.map((item, idx) => (
+              {safeItems.map((item, idx) => (
                 <div key={idx} className="checkout-item">
                   <img src={item.image} alt={item.name} className="checkout-item-img" />
                   <div className="checkout-item-details">

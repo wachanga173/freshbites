@@ -1,8 +1,9 @@
 import './Cart.css'
 
 export default function Cart({ items, onRemove, onCheckout, onUpdateQuantity }) {
-  const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
+  const safeItems = Array.isArray(items) ? items : []
+  const total = safeItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  const itemCount = safeItems.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
     <div className="cart-container">
@@ -11,7 +12,7 @@ export default function Cart({ items, onRemove, onCheckout, onUpdateQuantity }) 
         <span className="item-count">{itemCount} {itemCount === 1 ? 'item' : 'items'}</span>
       </div>
 
-      {items.length === 0 ? (
+  {safeItems.length === 0 ? (
         <div className="empty-cart">
           <p>Your cart is empty</p>
           <span className="cart-icon">🛒</span>
@@ -19,7 +20,7 @@ export default function Cart({ items, onRemove, onCheckout, onUpdateQuantity }) 
       ) : (
         <>
           <div className="cart-items">
-            {items.map((item, idx) => (
+            {safeItems.map((item, idx) => (
               <div key={idx} className="cart-item">
                 <div className="cart-item-info">
                   <h4>{item.name}</h4>

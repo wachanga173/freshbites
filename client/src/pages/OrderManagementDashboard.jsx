@@ -181,10 +181,10 @@ export default function OrderManagementDashboard() {
         <div className="orders-grid">
           {loading ? (
             <p>Loading orders...</p>
-          ) : orders.length === 0 ? (
+          ) : !Array.isArray(orders) || orders.length === 0 ? (
             <p>No orders found</p>
           ) : (
-            orders.map(order => (
+            (Array.isArray(orders) ? orders : []).map(order => (
               <div
                 key={order.orderId}
                 className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
@@ -234,7 +234,7 @@ export default function OrderManagementDashboard() {
 
             <div className="detail-section">
               <h3>Items ({selectedOrder.items.length})</h3>
-              {selectedOrder.items.map((item, idx) => (
+              {(selectedOrder && Array.isArray(selectedOrder.items) ? selectedOrder.items : []).map((item, idx) => (
                 <div key={idx} className="item-row">
                   <span>{item.name} x{item.quantity}</span>
                   <span>KSH {item.price * item.quantity}</span>
@@ -320,7 +320,7 @@ export default function OrderManagementDashboard() {
                   defaultValue=""
                 >
                   <option value="">Select delivery person...</option>
-                  {deliveryPersonnel.map(person => (
+                  {(Array.isArray(deliveryPersonnel) ? deliveryPersonnel : []).map(person => (
                     <option key={person.id} value={person.id}>
                       {person.username} {person.phone && `- ${person.phone}`}
                     </option>
