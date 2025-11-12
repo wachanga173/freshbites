@@ -12,43 +12,50 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
 
   const safeItems = Array.isArray(items) ? items : []
   const handlePayPalPayment = async () => {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError('');
 
     try {
+      // Prepare order details to store for use after PayPal redirect
+      const orderDetails = {
+        items: safeItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity
+        })),
+        total: total,
+        shippingFee: 200, // hardcoded as in UI
+        deliveryType: 'pickup', // or get from UI if available
+        deliveryAddress: null // or get from UI if available
+      };
+      localStorage.setItem('pendingOrderDetails', JSON.stringify(orderDetails));
+
       // Create PayPal payment
-      const token = localStorage.getItem('token')
-  const response = await fetch(getApiUrl('/api/payment/paypal/create'), {
+      const token = localStorage.getItem('token');
+      const response = await fetch(getApiUrl('/api/payment/paypal/create'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          items: safeItems.map(item => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity
-          })),
-          total: total
-        })
-      })
+        body: JSON.stringify(orderDetails)
+      });
 
-      const data = await response.json()
+      const data = await response.json();
       
       if (data.success && data.approvalUrl) {
         // Redirect to PayPal for approval
-        window.location.href = data.approvalUrl
+        window.location.href = data.approvalUrl;
       } else {
-        setError(data.error || 'Failed to create PayPal payment')
+        setError(data.error || 'Failed to create PayPal payment');
       }
     } catch (err) {
-      setError('Payment initialization failed. Please try again.')
+      setError('Payment initialization failed. Please try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleMpesaPayment = async () => {
     if (!mpesaPhone || mpesaPhone.length < 10) {
