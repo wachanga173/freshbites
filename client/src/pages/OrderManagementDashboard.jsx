@@ -6,6 +6,7 @@ import './OrderManagementDashboard.css'
 export default function OrderManagementDashboard() {
   const { user } = useAuth()
   const [orders, setOrders] = useState([])
+  const [orderError, setOrderError] = useState(null)
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [deliveryPersonnel, setDeliveryPersonnel] = useState([])
   const [filter, setFilter] = useState('all')
@@ -20,6 +21,7 @@ export default function OrderManagementDashboard() {
 
   const fetchOrders = async () => {
     try {
+      setOrderError(null)
       const token = localStorage.getItem('token')
       const endpoint = filter === 'all' ? '/api/orders/manage' : `/api/orders/manage?status=${filter}`
       const url = getApiUrl(endpoint)
@@ -27,10 +29,19 @@ export default function OrderManagementDashboard() {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       const data = await response.json()
-      setOrders(data)
+      console.log('Fetched orders response:', data)
+      if (Array.isArray(data)) {
+        setOrders(data)
+      } else {
+        setOrders([])
+        setOrderError(
+          (data && data.error) ? `Error: ${data.error}` : 'Unexpected response from server.'
+        )
+      }
       setLoading(false)
     } catch (err) {
       console.error('Failed to fetch orders:', err)
+      setOrderError('Failed to fetch orders. See console for details.')
       setLoading(false)
     }
   }
@@ -181,6 +192,8 @@ export default function OrderManagementDashboard() {
         <div className="orders-grid">
           {loading ? (
             <p>Loading orders...</p>
+          ) : orderError ? (
+            <p style={{ color: 'red' }}>{orderError}</p>
           ) : !Array.isArray(orders) || orders.length === 0 ? (
             <p>No orders found</p>
           ) : (
