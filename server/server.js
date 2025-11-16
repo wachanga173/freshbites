@@ -226,11 +226,12 @@ app.post('/api/auth/register', authLimiter, validateRegister, catchAsync(async (
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await User.create({
-    username,
-    email,
-    password: hashedPassword,
-    phone,
-    roles: ['customer']
+  username,
+  email,
+  password: hashedPassword,
+  phone,
+  roles: ['customer'],
+  role: 'customer'
   });
 
   const token = jwt.sign(

@@ -39,7 +39,8 @@ async function migrateData() {
           username: user.username,
           email: user.email,
           password: user.password, // Already hashed
-          role: user.role
+          role: user.role,
+          roles: user.roles || (user.role ? [user.role] : ['customer'])
         });
       }
       console.log(`Migrated ${usersData.length} users`);
