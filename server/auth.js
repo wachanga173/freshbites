@@ -27,8 +27,11 @@ function requireRole(...roles) {
     // Support both single role (legacy) and multiple roles
     const userRoles = Array.isArray(req.user.roles) ? req.user.roles : [req.user.role];
     
+    // Flatten roles array in case it's passed as [['role1', 'role2']]
+    const requiredRoles = roles.flat();
+    
     // Check if user has at least one of the required roles
-    const hasRole = roles.some(role => userRoles.includes(role));
+    const hasRole = requiredRoles.some(role => userRoles.includes(role));
     
     if (!hasRole) {
       return res.status(403).json({ error: 'Insufficient permissions' });
