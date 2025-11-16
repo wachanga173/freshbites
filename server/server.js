@@ -891,6 +891,7 @@ app.post('/api/superadmin/create-admin', authenticateToken, requireRole('superad
       email,
       password: hashedPassword,
       roles: roles,
+      role: Array.isArray(roles) && roles.length > 0 ? roles[0] : '',
       phone: phone || ''
     });
 
