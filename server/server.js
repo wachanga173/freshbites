@@ -941,6 +941,27 @@ app.delete('/api/superadmin/users/:id', authenticateToken, requireRole('superadm
   }
 });
 
+// ========== DELIVERY PERSONNEL ROUTE ==========
+
+// Get delivery personnel (for order managers and admins)
+app.get('/api/delivery-personnel', authenticateToken, requireRole(['admin', 'superadmin', 'ordermanager']), async (req, res) => {
+  try {
+    const deliveryUsers = await User.find({ roles: 'delivery' }).select('-password');
+    const usersWithId = deliveryUsers.map(user => ({
+      id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      phone: user.phone,
+      roles: user.roles,
+      createdAt: user.createdAt
+    }));
+    res.json(usersWithId);
+  } catch (err) {
+    console.error('Get delivery personnel error:', err);
+    res.status(500).json({ error: 'Failed to fetch delivery personnel' });
+  }
+});
+
 // ========== ORDER MANAGEMENT ROUTES (for ordermanager role) ==========
 
 // Get all orders (for order managers and admins)

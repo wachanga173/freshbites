@@ -49,14 +49,17 @@ export default function OrderManagementDashboard() {
   const fetchDeliveryPersonnel = async () => {
     try {
       const token = localStorage.getItem('token')
-      const url = getApiUrl('/api/superadmin/users')
+      const url = getApiUrl('/api/delivery-personnel')
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       const data = await response.json()
-      // Filter users who have delivery role
-      const deliveryUsers = data.filter(u => u.roles && u.roles.includes('delivery'))
-      setDeliveryPersonnel(deliveryUsers)
+      if (response.ok) {
+        // The new endpoint returns only delivery personnel
+        setDeliveryPersonnel(data)
+      } else {
+        console.error('Failed to fetch delivery personnel:', data.error)
+      }
     } catch (err) {
       console.error('Failed to fetch delivery personnel:', err)
     }
