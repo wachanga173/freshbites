@@ -235,7 +235,7 @@ app.post('/api/auth/register', authLimiter, validateRegister, catchAsync(async (
   });
 
   const token = jwt.sign(
-    { id: user._id, username: user.username, roles: user.roles },
+  { id: user._id, username: user.username, roles: user.roles, role: user.role },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -287,7 +287,7 @@ app.post('/api/auth/login', authLimiter, validateLogin, catchAsync(async (req, r
   }
 
   const token = jwt.sign(
-    { id: user._id, username: user.username, roles: user.roles },
+  { id: user._id, username: user.username, roles: user.roles, role: user.role },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
