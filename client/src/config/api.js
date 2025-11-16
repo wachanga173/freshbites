@@ -1,7 +1,7 @@
 // API Configuration
 // This handles API URLs for both development and production
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:10000';
 
 // Helper function to build API URLs
 export const getApiUrl = (endpoint) => {
