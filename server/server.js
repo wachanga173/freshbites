@@ -176,7 +176,9 @@ async function getMenuByCategory() {
           description: item.description,
           price: item.price,
           image: item.image,
-          deliverable: item.deliverable || false
+          deliverable: item.deliverable || false,
+          orderCategory: item.orderCategory || ['dine-in'],
+          shippingFee: item.shippingFee || 0
         });
       }
     });
@@ -520,6 +522,16 @@ app.post('/api/payment/paypal/execute', authenticateToken, async (req, res) => {
         // Determine actual order type (backward compatibility)
         const actualOrderType = orderType || (deliveryType === 'delivery' ? 'delivery' : deliveryType === 'pickup' ? 'pickup' : 'dine-in');
         
+        // Determine initial status based on order type
+        let initialStatus = 'confirmed';
+        if (actualOrderType === 'pickup') {
+          initialStatus = 'ready';
+        } else if (actualOrderType === 'dine-in') {
+          initialStatus = 'ready';
+        } else if (actualOrderType === 'delivery') {
+          initialStatus = 'confirmed';
+        }
+        
         // Save completed order
         const newOrder = await Order.create({
           orderId: `ord_${Date.now()}`,
@@ -534,13 +546,13 @@ app.post('/api/payment/paypal/execute', authenticateToken, async (req, res) => {
           orderType: actualOrderType,
           deliveryType: deliveryType || 'pickup',
           deliveryAddress: deliveryAddress || null,
-          status: actualOrderType === 'pickup' ? 'ready' : 'confirmed',
+          status: initialStatus,
           statusHistory: [{
-            status: actualOrderType === 'pickup' ? 'ready' : 'confirmed',
+            status: initialStatus,
             timestamp: new Date(),
-            note: 'Payment completed via PayPal'
+            note: `Payment completed via PayPal - ${actualOrderType} order`
           }],
-          completedAt: actualOrderType === 'pickup' ? new Date() : null
+          completedAt: null
         });
 
         res.json({
@@ -673,7 +685,14 @@ app.post('/api/payment/mpesa/callback', async (req, res) => {
       if (order) {
         // Determine status based on orderType (with fallback to deliveryType)
         const orderTypeValue = order.orderType || order.deliveryType || 'dine-in';
-        const newStatus = orderTypeValue === 'pickup' ? 'ready' : 'confirmed';
+        
+        // Set appropriate status based on order type
+        let newStatus = 'confirmed';
+        if (orderTypeValue === 'pickup' || orderTypeValue === 'dine-in') {
+          newStatus = 'ready';
+        } else if (orderTypeValue === 'delivery') {
+          newStatus = 'confirmed';
+        }
         
         order.status = newStatus;
         
@@ -685,12 +704,8 @@ app.post('/api/payment/mpesa/callback', async (req, res) => {
         order.statusHistory.push({
           status: newStatus,
           timestamp: new Date(),
-          note: 'Payment confirmed via M-Pesa'
+          note: `Payment confirmed via M-Pesa - ${orderTypeValue} order`
         });
-        
-        if (orderTypeValue === 'pickup') {
-          order.completedAt = new Date();
-        }
         
         await order.save();
         console.log(`Order ${order.orderId} status updated to ${newStatus}`);

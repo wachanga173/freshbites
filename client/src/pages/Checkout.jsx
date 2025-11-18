@@ -51,13 +51,17 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
       return common.filter(type => itemCategories.includes(type))
     }, ['dine-in', 'pickup', 'delivery'])
 
+    console.log('Available order types:', commonOrderTypes)
+    console.log('Items order categories:', itemOrderCategories)
+    
     setAvailableOrderTypes(commonOrderTypes.length > 0 ? commonOrderTypes : ['dine-in'])
 
     // Auto-select the first available option if current selection is not available
-    if (!commonOrderTypes.includes(orderType)) {
+    if (commonOrderTypes.length > 0 && !commonOrderTypes.includes(orderType)) {
+      console.log('Auto-selecting order type:', commonOrderTypes[0])
       setOrderType(commonOrderTypes[0] || 'dine-in')
     }
-  }, [safeItems])
+  }, [safeItems, orderType])
   
   // Check if cart contains delivery items and calculate shipping fee
   useEffect(() => {
