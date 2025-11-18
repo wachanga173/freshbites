@@ -764,6 +764,50 @@ app.get('/api/orders', authenticateToken, async (req, res) => {
   }
 });
 
+// Manual payment confirmation (for when M-Pesa callback fails)
+app.post('/api/orders/:orderId/confirm-payment', authenticateToken, requireRole('admin', 'superadmin', 'ordermanager'), async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await Order.findOne({ orderId });
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    if (order.status !== 'pending') {
+      return res.status(400).json({ error: 'Order is not pending payment' });
+    }
+
+    // Determine status based on orderType
+    const orderTypeValue = order.orderType || order.deliveryType || 'dine-in';
+    const newStatus = orderTypeValue === 'pickup' ? 'ready' : 'confirmed';
+
+    order.status = newStatus;
+    
+    if (!Array.isArray(order.statusHistory)) {
+      order.statusHistory = [];
+    }
+
+    order.statusHistory.push({
+      status: newStatus,
+      timestamp: new Date(),
+      updatedBy: req.user.id,
+      note: `Payment manually confirmed by ${req.user.username || req.user.email || 'Manager'}`
+    });
+
+    if (orderTypeValue === 'pickup') {
+      order.completedAt = new Date();
+    }
+
+    await order.save();
+
+    res.json({ success: true, order });
+  } catch (err) {
+    console.error('Confirm payment error:', err);
+    res.status(500).json({ error: 'Failed to confirm payment' });
+  }
+});
+
 // ========== ADMIN MENU MANAGEMENT ==========
 
 // Upload image endpoint

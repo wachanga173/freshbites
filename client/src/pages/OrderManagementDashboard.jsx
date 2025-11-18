@@ -151,6 +151,40 @@ export default function OrderManagementDashboard() {
     }
   }
 
+  const confirmPayment = async (orderId) => {
+    const confirmMsg = `Confirm that payment has been received for order #${orderId}?\n\n` +
+                      `This will change the order status from pending to confirmed/ready.\n\n` +
+                      `⚠️ Only confirm if you have verified the payment.`
+
+    if (!confirm(confirmMsg)) return
+
+    try {
+      const token = localStorage.getItem('token')
+      const url = getApiUrl(`/api/orders/${orderId}/confirm-payment`)
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
+      const data = await response.json()
+      
+      if (response.ok && data.success) {
+        alert(`✅ Payment confirmed!\n\nOrder status updated to ${data.order.status}.`)
+        fetchOrders()
+        if (selectedOrder?.orderId === orderId) {
+          setSelectedOrder(data.order)
+        }
+      } else {
+        alert(`Failed: ${data.error || 'Could not confirm payment'}`)
+      }
+    } catch (err) {
+      alert('Failed to confirm payment')
+    }
+  }
+
   const getStatusColor = (status) => {
     const colors = {
       pending: '#ffa500',
@@ -268,6 +302,15 @@ export default function OrderManagementDashboard() {
             <div className="detail-section">
               <h3>Update Status</h3>
               <div className="status-actions">
+                {selectedOrder.status === 'pending' && (
+                  <button 
+                    className="confirm-payment-btn"
+                    onClick={() => confirmPayment(selectedOrder.orderId)}
+                    style={{ backgroundColor: '#28a745', marginBottom: '10px' }}
+                  >
+                    💰 Confirm Payment Received
+                  </button>
+                )}
                 {selectedOrder.status !== 'completed' && selectedOrder.canReuse !== false && (
                   <>
                     <button onClick={() => updateOrderStatus(selectedOrder.orderId, 'confirmed')}>
