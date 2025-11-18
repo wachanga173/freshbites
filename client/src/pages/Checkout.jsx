@@ -20,8 +20,44 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
   })
   const [shippingFee, setShippingFee] = useState(0)
   const [hasDeliveryItems, setHasDeliveryItems] = useState(false)
+  const [availableOrderTypes, setAvailableOrderTypes] = useState(['dine-in', 'pickup', 'delivery'])
 
   const safeItems = Array.isArray(items) ? items : []
+  
+  // Determine available order types based on items in cart
+  useEffect(() => {
+    if (safeItems.length === 0) {
+      setAvailableOrderTypes(['dine-in'])
+      return
+    }
+
+    // Get order categories from all items
+    // An order type is available only if ALL items support it
+    const itemOrderCategories = safeItems.map(item => {
+      // Handle both array and string formats for backward compatibility
+      if (Array.isArray(item.orderCategory)) {
+        return item.orderCategory
+      } else if (item.orderCategory) {
+        return [item.orderCategory]
+      } else if (item.deliverable) {
+        return ['dine-in', 'pickup', 'delivery']
+      } else {
+        return ['dine-in', 'pickup']
+      }
+    })
+
+    // Find common order types across all items
+    const commonOrderTypes = itemOrderCategories.reduce((common, itemCategories) => {
+      return common.filter(type => itemCategories.includes(type))
+    }, ['dine-in', 'pickup', 'delivery'])
+
+    setAvailableOrderTypes(commonOrderTypes.length > 0 ? commonOrderTypes : ['dine-in'])
+
+    // Auto-select the first available option if current selection is not available
+    if (!commonOrderTypes.includes(orderType)) {
+      setOrderType(commonOrderTypes[0] || 'dine-in')
+    }
+  }, [safeItems])
   
   // Check if cart contains delivery items and calculate shipping fee
   useEffect(() => {
@@ -59,6 +95,20 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
     setError('');
 
     try {
+      // Validate order type is selected
+      if (!orderType) {
+        setError('Please select an order type (Dine In, Pickup, or Delivery)')
+        setLoading(false)
+        return
+      }
+
+      // Validate order type is available
+      if (!availableOrderTypes.includes(orderType)) {
+        setError('Selected order type is not available for items in your cart')
+        setLoading(false)
+        return
+      }
+
       // Validate delivery address if order type is delivery
       if (orderType === 'delivery' && (!deliveryAddress.street || !deliveryAddress.city || !deliveryAddress.phone)) {
         setError('Please fill in all delivery address fields')
@@ -112,6 +162,18 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
   const handleMpesaPayment = async () => {
     if (!mpesaPhone || mpesaPhone.length < 10) {
       setError('Please enter a valid M-Pesa phone number')
+      return
+    }
+
+    // Validate order type is selected
+    if (!orderType) {
+      setError('Please select an order type (Dine In, Pickup, or Delivery)')
+      return
+    }
+
+    // Validate order type is available
+    if (!availableOrderTypes.includes(orderType)) {
+      setError('Selected order type is not available for items in your cart')
       return
     }
 
@@ -248,27 +310,34 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
 
           {/* Order Type Selection */}
           <section className="checkout-section">
-            <h2>Order Type</h2>
+            <h2>Order Type *</h2>
+            <p className="info-text" style={{fontSize: '0.9em', color: '#666', marginBottom: '10px'}}>
+              Select how you want to receive your order (based on available items)
+            </p>
             <div className="order-type-options">
-              <div 
-                className={`order-type-card ${orderType === 'dine-in' ? 'selected' : ''}`}
-                onClick={() => setOrderType('dine-in')}
-              >
-                <div className="order-type-icon">🍽️</div>
-                <h3>Dine In</h3>
-                <p>Eat at our restaurant</p>
-              </div>
+              {availableOrderTypes.includes('dine-in') && (
+                <div 
+                  className={`order-type-card ${orderType === 'dine-in' ? 'selected' : ''}`}
+                  onClick={() => setOrderType('dine-in')}
+                >
+                  <div className="order-type-icon">🍽️</div>
+                  <h3>Dine In</h3>
+                  <p>Eat at our restaurant</p>
+                </div>
+              )}
 
-              <div 
-                className={`order-type-card ${orderType === 'pickup' ? 'selected' : ''}`}
-                onClick={() => setOrderType('pickup')}
-              >
-                <div className="order-type-icon">🛍️</div>
-                <h3>Pickup</h3>
-                <p>Pick up your order</p>
-              </div>
+              {availableOrderTypes.includes('pickup') && (
+                <div 
+                  className={`order-type-card ${orderType === 'pickup' ? 'selected' : ''}`}
+                  onClick={() => setOrderType('pickup')}
+                >
+                  <div className="order-type-icon">🛍️</div>
+                  <h3>Pickup</h3>
+                  <p>Pick up your order</p>
+                </div>
+              )}
 
-              {hasDeliveryItems && (
+              {availableOrderTypes.includes('delivery') && (
                 <div 
                   className={`order-type-card ${orderType === 'delivery' ? 'selected' : ''}`}
                   onClick={() => setOrderType('delivery')}
@@ -279,8 +348,11 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                 </div>
               )}
             </div>
-            {!hasDeliveryItems && orderType === 'delivery' && (
-              <p className="info-message">⚠️ No deliverable items in cart. Delivery option not available.</p>
+            {availableOrderTypes.length === 0 && (
+              <p className="error-message">⚠️ No valid order type available for the items in your cart.</p>
+            )}
+            {!orderType && (
+              <p className="error-message">⚠️ Please select an order type to continue.</p>
             )}
           </section>
 
