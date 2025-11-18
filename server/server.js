@@ -500,8 +500,12 @@ app.post('/api/payment/paypal/create', authenticateToken, (req, res) => {
 });
 
 // PayPal: Execute payment (callback after user approves)
-app.get('/api/payment/paypal/execute', authenticateToken, async (req, res) => {
-  const { paymentId, PayerID } = req.query;
+app.post('/api/payment/paypal/execute', authenticateToken, async (req, res) => {
+  const { paymentId, PayerID, items, total, shippingFee, deliveryType, deliveryAddress, orderType } = req.body;
+
+  if (!paymentId || !PayerID) {
+    return res.status(400).json({ error: 'Payment ID and Payer ID are required' });
+  }
 
   const execute_payment_json = {
     payer_id: PayerID
@@ -513,29 +517,30 @@ app.get('/api/payment/paypal/execute', authenticateToken, async (req, res) => {
       return res.status(500).json({ error: 'Payment execution failed' });
     } else {
       try {
-        // Get order details from request body
-        const { items, total, shippingFee, deliveryType, deliveryAddress } = req.body;
+        // Determine actual order type (backward compatibility)
+        const actualOrderType = orderType || (deliveryType === 'delivery' ? 'delivery' : deliveryType === 'pickup' ? 'pickup' : 'dine-in');
         
         // Save completed order
         const newOrder = await Order.create({
           orderId: `ord_${Date.now()}`,
           userId: req.user.id,
-          username: req.user.username,
+          username: req.user.username || req.user.email,
           items: items || [],
           total: total || 0,
           shippingFee: shippingFee || 0,
           grandTotal: (total || 0) + (shippingFee || 0),
           paymentMethod: 'paypal',
           paymentId: payment.id,
+          orderType: actualOrderType,
           deliveryType: deliveryType || 'pickup',
           deliveryAddress: deliveryAddress || null,
-          status: deliveryType === 'pickup' ? 'ready' : 'confirmed',
+          status: actualOrderType === 'pickup' ? 'ready' : 'confirmed',
           statusHistory: [{
-            status: deliveryType === 'pickup' ? 'ready' : 'confirmed',
+            status: actualOrderType === 'pickup' ? 'ready' : 'confirmed',
             timestamp: new Date(),
             note: 'Payment completed via PayPal'
           }],
-          completedAt: deliveryType === 'pickup' ? new Date() : null
+          completedAt: actualOrderType === 'pickup' ? new Date() : null
         });
 
         res.json({
@@ -666,20 +671,31 @@ app.post('/api/payment/mpesa/callback', async (req, res) => {
       const order = await Order.findOne({ checkoutRequestID: checkoutRequestID });
       
       if (order) {
-        const newStatus = order.deliveryType === 'pickup' ? 'ready' : 'confirmed';
+        // Determine status based on orderType (with fallback to deliveryType)
+        const orderTypeValue = order.orderType || order.deliveryType || 'dine-in';
+        const newStatus = orderTypeValue === 'pickup' ? 'ready' : 'confirmed';
         
         order.status = newStatus;
+        
+        // Ensure statusHistory exists
+        if (!Array.isArray(order.statusHistory)) {
+          order.statusHistory = [];
+        }
+        
         order.statusHistory.push({
           status: newStatus,
           timestamp: new Date(),
           note: 'Payment confirmed via M-Pesa'
         });
         
-        if (order.deliveryType === 'pickup') {
+        if (orderTypeValue === 'pickup') {
           order.completedAt = new Date();
         }
         
         await order.save();
+        console.log(`Order ${order.orderId} status updated to ${newStatus}`);
+      } else {
+        console.error(`Order not found for checkoutRequestID: ${checkoutRequestID}`);
       }
     } else {
       // Payment failed
@@ -692,11 +708,12 @@ app.post('/api/payment/mpesa/callback', async (req, res) => {
             statusHistory: {
               status: 'failed',
               timestamp: new Date(),
-              note: 'M-Pesa payment failed'
+              note: `M-Pesa payment failed: ${stkCallback.ResultDesc || 'Unknown error'}`
             }
           }
         }
       );
+      console.log(`Order payment failed for checkoutRequestID: ${checkoutRequestID}`);
     }
 
     res.json({ ResultCode: 0, ResultDesc: 'Accepted' });
