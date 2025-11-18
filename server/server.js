@@ -1491,7 +1491,8 @@ app.post('/api/orders/:orderId/complete', authenticateToken, requireRole('orderm
     }
     
     // Handle legacy orders without orderType (backward compatibility)
-    const orderTypeValue = order.orderType || order.deliveryType || 'dine-in';
+    // Prioritize completionType from request, then order fields, then default
+    const orderTypeValue = completionType || order.orderType || order.deliveryType || 'dine-in';
     
     if (orderTypeValue === 'delivery') {
       return res.status(400).json({ error: 'Delivery orders must be confirmed by delivery personnel' });
@@ -1506,13 +1507,19 @@ app.post('/api/orders/:orderId/complete', authenticateToken, requireRole('orderm
     order.status = statusMap[orderTypeValue] || 'completed';
     order.completedAt = new Date();
     order.completedBy = req.user.id;
-    order.completedByRole = req.user.roles.includes('superadmin') ? 'superadmin' : 'ordermanager';
+    order.completedByRole = Array.isArray(req.user.roles) && req.user.roles.includes('superadmin') ? 'superadmin' : 'ordermanager';
     
+    // Ensure statusHistory array exists
+    if (!Array.isArray(order.statusHistory)) {
+      order.statusHistory = [];
+    }
+    
+    const username = req.user.username || req.user.email || 'Manager';
     order.statusHistory.push({
       status: order.status,
       timestamp: new Date(),
       updatedBy: req.user.id,
-      note: `${orderTypeValue} confirmed by ${req.user.username}`
+      note: `${orderTypeValue} confirmed by ${username}`
     });
     
     await order.save();
@@ -1520,7 +1527,8 @@ app.post('/api/orders/:orderId/complete', authenticateToken, requireRole('orderm
     res.json({ success: true, order });
   } catch (err) {
     console.error('Complete order error:', err);
-    res.status(500).json({ error: 'Failed to complete order' });
+    console.error('Error details:', err.message, err.stack);
+    res.status(500).json({ error: 'Failed to complete order', details: err.message });
   }
 });
 
