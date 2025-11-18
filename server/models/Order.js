@@ -43,6 +43,11 @@ const orderSchema = new mongoose.Schema({
   paymentId: String,
   checkoutRequestID: String,
   merchantRequestID: String,
+  orderType: {
+    type: String,
+    enum: ['dine-in', 'pickup', 'delivery'],
+    default: 'dine-in'
+  },
   deliveryType: {
     type: String,
     enum: ['pickup', 'delivery'],
@@ -52,7 +57,9 @@ const orderSchema = new mongoose.Schema({
     street: String,
     city: String,
     phone: String,
-    instructions: String
+    instructions: String,
+    latitude: Number,
+    longitude: Number
   },
   status: {
     type: String,
@@ -91,7 +98,16 @@ const orderSchema = new mongoose.Schema({
   },
   completedByRole: {
     type: String,
-    enum: ['delivery', 'ordermanager', 'customer']
+    enum: ['delivery', 'ordermanager', 'superadmin', 'customer']
+  },
+  deliveryConfirmation: {
+    confirmedAt: Date,
+    confirmedLocation: {
+      latitude: Number,
+      longitude: Number
+    },
+    locationMatch: Boolean,
+    distanceFromCustomer: Number
   },
   canReuse: {
     type: Boolean,

@@ -113,38 +113,41 @@ export default function OrderManagementDashboard() {
     }
   }
 
-  const markPickupDone = async (orderId) => {
-    const confirmMsg = `Confirm that customer has PHYSICALLY COLLECTED this order?\n\n` +
-                      `Order: #${orderId}\n\n` +
-                      `⚠️ This action CANNOT be undone.\n` +
-                      `⚠️ The order will be LOCKED and CANNOT be reused.`
+  const markPickupDone = async (orderId, orderType = 'pickup') => {
+    const typeLabel = orderType === 'dine-in' ? 'Dine-In' : 'Pickup'
+    const action = orderType === 'dine-in' ? 'finished dining' : 'collected the order'
+    const confirmMsg = `Confirm that customer has ${action}?\n\n` +
+                      `Order: #${orderId}\n` +
+                      `Type: ${typeLabel}\n\n` +
+                      `⚠️ This action CANNOT be undone.`
 
     if (!confirm(confirmMsg)) return
 
     try {
       const token = localStorage.getItem('token')
-      const url = getApiUrl(`/api/orders/${orderId}/mark-pickup-done`)
+      const url = getApiUrl(`/api/orders/${orderId}/complete`)
       const response = await fetch(url, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify({ completionType: orderType })
       })
       
       const data = await response.json()
       
       if (response.ok && data.success) {
-        alert('✅ Pickup confirmed!\n\nCustomer has collected the order.\nOrder is now completed and locked.')
+        alert(`✅ ${typeLabel} confirmed!\n\nOrder is now completed.`)
         fetchOrders()
         if (selectedOrder?.orderId === orderId) {
-          const updated = await response.json()
-          setSelectedOrder(updated.order)
+          setSelectedOrder(data.order)
         }
       } else {
-        alert(`Failed: ${data.error || 'Could not mark pickup as done'}`)
+        alert(`Failed: ${data.error || 'Could not complete order'}`)
       }
     } catch (err) {
-      alert('Failed to mark pickup as done')
+      alert('Failed to complete order')
     }
   }
 
@@ -286,12 +289,20 @@ export default function OrderManagementDashboard() {
                         </button>
                       </>
                     )}
-                    {selectedOrder.deliveryType === 'pickup' && selectedOrder.status === 'ready' && (
+                    {((selectedOrder.orderType === 'pickup' || selectedOrder.deliveryType === 'pickup') && selectedOrder.status === 'ready') && (
                       <button 
                         className="complete-pickup-btn"
-                        onClick={() => markPickupDone(selectedOrder.orderId)}
+                        onClick={() => markPickupDone(selectedOrder.orderId, 'pickup')}
                       >
-                        ✅ Customer Collected (Mark DONE)
+                        ✅ Customer Collected (Mark Picked Up)
+                      </button>
+                    )}
+                    {selectedOrder.orderType === 'dine-in' && selectedOrder.status === 'ready' && (
+                      <button 
+                        className="complete-pickup-btn"
+                        onClick={() => markPickupDone(selectedOrder.orderId, 'dine-in')}
+                      >
+                        ✅ Customer Finished (Mark Dined)
                       </button>
                     )}
                     <button 

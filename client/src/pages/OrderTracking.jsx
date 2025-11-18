@@ -90,6 +90,8 @@ export default function OrderTracking() {
       ready: '#32cd32',
       out_for_delivery: '#ff6347',
       delivered: '#00ff00',
+      picked_up: '#00ff00',
+      dined: '#00ff00',
       completed: '#228b22',
       failed: '#dc143c',
       cancelled: '#696969'
@@ -105,11 +107,38 @@ export default function OrderTracking() {
       ready: '✓',
       out_for_delivery: '🚴',
       delivered: '📦',
+      picked_up: '🛍️',
+      dined: '🍽️',
       completed: '✔✔',
       failed: '❌',
       cancelled: '🚫'
     }
     return icons[status] || '📋'
+  }
+
+  const getStatusMessage = (order) => {
+    switch(order.status) {
+      case 'delivered':
+        return {
+          title: '📦 Order Delivered',
+          message: 'Your order has been delivered to your location.',
+          action: 'If you have any issues, please contact customer support.'
+        }
+      case 'picked_up':
+        return {
+          title: '🛍️ Order Picked Up',
+          message: 'Your order has been picked up from our restaurant.',
+          action: 'If you have any issues, please contact customer support.'
+        }
+      case 'dined':
+        return {
+          title: '🍽️ Dine-In Complete',
+          message: 'You have enjoyed your meal at our restaurant.',
+          action: 'Thank you for dining with us! For any feedback, please contact customer support.'
+        }
+      default:
+        return null
+    }
   }
 
   if (loading) {
@@ -279,6 +308,26 @@ export default function OrderTracking() {
                   <p className="payment-method">Payment: {selectedOrder.paymentMethod.toUpperCase()}</p>
                 </div>
               </div>
+
+              {/* Status message for completed orders */}
+              {(selectedOrder.status === 'delivered' || selectedOrder.status === 'picked_up' || selectedOrder.status === 'dined') && (
+                <div className="order-status-message">
+                  <h3>{getStatusMessage(selectedOrder).title}</h3>
+                  <p>{getStatusMessage(selectedOrder).message}</p>
+                  <p className="support-info">{getStatusMessage(selectedOrder).action}</p>
+                  <div className="support-contact">
+                    <h4>📞 Customer Support</h4>
+                    <p>Phone: <a href="tel:+254712345678">+254 712 345 678</a></p>
+                    <p>Email: <a href="mailto:support@freshbites.com">support@freshbites.com</a></p>
+                    <p>Hours: Monday - Sunday, 8:00 AM - 10:00 PM</p>
+                  </div>
+                  {selectedOrder.completedAt && (
+                    <p className="completed-time">
+                      Completed on: {new Date(selectedOrder.completedAt).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Actions */}
               {(selectedOrder.status === 'delivered' || 

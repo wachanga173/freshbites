@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getApiUrl } from '../config/api';
 import { useAuth } from '../context/AuthContext'
 import './Checkout.css'
@@ -9,25 +9,77 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [mpesaPhone, setMpesaPhone] = useState('')
+  const [orderType, setOrderType] = useState('dine-in') // 'delivery', 'pickup', 'dine-in'
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    street: '',
+    city: '',
+    phone: '',
+    instructions: '',
+    latitude: null,
+    longitude: null
+  })
+  const [shippingFee, setShippingFee] = useState(0)
+  const [hasDeliveryItems, setHasDeliveryItems] = useState(false)
 
   const safeItems = Array.isArray(items) ? items : []
+  
+  // Check if cart contains delivery items and calculate shipping fee
+  useEffect(() => {
+    const deliveryItems = safeItems.filter(item => item.deliverable)
+    setHasDeliveryItems(deliveryItems.length > 0)
+    
+    // Calculate shipping fee based on items (you can customize this logic)
+    if (orderType === 'delivery' && deliveryItems.length > 0) {
+      setShippingFee(200) // Base shipping fee
+    } else {
+      setShippingFee(0)
+    }
+  }, [orderType, safeItems])
+
+  // Get user's location for delivery
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setDeliveryAddress(prev => ({
+            ...prev,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          }))
+        },
+        (error) => {
+          console.error('Error getting location:', error)
+          setError('Unable to get your location. Please enable location services.')
+        }
+      )
+    }
+  }
   const handlePayPalPayment = async () => {
     setLoading(true);
     setError('');
 
     try {
+      // Validate delivery address if order type is delivery
+      if (orderType === 'delivery' && (!deliveryAddress.street || !deliveryAddress.city || !deliveryAddress.phone)) {
+        setError('Please fill in all delivery address fields')
+        setLoading(false)
+        return
+      }
+
       // Prepare order details to store for use after PayPal redirect
       const orderDetails = {
         items: safeItems.map(item => ({
           id: item.id,
           name: item.name,
           price: item.price,
-          quantity: item.quantity
+          quantity: item.quantity,
+          deliverable: item.deliverable || false
         })),
         total: total,
-        shippingFee: 200, // hardcoded as in UI
-        deliveryType: 'pickup', // or get from UI if available
-        deliveryAddress: null // or get from UI if available
+        shippingFee: shippingFee,
+        orderType: orderType,
+        deliveryType: orderType === 'delivery' ? 'delivery' : 'pickup',
+        deliveryAddress: orderType === 'delivery' ? deliveryAddress : null
       };
       localStorage.setItem('pendingOrderDetails', JSON.stringify(orderDetails));
 
@@ -63,14 +115,16 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
       return
     }
 
+    // Validate delivery address if order type is delivery
+    if (orderType === 'delivery' && (!deliveryAddress.street || !deliveryAddress.city || !deliveryAddress.phone)) {
+      setError('Please fill in all delivery address fields')
+      return
+    }
+
     setLoading(true)
     setError('')
 
     try {
-      let formattedPhone = mpesaPhone;
-      if (/^07\d{8}$/.test(mpesaPhone)) {
-        formattedPhone = '254' + mpesaPhone.slice(1);
-      }
       const token = localStorage.getItem('token');
       const response = await fetch(getApiUrl('/api/payment/mpesa/stkpush'), {
         method: 'POST',
@@ -79,12 +133,18 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          phoneNumber: formattedPhone,
+          phoneNumber: mpesaPhone,
           amount: Math.round(total),
+          shippingFee: shippingFee,
+          orderType: orderType,
+          deliveryType: orderType === 'delivery' ? 'delivery' : 'pickup',
+          deliveryAddress: orderType === 'delivery' ? deliveryAddress : null,
           items: safeItems.map(item => ({
             id: item.id,
             name: item.name,
-            quantity: item.quantity
+            price: item.price,
+            quantity: item.quantity,
+            deliverable: item.deliverable || false
           }))
         })
       });
@@ -176,6 +236,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                   <div className="checkout-item-details">
                     <h4>{item.name}</h4>
                     <p>Quantity: {item.quantity}</p>
+                    {item.deliverable && <span className="delivery-badge">🚚 Deliverable</span>}
                   </div>
                   <div className="checkout-item-price">
                     KSH {(item.price * item.quantity).toFixed(0)}
@@ -184,6 +245,107 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
               ))}
             </div>
           </section>
+
+          {/* Order Type Selection */}
+          <section className="checkout-section">
+            <h2>Order Type</h2>
+            <div className="order-type-options">
+              <div 
+                className={`order-type-card ${orderType === 'dine-in' ? 'selected' : ''}`}
+                onClick={() => setOrderType('dine-in')}
+              >
+                <div className="order-type-icon">🍽️</div>
+                <h3>Dine In</h3>
+                <p>Eat at our restaurant</p>
+              </div>
+
+              <div 
+                className={`order-type-card ${orderType === 'pickup' ? 'selected' : ''}`}
+                onClick={() => setOrderType('pickup')}
+              >
+                <div className="order-type-icon">🛍️</div>
+                <h3>Pickup</h3>
+                <p>Pick up your order</p>
+              </div>
+
+              {hasDeliveryItems && (
+                <div 
+                  className={`order-type-card ${orderType === 'delivery' ? 'selected' : ''}`}
+                  onClick={() => setOrderType('delivery')}
+                >
+                  <div className="order-type-icon">🚚</div>
+                  <h3>Delivery</h3>
+                  <p>Delivered to your location</p>
+                </div>
+              )}
+            </div>
+            {!hasDeliveryItems && orderType === 'delivery' && (
+              <p className="info-message">⚠️ No deliverable items in cart. Delivery option not available.</p>
+            )}
+          </section>
+
+          {/* Delivery Address - Only show for delivery orders */}
+          {orderType === 'delivery' && hasDeliveryItems && (
+            <section className="checkout-section">
+              <h2>Delivery Address</h2>
+              <div className="delivery-address-form">
+                <div className="form-group">
+                  <label htmlFor="street">Street Address *</label>
+                  <input
+                    id="street"
+                    type="text"
+                    placeholder="Enter your street address"
+                    value={deliveryAddress.street}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, street: e.target.value})}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="city">City *</label>
+                  <input
+                    id="city"
+                    type="text"
+                    placeholder="Enter your city"
+                    value={deliveryAddress.city}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, city: e.target.value})}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="delivery-phone">Phone Number *</label>
+                  <input
+                    id="delivery-phone"
+                    type="tel"
+                    placeholder="0712345678"
+                    value={deliveryAddress.phone}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, phone: e.target.value})}
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="instructions">Delivery Instructions (Optional)</label>
+                  <textarea
+                    id="instructions"
+                    placeholder="Any special instructions for delivery"
+                    value={deliveryAddress.instructions}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, instructions: e.target.value})}
+                    className="form-textarea"
+                    rows="3"
+                  />
+                </div>
+                <button 
+                  type="button" 
+                  className="location-btn"
+                  onClick={getUserLocation}
+                >
+                  📍 Get My Location
+                </button>
+                {deliveryAddress.latitude && deliveryAddress.longitude && (
+                  <p className="location-confirmed">✓ Location captured</p>
+                )}
+              </div>
+            </section>
+          )}
 
           {/* Payment Method Selection */}
           <section className="checkout-section">
@@ -215,12 +377,12 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                 <input
                   id="mpesa-phone"
                   type="tel"
-                  placeholder="254712345678"
+                  placeholder="07XXXXXXXX or 254XXXXXXXXX"
                   value={mpesaPhone}
                   onChange={(e) => setMpesaPhone(e.target.value)}
                   className="mpesa-phone-input"
                 />
-                <small>Enter phone number in format: 254XXXXXXXXX</small>
+                <small>Enter phone number starting with 07 or 254</small>
               </div>
             )}
           </section>
@@ -240,14 +402,16 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
               <span>Subtotal</span>
               <span>KSH {total.toFixed(0)}</span>
             </div>
-            <div className="summary-row">
-              <span>Delivery Fee</span>
-              <span>KSH 200</span>
-            </div>
+            {orderType === 'delivery' && shippingFee > 0 && (
+              <div className="summary-row">
+                <span>Delivery Fee</span>
+                <span>KSH {shippingFee.toFixed(0)}</span>
+              </div>
+            )}
             <div className="summary-divider"></div>
             <div className="summary-row summary-total">
               <span>Total</span>
-              <span>KSH {(total + 200).toFixed(0)}</span>
+              <span>KSH {(total + shippingFee).toFixed(0)}</span>
             </div>
 
             <button 
@@ -255,7 +419,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
               onClick={handlePayment}
               disabled={loading || !paymentMethod}
             >
-              {loading ? 'Processing...' : `Pay KSH ${(total + 200).toFixed(0)}`}
+              {loading ? 'Processing...' : `Pay KSH ${(total + shippingFee).toFixed(0)}`}
             </button>
 
             <div className="secure-payment">

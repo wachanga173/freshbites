@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import MenuItem from './components/MenuItem'
 import Cart from './components/Cart'
+import FeedbackChatbot from './components/FeedbackChatbot'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import AdminDashboard from './pages/AdminDashboard'
 import OrderManagementDashboard from './pages/OrderManagementDashboard'
 import DeliveryDashboard from './pages/DeliveryDashboard'
 import OrderTracking from './pages/OrderTracking'
+import FeedbackManagerDashboard from './pages/FeedbackManagerDashboard'
 import Checkout from './pages/Checkout'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
@@ -26,6 +28,9 @@ function MainApp() {
   const [showAdminPanel, setShowAdminPanel] = useState(false)
   const [showCheckout, setShowCheckout] = useState(false)
   const [currentRoute, setCurrentRoute] = useState('home')
+
+  const isFeedbackManager = user && (user.roles?.includes('feedback_manager') || user.roles?.includes('superadmin'))
+  const isSuperAdmin = user && user.roles?.includes('superadmin')
 
   useEffect(() => {
     fetch(getApiUrl('/api/menu'))
@@ -51,6 +56,8 @@ function MainApp() {
       setCurrentRoute('delivery');
     } else if (path === '/my-orders') {
       setCurrentRoute('my-orders');
+    } else if (path === '/feedback-management') {
+      setCurrentRoute('feedback-management');
     } else {
       setCurrentRoute('home');
     }
@@ -100,7 +107,7 @@ function MainApp() {
     )
   }
 
-  if (currentRoute === 'order-management' && isOrderManager) {
+  if (currentRoute === 'order-management' && (isOrderManager || isSuperAdmin)) {
     return (
       <div>
         <RoleSwitcher />
@@ -114,6 +121,24 @@ function MainApp() {
           ← Back to Store
         </button>
         <OrderManagementDashboard />
+      </div>
+    )
+  }
+
+  if (currentRoute === 'feedback-management' && isFeedbackManager) {
+    return (
+      <div>
+        <RoleSwitcher />
+        <button 
+          className="back-to-store-btn"
+          onClick={() => {
+            setCurrentRoute('home')
+            window.history.pushState({}, '', '/')
+          }}
+        >
+          ← Back to Store
+        </button>
+        <FeedbackManagerDashboard />
       </div>
     )
   }
@@ -230,11 +255,17 @@ function MainApp() {
                   window.history.pushState({}, '', '/admin')
                 }}>Admin Panel</button>
               )}
-              {isOrderManager && (
+              {(isOrderManager || isSuperAdmin) && (
                 <button onClick={() => {
                   setCurrentRoute('order-management')
                   window.history.pushState({}, '', '/order-management')
                 }}>Order Management</button>
+              )}
+              {isFeedbackManager && (
+                <button onClick={() => {
+                  setCurrentRoute('feedback-management')
+                  window.history.pushState({}, '', '/feedback-management')
+                }}>Feedback Management</button>
               )}
               {isDelivery && (
                 <button onClick={() => {
@@ -310,6 +341,9 @@ function MainApp() {
           </div>
         </div>
       </main>
+
+      {/* Feedback Chatbot - Available for all logged-in users */}
+      {user && <FeedbackChatbot />}
 
       <footer className="footer">
         <div className="container">

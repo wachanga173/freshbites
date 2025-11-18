@@ -170,34 +170,55 @@ export default function DeliveryDashboard() {
   const handleMarkDeliveryDone = async () => {
     if (!selectedDelivery) return
 
+    if (!currentLocation) {
+      alert('Please wait while we get your location for verification...')
+      return
+    }
+
     const confirmMsg = `Are you sure you want to mark this delivery as DONE?\n\n` +
                       `Order: #${selectedDelivery.orderId}\n` +
                       `Customer: ${selectedDelivery.username}\n\n` +
-                      `⚠️ This action CANNOT be undone and the order CANNOT be reused.`
+                      `Your location will be verified against the delivery address.\n\n` +
+                      `⚠️ This action CANNOT be undone.`
 
     if (!confirm(confirmMsg)) return
 
     try {
       const token = localStorage.getItem('token')
-      const url = getApiUrl(`/api/delivery/${selectedDelivery.orderId}/mark-done`)
+      const url = getApiUrl('/api/delivery/confirm-delivery')
       const response = await fetch(url, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify({
+          orderId: selectedDelivery.orderId,
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude
+        })
       })
       const data = await response.json()
       
       if (response.ok && data.success) {
-        alert('✅ Delivery completed successfully!\n\nOrder has been marked as done and locked.')
+        let message = '✅ Delivery completed successfully!\n\n'
+        if (data.locationVerified) {
+          message += '✓ Location verified - You were at the delivery address'
+        } else if (data.distance) {
+          message += `⚠️ Location verification: You were ${data.distance}m from the delivery address`
+        } else {
+          message += '⚠️ Customer did not provide delivery location coordinates'
+        }
+        alert(message)
         stopLocationTracking()
         fetchMyDeliveries()
         setSelectedDelivery(null)
       } else {
-        alert(`Failed: ${data.error || 'Could not mark delivery as done'}`)
+        alert(`Failed: ${data.error || 'Could not confirm delivery'}`)
       }
     } catch (err) {
-      alert('Failed to mark delivery as done')
+      console.error('Confirm delivery error:', err)
+      alert('Failed to confirm delivery')
     }
   }
 

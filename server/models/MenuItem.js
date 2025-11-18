@@ -36,6 +36,16 @@ const menuItemSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  orderCategory: {
+    type: String,
+    enum: ['dine-in', 'pickup', 'delivery'],
+    default: 'dine-in'
+  },
+  shippingFee: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now

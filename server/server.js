@@ -15,6 +15,7 @@ const User = require('./models/User');
 const MenuItem = require('./models/MenuItem');
 const Order = require('./models/Order');
 const DeliveryTracking = require('./models/DeliveryTracking');
+const Feedback = require('./models/Feedback');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -560,26 +561,39 @@ app.get('/api/payment/paypal/execute', authenticateToken, async (req, res) => {
 
 // M-Pesa: Initiate STK Push
 app.post('/api/payment/mpesa/stkpush', authenticateToken, async (req, res) => {
-  const { phoneNumber, amount, items, shippingFee, deliveryType, deliveryAddress } = req.body;
+  const { phoneNumber, amount, items, shippingFee, deliveryType, deliveryAddress, orderType } = req.body;
 
   if (!phoneNumber || !amount) {
     return res.status(400).json({ error: 'Phone number and amount are required' });
   }
 
   try {
+    // Format phone number - accept both 254XXXXXXXXX and 07XXXXXXXX formats
+    let formattedPhone = phoneNumber.replace(/\s+/g, '');
+    if (formattedPhone.startsWith('07')) {
+      formattedPhone = '254' + formattedPhone.substring(1);
+    } else if (formattedPhone.startsWith('01')) {
+      formattedPhone = '254' + formattedPhone.substring(1);
+    } else if (!formattedPhone.startsWith('254')) {
+      return res.status(400).json({ error: 'Invalid phone number format. Use 07XXXXXXXX or 254XXXXXXXXX' });
+    }
+
     const accessToken = await getMpesaAccessToken();
     const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
     const password = Buffer.from(`${MPESA_CONFIG.shortCode}${MPESA_CONFIG.passkey}${timestamp}`).toString('base64');
+
+    // Calculate total amount including shipping fee for delivery orders
+    const totalAmount = Math.round(amount + (shippingFee || 0));
 
     const stkPushData = {
       BusinessShortCode: MPESA_CONFIG.shortCode,
       Password: password,
       Timestamp: timestamp,
       TransactionType: 'CustomerPayBillOnline',
-      Amount: Math.round(amount + (shippingFee || 0)),
-      PartyA: phoneNumber,
+      Amount: totalAmount,
+      PartyA: formattedPhone,
       PartyB: MPESA_CONFIG.shortCode,
-      PhoneNumber: phoneNumber,
+      PhoneNumber: formattedPhone,
       CallBackURL: MPESA_CONFIG.callbackUrl,
       AccountReference: `FreshBites${Date.now()}`,
       TransactionDesc: 'Fresh Bites Café Order'
@@ -610,6 +624,7 @@ app.post('/api/payment/mpesa/stkpush', authenticateToken, async (req, res) => {
         paymentMethod: 'mpesa',
         checkoutRequestID: response.data.CheckoutRequestID,
         merchantRequestID: response.data.MerchantRequestID,
+        orderType: orderType || 'dine-in',
         deliveryType: deliveryType || 'pickup',
         deliveryAddress: deliveryAddress || null,
         status: 'pending',
@@ -1031,7 +1046,7 @@ app.patch('/api/orders/:orderId/assign', authenticateToken, requireRole(['admin'
     }
     
     const deliveryPerson = await User.findById(deliveryPersonId);
-    if (!deliveryPerson || deliveryPerson.role !== 'delivery') {
+    if (!deliveryPerson || !deliveryPerson.roles.includes('delivery')) {
       return res.status(400).json({ error: 'Invalid delivery person' });
     }
     
@@ -1382,6 +1397,333 @@ app.post('/api/orders/:orderId/confirm-completion', authenticateToken, async (re
   } catch (err) {
     console.error('Confirm completion error:', err);
     res.status(500).json({ error: 'Failed to confirm completion' });
+  }
+});
+
+// ========== DELIVERY CONFIRMATION WITH LOCATION VERIFICATION ==========
+
+// Confirm delivery with location verification (for delivery personnel)
+app.post('/api/delivery/confirm-delivery', authenticateToken, requireRole('delivery'), async (req, res) => {
+  try {
+    const { orderId, latitude, longitude } = req.body;
+    
+    if (!latitude || !longitude) {
+      return res.status(400).json({ error: 'Location coordinates required for delivery confirmation' });
+    }
+    
+    const order = await Order.findOne({ orderId });
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    
+    if (order.assignedTo.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'You are not assigned to this order' });
+    }
+    
+    // Calculate distance between delivery location and customer location using Haversine formula
+    let locationMatch = false;
+    let distance = null;
+    
+    if (order.deliveryAddress && order.deliveryAddress.latitude && order.deliveryAddress.longitude) {
+      const R = 6371; // Earth's radius in km
+      const dLat = (order.deliveryAddress.latitude - latitude) * Math.PI / 180;
+      const dLon = (order.deliveryAddress.longitude - longitude) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(latitude * Math.PI / 180) * Math.cos(order.deliveryAddress.latitude * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      distance = R * c * 1000; // Distance in meters
+      
+      // Consider match if within 100 meters
+      locationMatch = distance <= 100;
+    }
+    
+    order.status = 'delivered';
+    order.completedAt = new Date();
+    order.completedBy = req.user.id;
+    order.completedByRole = 'delivery';
+    order.deliveryConfirmation = {
+      confirmedAt: new Date(),
+      confirmedLocation: {
+        latitude,
+        longitude
+      },
+      locationMatch,
+      distanceFromCustomer: distance
+    };
+    
+    order.statusHistory.push({
+      status: 'delivered',
+      timestamp: new Date(),
+      updatedBy: req.user.id,
+      note: `Delivered by ${req.user.username}${locationMatch ? ' (location verified)' : distance ? ` (${Math.round(distance)}m from customer)` : ''}`
+    });
+    
+    await order.save();
+    
+    res.json({ 
+      success: true, 
+      order,
+      locationVerified: locationMatch,
+      distance: distance ? Math.round(distance) : null
+    });
+  } catch (err) {
+    console.error('Confirm delivery error:', err);
+    res.status(500).json({ error: 'Failed to confirm delivery' });
+  }
+});
+
+// Order manager confirms pickup or dine-in
+app.post('/api/orders/:orderId/complete', authenticateToken, requireRole(['ordermanager', 'superadmin']), async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { completionType } = req.body; // 'pickup' or 'dine-in'
+    
+    const order = await Order.findOne({ orderId });
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    
+    if (order.orderType === 'delivery') {
+      return res.status(400).json({ error: 'Delivery orders must be confirmed by delivery personnel' });
+    }
+    
+    const statusMap = {
+      'pickup': 'picked_up',
+      'dine-in': 'dined'
+    };
+    
+    order.status = statusMap[order.orderType] || 'completed';
+    order.completedAt = new Date();
+    order.completedBy = req.user.id;
+    order.completedByRole = req.user.roles.includes('superadmin') ? 'superadmin' : 'ordermanager';
+    
+    order.statusHistory.push({
+      status: order.status,
+      timestamp: new Date(),
+      updatedBy: req.user.id,
+      note: `${order.orderType} confirmed by ${req.user.username}`
+    });
+    
+    await order.save();
+    
+    res.json({ success: true, order });
+  } catch (err) {
+    console.error('Complete order error:', err);
+    res.status(500).json({ error: 'Failed to complete order' });
+  }
+});
+
+// ========== FEEDBACK ROUTES ==========
+
+// Submit feedback (chatbot)
+app.post('/api/feedback', authenticateToken, async (req, res) => {
+  try {
+    const { subject, message, category, rating, orderId } = req.body;
+    
+    if (!subject || !message) {
+      return res.status(400).json({ error: 'Subject and message are required' });
+    }
+    
+    const feedbackId = `fb_${Date.now()}`;
+    const feedback = await Feedback.create({
+      feedbackId,
+      userId: req.user.id,
+      username: req.user.username,
+      orderId: orderId || null,
+      subject,
+      message,
+      category: category || 'general',
+      rating: rating || null,
+      chatHistory: [{
+        sender: 'customer',
+        message,
+        timestamp: new Date()
+      }]
+    });
+    
+    res.status(201).json({ success: true, feedback });
+  } catch (err) {
+    console.error('Submit feedback error:', err);
+    res.status(500).json({ error: 'Failed to submit feedback' });
+  }
+});
+
+// Get all feedback (for feedback manager)
+app.get('/api/feedback/all', authenticateToken, requireRole(['feedback_manager', 'superadmin']), async (req, res) => {
+  try {
+    const { status, category } = req.query;
+    const filter = {};
+    
+    if (status) filter.status = status;
+    if (category) filter.category = category;
+    
+    const feedbacks = await Feedback.find(filter)
+      .populate('userId', 'username email phone')
+      .populate('response.respondedBy', 'username')
+      .sort({ createdAt: -1 });
+    
+    res.json(feedbacks);
+  } catch (err) {
+    console.error('Get feedback error:', err);
+    res.status(500).json({ error: 'Failed to fetch feedback' });
+  }
+});
+
+// Get customer's own feedback
+app.get('/api/feedback/my-feedback', authenticateToken, async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find({ userId: req.user.id })
+      .populate('response.respondedBy', 'username')
+      .sort({ createdAt: -1 });
+    
+    res.json(feedbacks);
+  } catch (err) {
+    console.error('Get my feedback error:', err);
+    res.status(500).json({ error: 'Failed to fetch feedback' });
+  }
+});
+
+// Get single feedback details
+app.get('/api/feedback/:feedbackId', authenticateToken, async (req, res) => {
+  try {
+    const { feedbackId } = req.params;
+    
+    const feedback = await Feedback.findOne({ feedbackId })
+      .populate('userId', 'username email phone')
+      .populate('response.respondedBy', 'username');
+    
+    if (!feedback) {
+      return res.status(404).json({ error: 'Feedback not found' });
+    }
+    
+    // Check authorization
+    const isFeedbackManager = req.user.roles.includes('feedback_manager') || req.user.roles.includes('superadmin');
+    if (!isFeedbackManager && feedback.userId._id.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+    
+    res.json(feedback);
+  } catch (err) {
+    console.error('Get feedback details error:', err);
+    res.status(500).json({ error: 'Failed to fetch feedback details' });
+  }
+});
+
+// Respond to feedback (for feedback manager)
+app.post('/api/feedback/:feedbackId/respond', authenticateToken, requireRole(['feedback_manager', 'superadmin']), async (req, res) => {
+  try {
+    const { feedbackId } = req.params;
+    const { message, status } = req.body;
+    
+    if (!message) {
+      return res.status(400).json({ error: 'Response message is required' });
+    }
+    
+    const feedback = await Feedback.findOne({ feedbackId });
+    if (!feedback) {
+      return res.status(404).json({ error: 'Feedback not found' });
+    }
+    
+    feedback.response = {
+      message,
+      respondedBy: req.user.id,
+      respondedAt: new Date()
+    };
+    
+    feedback.chatHistory.push({
+      sender: 'feedback_manager',
+      message,
+      timestamp: new Date()
+    });
+    
+    if (status) {
+      feedback.status = status;
+    } else if (feedback.status === 'pending') {
+      feedback.status = 'in_progress';
+    }
+    
+    await feedback.save();
+    
+    res.json({ success: true, feedback });
+  } catch (err) {
+    console.error('Respond to feedback error:', err);
+    res.status(500).json({ error: 'Failed to respond to feedback' });
+  }
+});
+
+// Update feedback status
+app.patch('/api/feedback/:feedbackId/status', authenticateToken, requireRole(['feedback_manager', 'superadmin']), async (req, res) => {
+  try {
+    const { feedbackId } = req.params;
+    const { status } = req.body;
+    
+    if (!['pending', 'in_progress', 'resolved', 'closed'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+    
+    const feedback = await Feedback.findOneAndUpdate(
+      { feedbackId },
+      { status, updatedAt: new Date() },
+      { new: true }
+    );
+    
+    if (!feedback) {
+      return res.status(404).json({ error: 'Feedback not found' });
+    }
+    
+    res.json({ success: true, feedback });
+  } catch (err) {
+    console.error('Update feedback status error:', err);
+    res.status(500).json({ error: 'Failed to update feedback status' });
+  }
+});
+
+// ========== AI DIET ASSISTANT ==========
+
+// AI-powered diet assistant endpoint
+app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
+  try {
+    const { question, userPreferences } = req.body;
+    
+    if (!question) {
+      return res.status(400).json({ error: 'Question is required' });
+    }
+    
+    // This is a placeholder for AI integration
+    // You would integrate with OpenAI, Anthropic, or another AI service here
+    // For now, return a structured response based on simple keyword matching
+    
+    const lowerQuestion = question.toLowerCase();
+    let response = '';
+    
+    if (lowerQuestion.includes('calorie') || lowerQuestion.includes('nutrition')) {
+      response = 'Our menu items include detailed nutritional information. For specific calorie counts, please check the menu details or ask about a particular item. Generally, our salads and grilled items are lower in calories, while our desserts and fried items are more indulgent.';
+    } else if (lowerQuestion.includes('allerg') || lowerQuestion.includes('gluten') || lowerQuestion.includes('dairy')) {
+      response = 'We take allergies seriously. Please inform our staff about any dietary restrictions. Many of our items can be modified to accommodate gluten-free, dairy-free, and other dietary needs. Our staff can provide detailed allergen information for each menu item.';
+    } else if (lowerQuestion.includes('vegan') || lowerQuestion.includes('vegetarian')) {
+      response = 'We offer several vegetarian and vegan options! Look for items marked as "Vegetarian" or "Vegan" on our menu. Our chefs can also modify many dishes to suit plant-based diets.';
+    } else if (lowerQuestion.includes('protein') || lowerQuestion.includes('workout') || lowerQuestion.includes('fitness')) {
+      response = 'For high-protein options, consider our grilled chicken dishes, fish entrees, or legume-based meals. These are excellent for post-workout nutrition and muscle recovery.';
+    } else if (lowerQuestion.includes('weight loss') || lowerQuestion.includes('diet')) {
+      response = 'For weight management, focus on our lighter options like salads, grilled proteins, and vegetable-based dishes. Portion control and balanced nutrition are key. Consider our smaller portions or sharing larger entrees.';
+    } else {
+      response = 'Thank you for your question! Our AI diet assistant can help with nutrition advice, dietary restrictions, allergies, calorie information, and meal recommendations. Please feel free to ask specific questions about our menu items or dietary concerns.';
+    }
+    
+    // Log the interaction for improvement
+    console.log('Diet AI Query:', { userId: req.user.id, question, timestamp: new Date() });
+    
+    res.json({
+      success: true,
+      question,
+      response,
+      timestamp: new Date().toISOString(),
+      disclaimer: 'This advice is general in nature. For specific dietary needs, please consult with a healthcare professional or registered dietitian.'
+    });
+  } catch (err) {
+    console.error('Diet assistant error:', err);
+    res.status(500).json({ error: 'Failed to process diet query' });
   }
 });
 

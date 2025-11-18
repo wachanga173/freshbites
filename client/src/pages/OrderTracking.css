@@ -390,6 +390,63 @@
   margin-top: 0.5rem;
 }
 
+.order-status-message {
+  padding: 1.5rem;
+  background: #e8f5e9;
+  border: 2px solid #4caf50;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.order-status-message h3 {
+  color: #2e7d32;
+  margin-bottom: 0.5rem;
+}
+
+.order-status-message p {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.support-info {
+  font-style: italic;
+  color: #666;
+  margin-top: 1rem;
+}
+
+.support-contact {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.support-contact h4 {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.support-contact p {
+  margin: 0.25rem 0;
+  color: #555;
+}
+
+.support-contact a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.support-contact a:hover {
+  text-decoration: underline;
+}
+
+.completed-time {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
 .completion-message {
   padding: 1.5rem;
   background: #e8f5e9;
