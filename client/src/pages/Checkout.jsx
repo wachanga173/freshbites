@@ -318,12 +318,39 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
             <p className="info-text" style={{fontSize: '0.9em', color: '#666', marginBottom: '10px'}}>
               Select how you want to receive your order (based on available items)
             </p>
+            
+            {/* Selected Order Type Display */}
+            {orderType && (
+              <div style={{
+                padding: '12px 16px',
+                backgroundColor: '#e8f5e9',
+                border: '2px solid #4caf50',
+                borderRadius: '8px',
+                marginBottom: '15px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
+              }}>
+                <span style={{fontSize: '1.2em'}}>✓</span>
+                <span style={{fontWeight: '600', color: '#2e7d32'}}>
+                  Selected: {orderType === 'dine-in' ? '🍽️ Dine In' : orderType === 'pickup' ? '🛍️ Pickup' : '🚚 Delivery'}
+                  {orderType === 'dine-in' && ' - Eat at our restaurant'}
+                  {orderType === 'pickup' && ' - Pick up your order'}
+                  {orderType === 'delivery' && ' - Delivered to your location'}
+                </span>
+              </div>
+            )}
+            
             <div className="order-type-options">
               {availableOrderTypes.includes('dine-in') && (
                 <div 
                   className={`order-type-card ${orderType === 'dine-in' ? 'selected' : ''}`}
                   onClick={() => setOrderType('dine-in')}
+                  style={{position: 'relative'}}
                 >
+                  {orderType === 'dine-in' && (
+                    <div style={{position: 'absolute', top: '10px', right: '10px', fontSize: '1.5em', color: '#4caf50'}}>✓</div>
+                  )}
                   <div className="order-type-icon">🍽️</div>
                   <h3>Dine In</h3>
                   <p>Eat at our restaurant</p>
@@ -334,7 +361,11 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                 <div 
                   className={`order-type-card ${orderType === 'pickup' ? 'selected' : ''}`}
                   onClick={() => setOrderType('pickup')}
+                  style={{position: 'relative'}}
                 >
+                  {orderType === 'pickup' && (
+                    <div style={{position: 'absolute', top: '10px', right: '10px', fontSize: '1.5em', color: '#4caf50'}}>✓</div>
+                  )}
                   <div className="order-type-icon">🛍️</div>
                   <h3>Pickup</h3>
                   <p>Pick up your order</p>
@@ -345,7 +376,11 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                 <div 
                   className={`order-type-card ${orderType === 'delivery' ? 'selected' : ''}`}
                   onClick={() => setOrderType('delivery')}
+                  style={{position: 'relative'}}
                 >
+                  {orderType === 'delivery' && (
+                    <div style={{position: 'absolute', top: '10px', right: '10px', fontSize: '1.5em', color: '#4caf50'}}>✓</div>
+                  )}
                   <div className="order-type-icon">🚚</div>
                   <h3>Delivery</h3>
                   <p>Delivered to your location</p>
