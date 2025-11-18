@@ -965,7 +965,7 @@ app.delete('/api/superadmin/users/:id', authenticateToken, requireRole('superadm
 // ========== DELIVERY PERSONNEL ROUTE ==========
 
 // Get delivery personnel (for order managers and admins)
-app.get('/api/delivery-personnel', authenticateToken, requireRole(['admin', 'superadmin', 'ordermanager']), async (req, res) => {
+app.get('/api/delivery-personnel', authenticateToken, requireRole('admin', 'superadmin', 'ordermanager'), async (req, res) => {
   try {
     const deliveryUsers = await User.find({ roles: 'delivery' }).select('-password');
     const usersWithId = deliveryUsers.map(user => ({
@@ -986,7 +986,7 @@ app.get('/api/delivery-personnel', authenticateToken, requireRole(['admin', 'sup
 // ========== ORDER MANAGEMENT ROUTES (for ordermanager role) ==========
 
 // Get all orders (for order managers and admins)
-app.get('/api/orders/manage', authenticateToken, requireRole(['admin', 'superadmin', 'ordermanager']), async (req, res) => {
+app.get('/api/orders/manage', authenticateToken, requireRole('admin', 'superadmin', 'ordermanager'), async (req, res) => {
   try {
     const { status, deliveryType } = req.query;
     const filter = {};
@@ -1007,7 +1007,7 @@ app.get('/api/orders/manage', authenticateToken, requireRole(['admin', 'superadm
 });
 
 // Update order status (for order managers and admins)
-app.patch('/api/orders/:orderId/status', authenticateToken, requireRole(['admin', 'superadmin', 'ordermanager']), async (req, res) => {
+app.patch('/api/orders/:orderId/status', authenticateToken, requireRole('admin', 'superadmin', 'ordermanager'), async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status, note } = req.body;
@@ -1041,7 +1041,7 @@ app.patch('/api/orders/:orderId/status', authenticateToken, requireRole(['admin'
 });
 
 // Assign order to delivery person
-app.patch('/api/orders/:orderId/assign', authenticateToken, requireRole(['admin', 'superadmin', 'ordermanager']), async (req, res) => {
+app.patch('/api/orders/:orderId/assign', authenticateToken, requireRole('admin', 'superadmin', 'ordermanager'), async (req, res) => {
   try {
     const { orderId } = req.params;
     const { deliveryPersonId } = req.body;
@@ -1480,7 +1480,7 @@ app.post('/api/delivery/confirm-delivery', authenticateToken, requireRole('deliv
 });
 
 // Order manager confirms pickup or dine-in
-app.post('/api/orders/:orderId/complete', authenticateToken, requireRole(['ordermanager', 'superadmin']), async (req, res) => {
+app.post('/api/orders/:orderId/complete', authenticateToken, requireRole('ordermanager', 'superadmin'), async (req, res) => {
   try {
     const { orderId } = req.params;
     const { completionType } = req.body; // 'pickup' or 'dine-in'
@@ -1560,7 +1560,7 @@ app.post('/api/feedback', authenticateToken, async (req, res) => {
 });
 
 // Get all feedback (for feedback manager)
-app.get('/api/feedback/all', authenticateToken, requireRole(['feedback_manager', 'superadmin']), async (req, res) => {
+app.get('/api/feedback/all', authenticateToken, requireRole('feedback_manager', 'superadmin'), async (req, res) => {
   try {
     const { status, category } = req.query;
     const filter = {};
@@ -1621,7 +1621,7 @@ app.get('/api/feedback/:feedbackId', authenticateToken, async (req, res) => {
 });
 
 // Respond to feedback (for feedback manager)
-app.post('/api/feedback/:feedbackId/respond', authenticateToken, requireRole(['feedback_manager', 'superadmin']), async (req, res) => {
+app.post('/api/feedback/:feedbackId/respond', authenticateToken, requireRole('feedback_manager', 'superadmin'), async (req, res) => {
   try {
     const { feedbackId } = req.params;
     const { message, status } = req.body;
@@ -1663,7 +1663,7 @@ app.post('/api/feedback/:feedbackId/respond', authenticateToken, requireRole(['f
 });
 
 // Update feedback status
-app.patch('/api/feedback/:feedbackId/status', authenticateToken, requireRole(['feedback_manager', 'superadmin']), async (req, res) => {
+app.patch('/api/feedback/:feedbackId/status', authenticateToken, requireRole('feedback_manager', 'superadmin'), async (req, res) => {
   try {
     const { feedbackId } = req.params;
     const { status } = req.body;
