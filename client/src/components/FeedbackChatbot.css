@@ -28,6 +28,7 @@
   bottom: 90px;
   right: 20px;
   width: 380px;
+  max-height: calc(100vh - 120px);
   height: 600px;
   background: white;
   border-radius: 16px;
@@ -271,8 +272,16 @@
 @media (max-width: 768px) {
   .chatbot-window {
     width: calc(100% - 40px);
-    height: 500px;
+    max-height: calc(100vh - 140px);
+    height: auto;
+    min-height: 400px;
     right: 20px;
     left: 20px;
+    bottom: 90px;
+  }
+  
+  .chatbot-toggle {
+    bottom: 20px;
+    right: 20px;
   }
 }

@@ -76,12 +76,23 @@ export default function AdminDashboard() {
       imageUrl = await handleImageUpload(imageFile)
     }
 
+    // Collect selected order categories from checkboxes
+    const orderCategories = []
+    const categoryCheckboxes = e.target.querySelectorAll('input[name="orderCategory"]:checked')
+    categoryCheckboxes.forEach(cb => orderCategories.push(cb.value))
+    
+    // Default to dine-in if nothing selected
+    const finalCategories = orderCategories.length > 0 ? orderCategories : ['dine-in']
+
     const item = {
       name: formData.get('name'),
       description: formData.get('description'),
       price: parseFloat(formData.get('price')),
       image: imageUrl,
-      available: formData.get('available') !== 'false' // default true unless unchecked
+      available: formData.get('available') !== 'false',
+      orderCategory: finalCategories, // Array of categories
+      deliverable: finalCategories.includes('delivery'),
+      shippingFee: finalCategories.includes('delivery') ? parseFloat(formData.get('shippingFee') || 200) : 0
     }
 
   const res = await fetch(getApiUrl(`/api/admin/menu/${selectedCategory}`), {
@@ -114,12 +125,23 @@ export default function AdminDashboard() {
       imageUrl = formData.get('imageUrl')
     }
 
+    // Collect selected order categories from checkboxes
+    const orderCategories = []
+    const categoryCheckboxes = e.target.querySelectorAll('input[name="orderCategory"]:checked')
+    categoryCheckboxes.forEach(cb => orderCategories.push(cb.value))
+    
+    // Default to dine-in if nothing selected
+    const finalCategories = orderCategories.length > 0 ? orderCategories : ['dine-in']
+
     const item = {
       name: formData.get('name'),
       description: formData.get('description'),
       price: parseFloat(formData.get('price')),
       image: imageUrl,
-      available: formData.get('available') !== 'false' // default true unless unchecked
+      available: formData.get('available') !== 'false',
+      orderCategory: finalCategories,
+      deliverable: finalCategories.includes('delivery'),
+      shippingFee: finalCategories.includes('delivery') ? parseFloat(formData.get('shippingFee') || 200) : 0
     }
 
     await handleUpdateItem(editingItem.category, editingItem.id, item)
@@ -354,6 +376,64 @@ export default function AdminDashboard() {
                       Available (uncheck to mark unavailable)
                     </label>
                   </div>
+                  <div className="order-category-section">
+                    <label style={{fontWeight: 'bold', display: 'block', marginBottom: '8px'}}>Order Type (select all that apply):</label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input type="checkbox" name="orderCategory" value="dine-in" defaultChecked />
+                      🍽️ Dine-In
+                    </label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input type="checkbox" name="orderCategory" value="pickup" />
+                      🛍️ Pickup
+                    </label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input type="checkbox" name="orderCategory" value="delivery" onChange={(e) => {
+                        const feeSection = document.getElementById('shippingFeeSection');
+                        if (feeSection) feeSection.style.display = e.target.checked ? 'block' : 'none';
+                      }} />
+                      🚚 Delivery
+                    </label>
+                    <div id="shippingFeeSection" style={{marginLeft: '24px', marginTop: '5px', display: 'none'}}>
+                      <input 
+                        type="number" 
+                        name="shippingFee" 
+                        placeholder="Shipping Fee (KSH)" 
+                        defaultValue="200"
+                        step="0.01"
+                        style={{width: '180px', padding: '5px'}}
+                      />
+                    </div>
+                  </div>
+                  <div className="modal-buttons">
+                    <label style={{fontWeight: 'bold', display: 'block', marginBottom: '8px'}}>Order Type (select all that apply):</label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input type="checkbox" name="orderCategory" value="dine-in" defaultChecked />
+                      🍽️ Dine-In
+                    </label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input type="checkbox" name="orderCategory" value="pickup" />
+                      🛍️ Pickup
+                    </label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input type="checkbox" name="orderCategory" value="delivery" id="deliveryCheckbox" />
+                      🚚 Delivery
+                    </label>
+                    <div id="shippingFeeSection" style={{marginLeft: '24px', marginTop: '5px', display: 'none'}}>
+                      <input 
+                        type="number" 
+                        name="shippingFee" 
+                        placeholder="Shipping Fee (KSH)" 
+                        defaultValue="200"
+                        step="0.01"
+                        style={{width: '180px'}}
+                      />
+                    </div>
+                  </div>
+                  <script dangerouslySetInnerHTML={{__html: `
+                    document.getElementById('deliveryCheckbox')?.addEventListener('change', function(e) {
+                      document.getElementById('shippingFeeSection').style.display = e.target.checked ? 'block' : 'none';
+                    });
+                  `}} />
                   <div className="modal-buttons">
                     <button type="submit" disabled={uploadingImage}>
                       {uploadingImage ? 'Uploading...' : 'Add Item'}
@@ -397,6 +477,96 @@ export default function AdminDashboard() {
                       Available (uncheck to mark unavailable)
                     </label>
                   </div>
+                  <div className="order-category-section">
+                    <label style={{fontWeight: 'bold', display: 'block', marginBottom: '8px'}}>Order Type (select all that apply):</label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input 
+                        type="checkbox" 
+                        name="orderCategory" 
+                        value="dine-in" 
+                        defaultChecked={Array.isArray(editingItem.orderCategory) ? editingItem.orderCategory.includes('dine-in') : true}
+                      />
+                      🍽️ Dine-In
+                    </label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input 
+                        type="checkbox" 
+                        name="orderCategory" 
+                        value="pickup"
+                        defaultChecked={Array.isArray(editingItem.orderCategory) && editingItem.orderCategory.includes('pickup')}
+                      />
+                      🛍️ Pickup
+                    </label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input 
+                        type="checkbox" 
+                        name="orderCategory" 
+                        value="delivery" 
+                        defaultChecked={Array.isArray(editingItem.orderCategory) && editingItem.orderCategory.includes('delivery')}
+                        onChange={(e) => {
+                          const feeSection = document.getElementById('editShippingFeeSection');
+                          if (feeSection) feeSection.style.display = e.target.checked ? 'block' : 'none';
+                        }}
+                      />
+                      🚚 Delivery
+                    </label>
+                    <div id="editShippingFeeSection" style={{marginLeft: '24px', marginTop: '5px', display: editingItem.deliverable ? 'block' : 'none'}}>
+                      <input 
+                        type="number" 
+                        name="shippingFee" 
+                        placeholder="Shipping Fee (KSH)" 
+                        defaultValue={editingItem.shippingFee || 200}
+                        step="0.01"
+                        style={{width: '180px', padding: '5px'}}
+                      />
+                    </div>
+                  </div>
+                  <div className="modal-buttons">
+                    <label style={{fontWeight: 'bold', display: 'block', marginBottom: '8px'}}>Order Type (select all that apply):</label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input 
+                        type="checkbox" 
+                        name="orderCategory" 
+                        value="dine-in" 
+                        defaultChecked={Array.isArray(editingItem.orderCategory) ? editingItem.orderCategory.includes('dine-in') : true}
+                      />
+                      🍽️ Dine-In
+                    </label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input 
+                        type="checkbox" 
+                        name="orderCategory" 
+                        value="pickup"
+                        defaultChecked={Array.isArray(editingItem.orderCategory) && editingItem.orderCategory.includes('pickup')}
+                      />
+                      🛍️ Pickup
+                    </label>
+                    <label style={{display: 'block', marginBottom: '5px'}}>
+                      <input 
+                        type="checkbox" 
+                        name="orderCategory" 
+                        value="delivery" 
+                        id="editDeliveryCheckbox"
+                        defaultChecked={Array.isArray(editingItem.orderCategory) && editingItem.orderCategory.includes('delivery')}
+                      />
+                      🚚 Delivery
+                    </label>
+                    <div id="editShippingFeeSection" style={{marginLeft: '24px', marginTop: '5px', display: editingItem.deliverable ? 'block' : 'none'}}>
+                      <input 
+                        type="number" 
+                        name="shippingFee" 
+                        placeholder="Shipping Fee (KSH)" 
+                        defaultValue={editingItem.shippingFee || 200}
+                        step="0.01"
+                        style={{width: '180px'}}
+                      />
+                    </div>
+                  </div>
+                  <script dangerouslySetInnerHTML={{__html: `
+                    document.getElementById('editDeliveryCheckbox')?.addEventListener('change', function(e) {
+                      document.getElementById('editShippingFeeSection').style.display = e.target.checked ? 'block' : 'none';
+                    });
+                  `}} />
                   <div className="modal-buttons">
                     <button type="submit" disabled={uploadingImage}>
                       {uploadingImage ? 'Uploading...' : 'Update Item'}
