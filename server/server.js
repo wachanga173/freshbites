@@ -776,7 +776,9 @@ app.post('/api/admin/menu/:category', authenticateToken, requireRole('admin', 's
       price: item.price,
       image: item.image,
       category: category,
-      deliverable: item.deliverable || false
+      deliverable: item.deliverable || false,
+      orderCategory: item.orderCategory || ['dine-in'],
+      shippingFee: item.shippingFee || 0
     });
 
     res.json({ 
@@ -811,7 +813,11 @@ app.put('/api/admin/menu/:category/:id', authenticateToken, requireRole('admin',
         name: updates.name,
         description: updates.description,
         price: updates.price,
-        image: updates.image
+        image: updates.image,
+        available: updates.available,
+        deliverable: updates.deliverable,
+        orderCategory: updates.orderCategory || ['dine-in'],
+        shippingFee: updates.shippingFee || 0
       },
       { new: true }
     );
@@ -1484,16 +1490,20 @@ app.post('/api/orders/:orderId/complete', authenticateToken, requireRole(['order
       return res.status(404).json({ error: 'Order not found' });
     }
     
-    if (order.orderType === 'delivery') {
+    // Handle legacy orders without orderType (backward compatibility)
+    const orderTypeValue = order.orderType || order.deliveryType || 'dine-in';
+    
+    if (orderTypeValue === 'delivery') {
       return res.status(400).json({ error: 'Delivery orders must be confirmed by delivery personnel' });
     }
     
     const statusMap = {
       'pickup': 'picked_up',
-      'dine-in': 'dined'
+      'dine-in': 'dined',
+      'delivery': 'delivered'
     };
     
-    order.status = statusMap[order.orderType] || 'completed';
+    order.status = statusMap[orderTypeValue] || 'completed';
     order.completedAt = new Date();
     order.completedBy = req.user.id;
     order.completedByRole = req.user.roles.includes('superadmin') ? 'superadmin' : 'ordermanager';
@@ -1502,7 +1512,7 @@ app.post('/api/orders/:orderId/complete', authenticateToken, requireRole(['order
       status: order.status,
       timestamp: new Date(),
       updatedBy: req.user.id,
-      note: `${order.orderType} confirmed by ${req.user.username}`
+      note: `${orderTypeValue} confirmed by ${req.user.username}`
     });
     
     await order.save();

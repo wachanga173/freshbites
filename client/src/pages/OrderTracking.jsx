@@ -17,7 +17,7 @@ export default function OrderTracking() {
   }, [])
 
   useEffect(() => {
-    if (selectedOrder && selectedOrder.deliveryType === 'delivery' && selectedOrder.status === 'out_for_delivery') {
+    if (selectedOrder && (selectedOrder.deliveryType === 'delivery' || selectedOrder.orderType === 'delivery') && selectedOrder.status === 'out_for_delivery') {
       // Poll for location updates every 5 seconds
       const interval = setInterval(() => {
         fetchTrackingInfo(selectedOrder.orderId)
@@ -165,7 +165,7 @@ export default function OrderTracking() {
                 className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
                 onClick={() => {
                   setSelectedOrder(order)
-                  if (order.deliveryType === 'delivery') {
+                  if ((order.orderType || order.deliveryType) === 'delivery') {
                     fetchTrackingInfo(order.orderId)
                   }
                 }}
@@ -182,7 +182,10 @@ export default function OrderTracking() {
                 <div className="order-card-body">
                   <p><strong>{order.items.length}</strong> items</p>
                   <p><strong>KSH {order.grandTotal}</strong></p>
-                  <p className="order-type">{order.deliveryType === 'delivery' ? '🚚 Delivery' : '🏪 Pickup'}</p>
+                  <p className="order-type">
+                    {(order.orderType || order.deliveryType) === 'delivery' ? '🚚 Delivery' : 
+                     (order.orderType || order.deliveryType) === 'pickup' ? '🏪 Pickup' : '🍽️ Dine-In'}
+                  </p>
                 </div>
                 <div className="order-card-footer">
                   <small>{new Date(order.createdAt).toLocaleString()}</small>
