@@ -92,12 +92,12 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
         setError('')
       },
       (error) => {
-        console.error('Error getting location:', error)
-        if (error.code === error.PERMISSION_DENIED) {
+        // Use numeric codes: 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT
+        if (error.code === 1) {
           setError('Location access denied. Please enable location permissions in your browser settings.')
-        } else if (error.code === error.POSITION_UNAVAILABLE) {
+        } else if (error.code === 2) {
           setError('Location information unavailable. Please try again.')
-        } else if (error.code === error.TIMEOUT) {
+        } else if (error.code === 3) {
           setError('Location request timed out. Please try again.')
         } else {
           setError('Unable to get your location. Please enable location services.')

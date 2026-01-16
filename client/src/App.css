@@ -71,10 +71,10 @@
 
 /* Desktop User Menu */
 .desktop-user-menu {
-  position: absolute;
+  position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 3;
+  z-index: 100;
   display: flex !important;
   align-items: center;
   gap: 12px;

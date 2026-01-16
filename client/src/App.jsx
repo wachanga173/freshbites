@@ -285,8 +285,8 @@ function MainApp() {
           <span></span>
           <span></span>
         </button>
-        
-        {/* Cart Icon */}
+
+        {/* Mobile Cart Icon */}
         <button 
           className="cart-icon-btn"
           onClick={() => setShowCart(!showCart)}
@@ -301,66 +301,66 @@ function MainApp() {
             <span className="cart-badge">{cartItems.length}</span>
           )}
         </button>
-
-        {/* Desktop User Menu */}
-        <div className="desktop-user-menu">
-          <button 
-            className="desktop-cart-btn"
-            onClick={() => setShowCart(!showCart)}
-            aria-label="View cart"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="9" cy="21" r="1"/>
-              <circle cx="20" cy="21" r="1"/>
-              <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-            </svg>
-            Cart
-            {cartItems.length > 0 && (
-              <span className="cart-badge">{cartItems.length}</span>
-            )}
-          </button>
-          
-          {user ? (
-            <div className="user-menu">
-              <span>Welcome, {user.username}!</span>
-              {isAdmin && (
-                <button onClick={() => {
-                  setShowAdminPanel(true)
-                  setCurrentRoute('admin')
-                  window.history.pushState({}, '', '/admin')
-                }}>Admin Panel</button>
-              )}
-              {(isOrderManager || isSuperAdmin) && (
-                <button onClick={() => {
-                  setCurrentRoute('order-management')
-                  window.history.pushState({}, '', '/order-management')
-                }}>Order Management</button>
-              )}
-              {isFeedbackManager && (
-                <button onClick={() => {
-                  setCurrentRoute('feedback-management')
-                  window.history.pushState({}, '', '/feedback-management')
-                }}>Feedback Management</button>
-              )}
-              {isDelivery && (
-                <button onClick={() => {
-                  setCurrentRoute('delivery')
-                  window.history.pushState({}, '', '/delivery')
-                }}>Delivery Dashboard</button>
-              )}
-              <button onClick={() => {
-                setCurrentRoute('my-orders')
-                window.history.pushState({}, '', '/my-orders')
-              }}>My Orders</button>
-              <button onClick={logout}>Logout</button>
-            </div>
-          ) : (
-            <button className="login-btn" onClick={() => setShowAuth(true)}>
-              Login / Register
-            </button>
-          )}
-        </div>
       </header>
+
+      {/* Desktop User Menu - Positioned outside header for proper layout */}
+      <div className="desktop-user-menu">
+        <button 
+          className="desktop-cart-btn"
+          onClick={() => setShowCart(!showCart)}
+          aria-label="View cart"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="9" cy="21" r="1"/>
+            <circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+          </svg>
+          Cart
+          {cartItems.length > 0 && (
+            <span className="cart-badge">{cartItems.length}</span>
+          )}
+        </button>
+        
+        {user ? (
+          <div className="user-menu">
+            <span>Welcome, {user.username}!</span>
+            {isAdmin && (
+              <button onClick={() => {
+                setShowAdminPanel(true)
+                setCurrentRoute('admin')
+                window.history.pushState({}, '', '/admin')
+              }}>Admin Panel</button>
+            )}
+            {(isOrderManager || isSuperAdmin) && (
+              <button onClick={() => {
+                setCurrentRoute('order-management')
+                window.history.pushState({}, '', '/order-management')
+              }}>Order Management</button>
+            )}
+            {isFeedbackManager && (
+              <button onClick={() => {
+                setCurrentRoute('feedback-management')
+                window.history.pushState({}, '', '/feedback-management')
+              }}>Feedback Management</button>
+            )}
+            {isDelivery && (
+              <button onClick={() => {
+                setCurrentRoute('delivery')
+                window.history.pushState({}, '', '/delivery')
+              }}>Delivery Dashboard</button>
+            )}
+            <button onClick={() => {
+              setCurrentRoute('my-orders')
+              window.history.pushState({}, '', '/my-orders')
+            }}>My Orders</button>
+            <button onClick={logout}>Logout</button>
+          </div>
+        ) : (
+          <button className="login-btn" onClick={() => setShowAuth(true)}>
+            Login / Register
+          </button>
+        )}
+      </div>
 
       <nav className="category-nav">
         <div className="nav-scroll">
