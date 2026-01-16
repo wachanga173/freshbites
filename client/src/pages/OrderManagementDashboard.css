@@ -238,6 +238,7 @@
   font-size: 14px;
 }
 
+/* Responsive Design */
 @media (max-width: 1024px) {
   .dashboard-content {
     grid-template-columns: 1fr;
@@ -245,5 +246,127 @@
   
   .status-actions {
     grid-template-columns: 1fr;
+  }
+
+  .orders-panel {
+    max-height: none;
+  }
+
+  .orders-grid {
+    max-height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .order-management {
+    padding: 16px;
+  }
+
+  .dashboard-header {
+    padding: 20px 16px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .header-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stat-item h3 {
+    font-size: 1.5rem;
+  }
+
+  .stat-item p {
+    font-size: 13px;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .filter-group select,
+  .filter-group button {
+    width: 100%;
+  }
+
+  .order-card {
+    padding: 16px;
+  }
+
+  .order-header h3 {
+    font-size: 16px;
+  }
+
+  .order-details {
+    grid-template-columns: 1fr;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
+
+  .order-timeline {
+    padding-left: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .header-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .order-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  .order-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .detail-item {
+    padding: 10px;
+  }
+
+  .detail-label {
+    font-size: 12px;
+  }
+
+  .detail-value {
+    font-size: 14px;
   }
 }

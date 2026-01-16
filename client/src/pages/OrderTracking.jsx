@@ -13,7 +13,7 @@ export default function OrderTracking() {
   const [error, setError] = useState('')
 
   const handleGoBack = () => {
-    window.history.back()
+    window.location.href = '/'
   }
 
   useEffect(() => {

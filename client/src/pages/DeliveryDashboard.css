@@ -568,6 +568,7 @@
   border-left: 4px solid #c62828;
 }
 
+/* Responsive Design */
 @media (max-width: 968px) {
   .deliveries-container {
     grid-template-columns: 1fr;
@@ -575,9 +576,94 @@
   
   .deliveries-grid {
     max-height: none;
+    padding-right: 0;
   }
   
   .delivery-details-panel {
     max-height: none;
+  }
+
+  .delivery-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .delivery-header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .delivery-dashboard {
+    padding: 16px;
+  }
+
+  .delivery-card {
+    padding: 16px;
+  }
+
+  .delivery-card-header h3 {
+    font-size: 16px;
+  }
+
+  .delivery-card-body {
+    font-size: 14px;
+  }
+
+  .delivery-details-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
+
+  .status-timeline {
+    padding-left: 20px;
+  }
+
+  .timeline-item {
+    padding-left: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .delivery-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .tracking-indicator {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  .delivery-card {
+    padding: 12px;
+  }
+
+  .delivery-card-header h3 {
+    font-size: 15px;
+  }
+
+  .detail-item {
+    padding: 10px;
+  }
+
+  .detail-label {
+    font-size: 12px;
+  }
+
+  .detail-value {
+    font-size: 14px;
   }
 }

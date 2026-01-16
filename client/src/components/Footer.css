@@ -196,37 +196,19 @@
 
 /* Contact Info */
 .footer-contact {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  padding: 2rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: none;
 }
 
 .contact-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.95rem;
+  display: none;
 }
 
 .contact-icon {
-  font-size: 1.25rem;
-  flex-shrink: 0;
-  margin-top: 2px;
+  display: none;
 }
 
 .contact-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.placeholder-note {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.75rem;
-  font-style: italic;
+  display: none;
 }
 
 /* Evolutionary Section */

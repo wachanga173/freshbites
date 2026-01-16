@@ -17,6 +17,7 @@ import PaymentCancel from './pages/PaymentCancel'
 import TermsAndConditions from './pages/TermsAndConditions'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import About from './pages/About'
+import Contact from './pages/Contact'
 import RoleSwitcher from './components/RoleSwitcher'
 import { getApiUrl } from './config/api'
 import './App.css'
@@ -69,6 +70,8 @@ function MainApp() {
       setCurrentRoute('privacy')
     } else if (path === '/about') {
       setCurrentRoute('about')
+    } else if (path === '/contact') {
+      setCurrentRoute('contact')
     } else {
       setCurrentRoute('home')
     }
@@ -101,6 +104,10 @@ function MainApp() {
 
   if (currentRoute === 'about') {
     return <About />
+  }
+
+  if (currentRoute === 'contact') {
+    return <Contact />
   }
 
   if (showAuth && !user) {
@@ -338,6 +345,46 @@ function MainApp() {
               </button>
             ))}
           </div>
+          {showMobileMenu && (
+            <div className="mobile-auth-links">
+              {user ? (
+                <>
+                  <button onClick={() => {
+                    setCurrentRoute('my-orders')
+                    window.history.pushState({}, '', '/my-orders')
+                    setShowMobileMenu(false)
+                  }} className="mobile-link-btn">My Orders</button>
+                  <button onClick={() => {
+                    setCurrentRoute('contact')
+                    window.history.pushState({}, '', '/contact')
+                    setShowMobileMenu(false)
+                  }} className="mobile-link-btn">Contact</button>
+                  <button onClick={() => {
+                    logout()
+                    setShowMobileMenu(false)
+                  }} className="mobile-link-btn">Logout</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => {
+                    setShowAuth(true)
+                    setAuthMode('login')
+                    setShowMobileMenu(false)
+                  }} className="mobile-link-btn">Login</button>
+                  <button onClick={() => {
+                    setShowAuth(true)
+                    setAuthMode('register')
+                    setShowMobileMenu(false)
+                  }} className="mobile-link-btn">Register</button>
+                  <button onClick={() => {
+                    setCurrentRoute('contact')
+                    window.history.pushState({}, '', '/contact')
+                    setShowMobileMenu(false)
+                  }} className="mobile-link-btn">Contact</button>
+                </>
+              )}
+            </div>
+          )}
         </div>
         
         {showMobileMenu && (
