@@ -1,0 +1,19 @@
+{
+  "name": "Fresh Bites Café - Online Food Delivery",
+  "short_name": "Fresh Bites",
+  "description": "Order delicious meals online with real-time GPS delivery tracking",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#667eea",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["food", "lifestyle"],
+  "permissions": ["geolocation"]
+}

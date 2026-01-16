@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { getApiUrl } from '../config/api'
 import { useAuth } from '../context/AuthContext'
 import './Checkout.css'
+import './Checkout-location.css'
 
 export default function Checkout({ items, total, onBack, onSuccess }) {
   const { user: _user } = useAuth()
@@ -463,11 +464,15 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                   type="button" 
                   className="location-btn"
                   onClick={getUserLocation}
+                  title="Click to allow location access. Your browser will ask for permission to share your location."
                 >
                   📍 Get My Location
                 </button>
+                <p className="location-help">
+                  💡 Click the button above and allow location access when prompted by your browser. This helps us deliver to your exact location.
+                </p>
                 {deliveryAddress.latitude && deliveryAddress.longitude && (
-                  <p className="location-confirmed">✓ Location captured</p>
+                  <p className="location-confirmed">✓ Location captured successfully!</p>
                 )}
               </div>
             </section>
