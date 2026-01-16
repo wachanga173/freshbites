@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react'
-import { getApiUrl } from '../config/api';
+import { getApiUrl } from '../config/api'
 
 const AuthContext = createContext(null)
 
@@ -14,6 +14,7 @@ export function AuthProvider({ children }) {
     } else {
       setLoading(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
   async function fetchUser() {
@@ -105,6 +106,7 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {

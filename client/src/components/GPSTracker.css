@@ -1,0 +1,218 @@
+.gps-tracker {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 24px;
+  color: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.tracker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.tracker-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.last-update {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.tracker-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.location-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.location-section {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.location-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.coordinates {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+.coordinates span {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.accuracy {
+  color: #ffd700;
+  font-weight: 600;
+}
+
+.no-location {
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  margin: 0;
+}
+
+.tracker-actions {
+  margin-bottom: 24px;
+}
+
+.open-maps-btn {
+  width: 100%;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.open-maps-btn:hover:not(:disabled) {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.open-maps-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tracker-info {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.info-icon {
+  font-size: 1.25rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .gps-tracker {
+    padding: 16px;
+  }
+
+  .tracker-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .tracker-header h3 {
+    font-size: 1.25rem;
+  }
+
+  .tracker-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .location-details {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+}
+
+/* Animation for updating values */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.stat-value {
+  animation: pulse 2s ease-in-out infinite;
+}

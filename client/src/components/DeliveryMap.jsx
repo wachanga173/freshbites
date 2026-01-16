@@ -31,12 +31,14 @@ export default function DeliveryMap({ deliveryLocation, destinationAddress }) {
     } else {
       initMap()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     if (map && deliveryLocation) {
       updateDeliveryLocation(deliveryLocation)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, deliveryLocation])
 
   const initMap = () => {
@@ -57,7 +59,7 @@ export default function DeliveryMap({ deliveryLocation, destinationAddress }) {
         center: center,
         mapTypeControl: false,
         streetViewControl: false,
-        fullscreenControl: true,
+        fullscreenControl: true
       })
 
       setMap(newMap)
@@ -65,7 +67,7 @@ export default function DeliveryMap({ deliveryLocation, destinationAddress }) {
       // Create directions renderer for route
       const renderer = new window.google.maps.DirectionsRenderer({
         map: newMap,
-        suppressMarkers: true, // We'll add custom markers
+        suppressMarkers: true // We'll add custom markers
       })
       setDirectionsRenderer(renderer)
 
@@ -81,12 +83,12 @@ export default function DeliveryMap({ deliveryLocation, destinationAddress }) {
             fillColor: '#4285F4',
             fillOpacity: 1,
             strokeColor: '#ffffff',
-            strokeWeight: 2,
+            strokeWeight: 2
           },
           label: {
             text: '🚴',
-            fontSize: '18px',
-          },
+            fontSize: '18px'
+          }
         })
         setDeliveryMarker(marker)
       }
@@ -120,12 +122,12 @@ export default function DeliveryMap({ deliveryLocation, destinationAddress }) {
             fillColor: '#EA4335',
             fillOpacity: 1,
             strokeColor: '#ffffff',
-            strokeWeight: 2,
+            strokeWeight: 2
           },
           label: {
             text: '📍',
-            fontSize: '18px',
-          },
+            fontSize: '18px'
+          }
         })
         setDestinationMarker(marker)
 
@@ -148,7 +150,7 @@ export default function DeliveryMap({ deliveryLocation, destinationAddress }) {
       {
         origin: new window.google.maps.LatLng(origin.latitude, origin.longitude),
         destination: destination,
-        travelMode: window.google.maps.TravelMode.DRIVING,
+        travelMode: window.google.maps.TravelMode.DRIVING
       },
       (result, status) => {
         if (status === 'OK') {

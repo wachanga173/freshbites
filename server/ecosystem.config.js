@@ -26,4 +26,4 @@ module.exports = {
     listen_timeout: 3000,
     kill_timeout: 5000
   }]
-};
+}

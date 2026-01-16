@@ -10,9 +10,9 @@ async function checkUsers() {
     const usersCollection = db.collection('users')
 
     const allUsers = await usersCollection.find({}).toArray()
-    
+
     console.log(`Total users: ${allUsers.length}\n`)
-    
+
     allUsers.forEach(user => {
       console.log('---')
       console.log(`Username: ${user.username}`)

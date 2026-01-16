@@ -15,6 +15,7 @@ export default function FeedbackManagerDashboard() {
 
   useEffect(() => {
     fetchFeedbacks()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter, categoryFilter])
 
   const fetchFeedbacks = async () => {
@@ -134,7 +135,7 @@ export default function FeedbackManagerDashboard() {
     return (
       <div className="access-denied">
         <h2>Access Denied</h2>
-        <p>You don't have permission to access this page.</p>
+        <p>You don&apos;t have permission to access this page.</p>
       </div>
     )
   }

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const feedbackSchema = new mongoose.Schema({
   feedbackId: {
@@ -73,13 +73,13 @@ const feedbackSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
-});
+})
 
 // Indexes for performance optimization
-feedbackSchema.index({ userId: 1, createdAt: -1 }); // User's feedback
-feedbackSchema.index({ status: 1, createdAt: -1 }); // Filter by status
-feedbackSchema.index({ category: 1, status: 1 }); // Category filtering
-feedbackSchema.index({ rating: 1 }); // Rating queries
-feedbackSchema.index({ createdAt: -1 }); // Recent feedback
+feedbackSchema.index({ userId: 1, createdAt: -1 }) // User's feedback
+feedbackSchema.index({ status: 1, createdAt: -1 }) // Filter by status
+feedbackSchema.index({ category: 1, status: 1 }) // Category filtering
+feedbackSchema.index({ rating: 1 }) // Rating queries
+feedbackSchema.index({ createdAt: -1 }) // Recent feedback
 
-module.exports = mongoose.model('Feedback', feedbackSchema);
+module.exports = mongoose.model('Feedback', feedbackSchema)

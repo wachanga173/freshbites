@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import MenuItem from './components/MenuItem'
 import Cart from './components/Cart'
 import FeedbackChatbot from './components/FeedbackChatbot'
+import Footer from './components/Footer'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import AdminDashboard from './pages/AdminDashboard'
@@ -13,6 +14,9 @@ import FeedbackManagerDashboard from './pages/FeedbackManagerDashboard'
 import Checkout from './pages/Checkout'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
+import TermsAndConditions from './pages/TermsAndConditions'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import About from './pages/About'
 import RoleSwitcher from './components/RoleSwitcher'
 import { getApiUrl } from './config/api'
 import './App.css'
@@ -25,9 +29,10 @@ function MainApp() {
   const [cartItems, setCartItems] = useState([])
   const [message, setMessage] = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
-  const [showAdminPanel, setShowAdminPanel] = useState(false)
+  const [_showAdminPanel, setShowAdminPanel] = useState(false)
   const [showCheckout, setShowCheckout] = useState(false)
   const [currentRoute, setCurrentRoute] = useState('home')
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
 
   const isFeedbackManager = user && (user.roles?.includes('feedback_manager') || user.roles?.includes('superadmin'))
   const isSuperAdmin = user && user.roles?.includes('superadmin')
@@ -35,33 +40,39 @@ function MainApp() {
   useEffect(() => {
     fetch(getApiUrl('/api/menu'))
       .then(r => {
-        if (!r.ok) throw new Error('Menu endpoint not found');
-        return r.json();
+        if (!r.ok) throw new Error('Menu endpoint not found')
+        return r.json()
       })
       .then(setMenu)
-      .catch(() => setMessage('Could not load menu from server'));
+      .catch(() => setMessage('Could not load menu from server'))
 
     // Simple routing based on URL path
-    const path = window.location.pathname;
+    const path = window.location.pathname
     if (path.includes('/payment/success')) {
-      setCurrentRoute('payment-success');
+      setCurrentRoute('payment-success')
     } else if (path.includes('/payment/cancel')) {
-      setCurrentRoute('payment-cancel');
+      setCurrentRoute('payment-cancel')
     } else if (path === '/admin') {
-      setCurrentRoute('admin');
-      setShowAdminPanel(true);
+      setCurrentRoute('admin')
+      setShowAdminPanel(true)
     } else if (path === '/order-management') {
-      setCurrentRoute('order-management');
+      setCurrentRoute('order-management')
     } else if (path === '/delivery') {
-      setCurrentRoute('delivery');
+      setCurrentRoute('delivery')
     } else if (path === '/my-orders') {
-      setCurrentRoute('my-orders');
+      setCurrentRoute('my-orders')
     } else if (path === '/feedback-management') {
-      setCurrentRoute('feedback-management');
+      setCurrentRoute('feedback-management')
+    } else if (path === '/terms') {
+      setCurrentRoute('terms')
+    } else if (path === '/privacy') {
+      setCurrentRoute('privacy')
+    } else if (path === '/about') {
+      setCurrentRoute('about')
     } else {
-      setCurrentRoute('home');
+      setCurrentRoute('home')
     }
-  }, []);
+  }, [])
   if (currentRoute === 'my-orders' && user) {
     return <OrderTracking />
   }
@@ -77,6 +88,19 @@ function MainApp() {
 
   if (currentRoute === 'payment-cancel') {
     return <PaymentCancel />
+  }
+
+  // Handle legal pages
+  if (currentRoute === 'terms') {
+    return <TermsAndConditions />
+  }
+
+  if (currentRoute === 'privacy') {
+    return <PrivacyPolicy />
+  }
+
+  if (currentRoute === 'about') {
+    return <About />
   }
 
   if (showAuth && !user) {
@@ -274,8 +298,8 @@ function MainApp() {
                 }}>Delivery Dashboard</button>
               )}
               <button onClick={() => {
-                setCurrentRoute('my-orders');
-                window.history.pushState({}, '', '/my-orders');
+                setCurrentRoute('my-orders')
+                window.history.pushState({}, '', '/my-orders')
               }}>My Orders</button>
               <button onClick={logout}>Logout</button>
             </div>
@@ -288,18 +312,40 @@ function MainApp() {
       </header>
 
       <nav className="category-nav">
-        <div className="container">
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              className={`category-btn ${activeCategory === cat.id ? 'active' : ''}`}
-              onClick={() => setActiveCategory(cat.id)}
-            >
-              <span className="cat-icon">{cat.icon}</span>
-              {cat.name}
-            </button>
-          ))}
+        <button 
+          className="hamburger-menu"
+          onClick={() => setShowMobileMenu(!showMobileMenu)}
+          aria-label="Toggle menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        
+        <div className={`nav-container ${showMobileMenu ? 'mobile-menu-open' : ''}`}>
+          <div className="nav-scroll">
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                className={`category-btn ${activeCategory === cat.id ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveCategory(cat.id)
+                  setShowMobileMenu(false)
+                }}
+              >
+                <span className="cat-icon">{cat.icon}</span>
+                {cat.name}
+              </button>
+            ))}
+          </div>
         </div>
+        
+        {showMobileMenu && (
+          <div 
+            className="mobile-menu-overlay" 
+            onClick={() => setShowMobileMenu(false)}
+          />
+        )}
       </nav>
 
       {message && (
@@ -345,16 +391,7 @@ function MainApp() {
       {/* Feedback Chatbot - Available for all logged-in users */}
       {user && <FeedbackChatbot />}
 
-      <footer className="footer">
-        <div className="container">
-          <p>© 2025 Fresh Bites Café. All rights reserved.</p>
-          <div className="footer-links">
-            <a href="#privacy">Privacy</a>
-            <a href="#terms">Terms</a>
-            <a href="#contact">Contact</a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

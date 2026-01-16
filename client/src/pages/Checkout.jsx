@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
-import { getApiUrl } from '../config/api';
+import { useState, useEffect, useMemo } from 'react'
+import { getApiUrl } from '../config/api'
 import { useAuth } from '../context/AuthContext'
 import './Checkout.css'
 
 export default function Checkout({ items, total, onBack, onSuccess }) {
-  const { user } = useAuth()
+  const { user: _user } = useAuth()
   const [paymentMethod, setPaymentMethod] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -22,7 +22,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
   const [hasDeliveryItems, setHasDeliveryItems] = useState(false)
   const [availableOrderTypes, setAvailableOrderTypes] = useState(['dine-in', 'pickup', 'delivery'])
 
-  const safeItems = Array.isArray(items) ? items : []
+  const safeItems = useMemo(() => Array.isArray(items) ? items : [], [items])
   
   // Determine available order types based on items in cart
   useEffect(() => {
@@ -50,15 +50,11 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
     const commonOrderTypes = itemOrderCategories.reduce((common, itemCategories) => {
       return common.filter(type => itemCategories.includes(type))
     }, ['dine-in', 'pickup', 'delivery'])
-
-    console.log('Available order types:', commonOrderTypes)
-    console.log('Items order categories:', itemOrderCategories)
     
     setAvailableOrderTypes(commonOrderTypes.length > 0 ? commonOrderTypes : ['dine-in'])
 
     // Auto-select the first available option if current selection is not available
     if (commonOrderTypes.length > 0 && !commonOrderTypes.includes(orderType)) {
-      console.log('Auto-selecting order type:', commonOrderTypes[0])
       setOrderType(commonOrderTypes[0] || 'dine-in')
     }
   }, [safeItems, orderType])
@@ -95,8 +91,8 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
     }
   }
   const handlePayPalPayment = async () => {
-    setLoading(true);
-    setError('');
+    setLoading(true)
+    setError('')
 
     try {
       // Validate order type is selected
@@ -134,11 +130,11 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
         orderType: orderType,
         deliveryType: orderType === 'delivery' ? 'delivery' : 'pickup',
         deliveryAddress: orderType === 'delivery' ? deliveryAddress : null
-      };
-      localStorage.setItem('pendingOrderDetails', JSON.stringify(orderDetails));
+      }
+      localStorage.setItem('pendingOrderDetails', JSON.stringify(orderDetails))
 
       // Create PayPal payment
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token')
       const response = await fetch(getApiUrl('/api/payment/paypal/create'), {
         method: 'POST',
         headers: {
@@ -146,22 +142,22 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(orderDetails)
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
       
       if (data.success && data.approvalUrl) {
         // Redirect to PayPal for approval
-        window.location.href = data.approvalUrl;
+        window.location.href = data.approvalUrl
       } else {
-        setError(data.error || 'Failed to create PayPal payment');
+        setError(data.error || 'Failed to create PayPal payment')
       }
     } catch (err) {
-      setError('Payment initialization failed. Please try again.');
+      setError('Payment initialization failed. Please try again.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleMpesaPayment = async () => {
     if (!mpesaPhone || mpesaPhone.length < 10) {
@@ -191,7 +187,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
     setError('')
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token')
       const response = await fetch(getApiUrl('/api/payment/mpesa/stkpush'), {
         method: 'POST',
         headers: {
@@ -213,22 +209,22 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
             deliverable: item.deliverable || false
           }))
         })
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
       
       if (data.success) {
         // Show success message
-        alert('Payment request sent! Please check your phone to complete the M-Pesa payment.');
+        alert('Payment request sent! Please check your phone to complete the M-Pesa payment.')
         // Poll for payment status
-        pollMpesaStatus(data.checkoutRequestID);
+        pollMpesaStatus(data.checkoutRequestID)
       } else {
-        setError(data.error || 'Failed to initiate M-Pesa payment');
+        setError(data.error || 'Failed to initiate M-Pesa payment')
       }
     } catch (err) {
-      setError('Payment initialization failed. Please try again.');
+      setError('Payment initialization failed. Please try again.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -244,7 +240,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
 
       try {
         const token = localStorage.getItem('token')
-  const response = await fetch(getApiUrl(`/api/payment/mpesa/status/${checkoutRequestID}`), {
+        const response = await fetch(getApiUrl(`/api/payment/mpesa/status/${checkoutRequestID}`), {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -463,12 +459,14 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
             <h2>Select Payment Method</h2>
             <div className="payment-methods">
               <div 
-                className={`payment-card ${paymentMethod === 'paypal' ? 'selected' : ''}`}
-                onClick={() => setPaymentMethod('paypal')}
+                className={'payment-card disabled'}
+                style={{opacity: 0.6, cursor: 'not-allowed'}}
+                title="Payment option will be integrated soon"
               >
                 <div className="payment-icon">💳</div>
                 <h3>PayPal</h3>
-                <p>Pay securely with PayPal</p>
+                <p>Payment option will be integrated soon</p>
+                <span className="coming-soon-badge">Coming Soon</span>
               </div>
 
               <div 

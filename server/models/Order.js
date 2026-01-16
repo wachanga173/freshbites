@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema({
   orderId: {
@@ -118,14 +118,14 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }
-});
+})
 
 // Indexes for performance optimization (orderId already has unique index)
-orderSchema.index({ userId: 1, createdAt: -1 }); // User's orders sorted by date
-orderSchema.index({ status: 1, createdAt: -1 }); // Filter by status and sort
-orderSchema.index({ assignedTo: 1, status: 1 }); // Delivery person's active orders
-orderSchema.index({ deliveryType: 1, status: 1 }); // Filter delivery vs pickup
-orderSchema.index({ createdAt: -1 }); // Recent orders
-orderSchema.index({ 'paymentDetails.status': 1 }); // Payment status queries
+orderSchema.index({ userId: 1, createdAt: -1 }) // User's orders sorted by date
+orderSchema.index({ status: 1, createdAt: -1 }) // Filter by status and sort
+orderSchema.index({ assignedTo: 1, status: 1 }) // Delivery person's active orders
+orderSchema.index({ deliveryType: 1, status: 1 }) // Filter delivery vs pickup
+orderSchema.index({ createdAt: -1 }) // Recent orders
+orderSchema.index({ 'paymentDetails.status': 1 }) // Payment status queries
 
-module.exports = mongoose.model('Order', orderSchema);
+module.exports = mongoose.model('Order', orderSchema)

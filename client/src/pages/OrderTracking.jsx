@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
-import DeliveryMap from '../components/DeliveryMap'
+import GPSTracker from '../components/GPSTracker'
 import './OrderTracking.css'
 
 export default function OrderTracking() {
-  const { user } = useAuth()
+  const { user: _user } = useAuth()
   const [orders, setOrders] = useState([])
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [tracking, setTracking] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  const handleGoBack = () => {
+    window.history.back()
+  }
 
   useEffect(() => {
     fetchMyOrders()
@@ -118,26 +122,26 @@ export default function OrderTracking() {
 
   const getStatusMessage = (order) => {
     switch(order.status) {
-      case 'delivered':
-        return {
-          title: '📦 Order Delivered',
-          message: 'Your order has been delivered to your location.',
-          action: 'If you have any issues, please contact customer support.'
-        }
-      case 'picked_up':
-        return {
-          title: '🛍️ Order Picked Up',
-          message: 'Your order has been picked up from our restaurant.',
-          action: 'If you have any issues, please contact customer support.'
-        }
-      case 'dined':
-        return {
-          title: '🍽️ Dine-In Complete',
-          message: 'You have enjoyed your meal at our restaurant.',
-          action: 'Thank you for dining with us! For any feedback, please contact customer support.'
-        }
-      default:
-        return null
+    case 'delivered':
+      return {
+        title: '📦 Order Delivered',
+        message: 'Your order has been delivered to your location.',
+        action: 'If you have any issues, please contact customer support.'
+      }
+    case 'picked_up':
+      return {
+        title: '🛍️ Order Picked Up',
+        message: 'Your order has been picked up from our restaurant.',
+        action: 'If you have any issues, please contact customer support.'
+      }
+    case 'dined':
+      return {
+        title: '🍽️ Dine-In Complete',
+        message: 'You have enjoyed your meal at our restaurant.',
+        action: 'Thank you for dining with us! For any feedback, please contact customer support.'
+      }
+    default:
+      return null
     }
   }
 
@@ -147,13 +151,18 @@ export default function OrderTracking() {
 
   return (
     <div className="order-tracking-container">
-      <h1>My Orders</h1>
+      <div className="order-tracking-header">
+        <button className="back-to-home-btn" onClick={handleGoBack}>
+          ← Back
+        </button>
+        <h1>My Orders</h1>
+      </div>
 
       {error && <div className="error-message">{error}</div>}
 
-  {!Array.isArray(orders) || orders.length === 0 ? (
+      {!Array.isArray(orders) || orders.length === 0 ? (
         <div className="no-orders">
-          <p>You haven't placed any orders yet.</p>
+          <p>You haven&apos;t placed any orders yet.</p>
         </div>
       ) : (
         <div className="orders-layout">
@@ -184,7 +193,7 @@ export default function OrderTracking() {
                   <p><strong>KSH {order.grandTotal}</strong></p>
                   <p className="order-type">
                     {(order.orderType || order.deliveryType) === 'delivery' ? '🚚 Delivery' : 
-                     (order.orderType || order.deliveryType) === 'pickup' ? '🏪 Pickup' : '🍽️ Dine-In'}
+                      (order.orderType || order.deliveryType) === 'pickup' ? '🏪 Pickup' : '🍽️ Dine-In'}
                   </p>
                 </div>
                 <div className="order-card-footer">
@@ -249,12 +258,16 @@ export default function OrderTracking() {
               {/* Live Tracking Map */}
               {selectedOrder.deliveryType === 'delivery' && 
                selectedOrder.status === 'out_for_delivery' && 
-               tracking && (
+               tracking && tracking.currentLocation && (
                 <div className="detail-section">
-                  <h3>🗺️ Live Tracking</h3>
-                  <DeliveryMap 
+                  <h3>🗺️ Live GPS Tracking</h3>
+                  <GPSTracker 
                     deliveryLocation={tracking.currentLocation}
-                    destinationAddress={selectedOrder.deliveryAddress}
+                    destinationLocation={{
+                      latitude: selectedOrder.deliveryAddress?.latitude || 0,
+                      longitude: selectedOrder.deliveryAddress?.longitude || 0
+                    }}
+                    showControls={false}
                   />
                   {selectedOrder.assignedTo && (
                     <div className="delivery-person-info">

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const menuItemSchema = new mongoose.Schema({
   id: {
@@ -52,12 +52,12 @@ const menuItemSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
-});
+})
 
 // Indexes for performance optimization (id already has unique index)
-menuItemSchema.index({ category: 1, available: 1 }); // Most common query pattern
-menuItemSchema.index({ available: 1, deliverable: 1 }); // Filter available deliverable items
-menuItemSchema.index({ name: 'text', description: 'text' }); // Text search support
-menuItemSchema.index({ price: 1 }); // Price-based sorting/filtering
+menuItemSchema.index({ category: 1, available: 1 }) // Most common query pattern
+menuItemSchema.index({ available: 1, deliverable: 1 }) // Filter available deliverable items
+menuItemSchema.index({ name: 'text', description: 'text' }) // Text search support
+menuItemSchema.index({ price: 1 }) // Price-based sorting/filtering
 
-module.exports = mongoose.model('MenuItem', menuItemSchema);
+module.exports = mongoose.model('MenuItem', menuItemSchema)

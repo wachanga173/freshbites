@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
-import DeliveryMap from '../components/DeliveryMap'
+import GPSTracker from '../components/GPSTracker'
 import './DeliveryDashboard.css'
 
 export default function DeliveryDashboard() {
-  const { user } = useAuth()
+  const { user: _user } = useAuth()
   const [activeDeliveries, setActiveDeliveries] = useState([])
   const [selectedDelivery, setSelectedDelivery] = useState(null)
   const [locationTracking, setLocationTracking] = useState(false)
@@ -36,6 +36,7 @@ export default function DeliveryDashboard() {
         navigator.geolocation.clearWatch(watchId)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDelivery])
 
   const fetchMyDeliveries = async () => {
@@ -175,11 +176,11 @@ export default function DeliveryDashboard() {
       return
     }
 
-    const confirmMsg = `Are you sure you want to mark this delivery as DONE?\n\n` +
+    const confirmMsg = 'Are you sure you want to mark this delivery as DONE?\n\n' +
                       `Order: #${selectedDelivery.orderId}\n` +
                       `Customer: ${selectedDelivery.username}\n\n` +
-                      `Your location will be verified against the delivery address.\n\n` +
-                      `⚠️ This action CANNOT be undone.`
+                      'Your location will be verified against the delivery address.\n\n' +
+                      '⚠️ This action CANNOT be undone.'
 
     if (!confirm(confirmMsg)) return
 
@@ -264,7 +265,7 @@ export default function DeliveryDashboard() {
           <div className="empty-state">
             <span className="empty-icon">📦</span>
             <h2>No Active Deliveries</h2>
-            <p>You'll see your assigned deliveries here</p>
+            <p>You&apos;ll see your assigned deliveries here</p>
           </div>
         </div>
       ) : (
@@ -351,11 +352,15 @@ export default function DeliveryDashboard() {
 
               {/* Delivery Address */}
               <div className="details-section">
-                <h3>🗺️ Delivery Address & Map</h3>
+                <h3>🗺️ Delivery Address & GPS Tracking</h3>
                 {currentLocation && selectedDelivery.deliveryAddress && (
-                  <DeliveryMap 
+                  <GPSTracker 
                     deliveryLocation={currentLocation}
-                    destinationAddress={selectedDelivery.deliveryAddress}
+                    destinationLocation={{
+                      latitude: selectedDelivery.deliveryAddress.latitude || 0,
+                      longitude: selectedDelivery.deliveryAddress.longitude || 0
+                    }}
+                    showControls={true}
                   />
                 )}
                 <div className="address-details">
@@ -423,7 +428,7 @@ export default function DeliveryDashboard() {
                         onClick={handleMarkArrived}
                         disabled={!locationTracking}
                       >
-                        📍 I've Arrived at Customer Location
+                        📍 I&apos;ve Arrived at Customer Location
                       </button>
                       
                       <button 
@@ -487,8 +492,8 @@ export default function DeliveryDashboard() {
             <li>Wait for an order manager to assign you a delivery</li>
             <li>Select the delivery to see customer details</li>
             <li>GPS tracking starts automatically</li>
-            <li>Use "Open in Maps" for navigation</li>
-            <li>Mark "I've Arrived" when you reach the customer</li>
+            <li>Use &quot;Open in Maps&quot; for navigation</li>
+            <li>Mark &quot;I&apos;ve Arrived&quot; when you reach the customer</li>
             <li>Customer confirms receipt to complete the order</li>
           </ol>
         </div>

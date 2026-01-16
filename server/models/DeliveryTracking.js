@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const deliveryTrackingSchema = new mongoose.Schema({
   orderId: {
@@ -50,12 +50,12 @@ const deliveryTrackingSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-});
+})
 
 // Update the updatedAt timestamp on save
-deliveryTrackingSchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
-  next();
-});
+deliveryTrackingSchema.pre('save', function (next) {
+  this.updatedAt = Date.now()
+  next()
+})
 
-module.exports = mongoose.model('DeliveryTracking', deliveryTrackingSchema);
+module.exports = mongoose.model('DeliveryTracking', deliveryTrackingSchema)

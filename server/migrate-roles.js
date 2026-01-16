@@ -11,7 +11,7 @@ async function migrateRoles() {
     const usersCollection = db.collection('users')
 
     // Find all users that have a 'role' field (not 'roles' array)
-    const usersWithOldSchema = await usersCollection.find({ 
+    const usersWithOldSchema = await usersCollection.find({
       role: { $exists: true },
       roles: { $exists: false }
     }).toArray()

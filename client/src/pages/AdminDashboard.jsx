@@ -21,6 +21,7 @@ export default function AdminDashboard() {
     if (isSuperAdmin) {
       loadUsers()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function loadMenu() {
@@ -47,7 +48,7 @@ export default function AdminDashboard() {
     formData.append('image', file)
 
     try {
-  const res = await fetch(getApiUrl('/api/admin/upload'), {
+      const res = await fetch(getApiUrl('/api/admin/upload'), {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -95,7 +96,7 @@ export default function AdminDashboard() {
       shippingFee: finalCategories.includes('delivery') ? parseFloat(formData.get('shippingFee') || 200) : 0
     }
 
-  const res = await fetch(getApiUrl(`/api/admin/menu/${selectedCategory}`), {
+    const res = await fetch(getApiUrl(`/api/admin/menu/${selectedCategory}`), {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -159,7 +160,7 @@ export default function AdminDashboard() {
   }
 
   async function handleUpdateItem(category, id, item) {
-  const res = await fetch(getApiUrl(`/api/admin/menu/${category}/${id}`), {
+    const res = await fetch(getApiUrl(`/api/admin/menu/${category}/${id}`), {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -183,7 +184,7 @@ export default function AdminDashboard() {
   async function handleDeleteItem(category, id) {
     if (!confirm('Are you sure you want to delete this item?')) return
 
-  const res = await fetch(getApiUrl(`/api/admin/menu/${category}/${id}`), {
+    const res = await fetch(getApiUrl(`/api/admin/menu/${category}/${id}`), {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -207,7 +208,7 @@ export default function AdminDashboard() {
       return
     }
     
-  const res = await fetch(getApiUrl('/api/superadmin/create-admin'), {
+    const res = await fetch(getApiUrl('/api/superadmin/create-admin'), {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -236,7 +237,7 @@ export default function AdminDashboard() {
   async function handleDeleteUser(id) {
     if (!confirm('Are you sure you want to delete this user?')) return
 
-  const res = await fetch(getApiUrl(`/api/superadmin/users/${id}`), {
+    const res = await fetch(getApiUrl(`/api/superadmin/users/${id}`), {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -347,7 +348,7 @@ export default function AdminDashboard() {
           </div>
 
           {showAddForm && (
-            <div className="modal-overlay" onClick={() => { setShowAddForm(false); setImagePreview(null); }}>
+            <div className="modal-overlay" onClick={() => { setShowAddForm(false); setImagePreview(null) }}>
               <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <h3>Add New Item</h3>
                 <form onSubmit={handleAddItem}>
@@ -388,8 +389,8 @@ export default function AdminDashboard() {
                     </label>
                     <label style={{display: 'block', marginBottom: '5px'}}>
                       <input type="checkbox" name="orderCategory" value="delivery" onChange={(e) => {
-                        const feeSection = document.getElementById('shippingFeeSection');
-                        if (feeSection) feeSection.style.display = e.target.checked ? 'block' : 'none';
+                        const feeSection = document.getElementById('shippingFeeSection')
+                        if (feeSection) feeSection.style.display = e.target.checked ? 'block' : 'none'
                       }} />
                       🚚 Delivery
                     </label>
@@ -438,7 +439,7 @@ export default function AdminDashboard() {
                     <button type="submit" disabled={uploadingImage}>
                       {uploadingImage ? 'Uploading...' : 'Add Item'}
                     </button>
-                    <button type="button" onClick={() => { setShowAddForm(false); setImagePreview(null); }}>
+                    <button type="button" onClick={() => { setShowAddForm(false); setImagePreview(null) }}>
                       Cancel
                     </button>
                   </div>
@@ -448,7 +449,7 @@ export default function AdminDashboard() {
           )}
 
           {editingItem && (
-            <div className="modal-overlay" onClick={() => { setEditingItem(null); setImagePreview(null); }}>
+            <div className="modal-overlay" onClick={() => { setEditingItem(null); setImagePreview(null) }}>
               <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxHeight: '80vh', overflowY: 'auto' }}>
                 <h3>Edit Item</h3>
                 <form onSubmit={handleEditItem}>
@@ -504,8 +505,8 @@ export default function AdminDashboard() {
                         value="delivery" 
                         defaultChecked={Array.isArray(editingItem.orderCategory) && editingItem.orderCategory.includes('delivery')}
                         onChange={(e) => {
-                          const feeSection = document.getElementById('editShippingFeeSection');
-                          if (feeSection) feeSection.style.display = e.target.checked ? 'block' : 'none';
+                          const feeSection = document.getElementById('editShippingFeeSection')
+                          if (feeSection) feeSection.style.display = e.target.checked ? 'block' : 'none'
                         }}
                       />
                       🚚 Delivery
@@ -571,7 +572,7 @@ export default function AdminDashboard() {
                     <button type="submit" disabled={uploadingImage}>
                       {uploadingImage ? 'Uploading...' : 'Update Item'}
                     </button>
-                    <button type="button" onClick={() => { setEditingItem(null); setImagePreview(null); }}>
+                    <button type="button" onClick={() => { setEditingItem(null); setImagePreview(null) }}>
                       Cancel
                     </button>
                   </div>

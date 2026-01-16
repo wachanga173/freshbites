@@ -17,6 +17,7 @@ export default function OrderManagementDashboard() {
     fetchDeliveryPersonnel()
     const interval = setInterval(fetchOrders, 30000) // Refresh every 30 seconds
     return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter])
 
   const fetchOrders = async () => {
@@ -29,7 +30,6 @@ export default function OrderManagementDashboard() {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       const data = await response.json()
-      console.log('Fetched orders response:', data)
       if (Array.isArray(data)) {
         setOrders(data)
       } else {
@@ -119,7 +119,7 @@ export default function OrderManagementDashboard() {
     const confirmMsg = `Confirm that customer has ${action}?\n\n` +
                       `Order: #${orderId}\n` +
                       `Type: ${typeLabel}\n\n` +
-                      `⚠️ This action CANNOT be undone.`
+                      '⚠️ This action CANNOT be undone.'
 
     if (!confirm(confirmMsg)) return
 
@@ -153,8 +153,8 @@ export default function OrderManagementDashboard() {
 
   const confirmPayment = async (orderId) => {
     const confirmMsg = `Confirm that payment has been received for order #${orderId}?\n\n` +
-                      `This will change the order status from pending to confirmed/ready.\n\n` +
-                      `⚠️ Only confirm if you have verified the payment.`
+                      'This will change the order status from pending to confirmed/ready.\n\n' +
+                      '⚠️ Only confirm if you have verified the payment.'
 
     if (!confirm(confirmMsg)) return
 
@@ -372,8 +372,8 @@ export default function OrderManagementDashboard() {
                     {selectedOrder.completedByRole && (
                       <p className="completion-details">
                         Completed by: {selectedOrder.completedByRole === 'delivery' ? 'Delivery Person' : 
-                                      selectedOrder.completedByRole === 'ordermanager' ? 'Order Manager' : 
-                                      'Customer'}
+                          selectedOrder.completedByRole === 'ordermanager' ? 'Order Manager' : 
+                            'Customer'}
                       </p>
                     )}
                   </div>

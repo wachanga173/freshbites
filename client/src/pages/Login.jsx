@@ -57,7 +57,7 @@ export default function Login({ onSwitch }) {
         </form>
 
         <p className="auth-footer">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <button className="link-btn" onClick={onSwitch}>
             Register
           </button>

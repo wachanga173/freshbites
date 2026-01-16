@@ -12,7 +12,7 @@ export default function Cart({ items, onRemove, onCheckout, onUpdateQuantity }) 
         <span className="item-count">{itemCount} {itemCount === 1 ? 'item' : 'items'}</span>
       </div>
 
-  {safeItems.length === 0 ? (
+      {safeItems.length === 0 ? (
         <div className="empty-cart">
           <p>Your cart is empty</p>
           <span className="cart-icon">🛒</span>
