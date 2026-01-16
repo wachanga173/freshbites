@@ -74,21 +74,40 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
 
   // Get user's location for delivery
   const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setDeliveryAddress(prev => ({
-            ...prev,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          }))
-        },
-        (error) => {
-          console.error('Error getting location:', error)
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser.')
+      return
+    }
+
+    setError('Getting your location...')
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setDeliveryAddress(prev => ({
+          ...prev,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        }))
+        setError('')
+      },
+      (error) => {
+        console.error('Error getting location:', error)
+        if (error.code === error.PERMISSION_DENIED) {
+          setError('Location access denied. Please enable location permissions in your browser settings.')
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          setError('Location information unavailable. Please try again.')
+        } else if (error.code === error.TIMEOUT) {
+          setError('Location request timed out. Please try again.')
+        } else {
           setError('Unable to get your location. Please enable location services.')
         }
-      )
-    }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    )
   }
   const handlePayPalPayment = async () => {
     setLoading(true)
