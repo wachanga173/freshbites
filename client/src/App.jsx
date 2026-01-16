@@ -34,6 +34,7 @@ function MainApp() {
   const [showCheckout, setShowCheckout] = useState(false)
   const [currentRoute, setCurrentRoute] = useState('home')
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [showCart, setShowCart] = useState(false)
 
   const isFeedbackManager = user && (user.roles?.includes('feedback_manager') || user.roles?.includes('superadmin'))
   const isSuperAdmin = user && user.roles?.includes('superadmin')
@@ -275,52 +276,8 @@ function MainApp() {
           <h1 className="hero-title">Fresh Bites Café</h1>
           <p className="hero-subtitle">Delicious meals, delivered fresh to your door</p>
         </div>
-        <div className="hero-actions">
-          {user ? (
-            <div className="user-menu">
-              <span>Welcome, {user.username}!</span>
-              {isAdmin && (
-                <button onClick={() => {
-                  setShowAdminPanel(true)
-                  setCurrentRoute('admin')
-                  window.history.pushState({}, '', '/admin')
-                }}>Admin Panel</button>
-              )}
-              {(isOrderManager || isSuperAdmin) && (
-                <button onClick={() => {
-                  setCurrentRoute('order-management')
-                  window.history.pushState({}, '', '/order-management')
-                }}>Order Management</button>
-              )}
-              {isFeedbackManager && (
-                <button onClick={() => {
-                  setCurrentRoute('feedback-management')
-                  window.history.pushState({}, '', '/feedback-management')
-                }}>Feedback Management</button>
-              )}
-              {isDelivery && (
-                <button onClick={() => {
-                  setCurrentRoute('delivery')
-                  window.history.pushState({}, '', '/delivery')
-                }}>Delivery Dashboard</button>
-              )}
-              <button onClick={() => {
-                setCurrentRoute('my-orders')
-                window.history.pushState({}, '', '/my-orders')
-              }}>My Orders</button>
-              <button onClick={logout}>Logout</button>
-            </div>
-          ) : (
-            <button className="login-btn" onClick={() => setShowAuth(true)}>
-              Login / Register
-            </button>
-          )}
-        </div>
-      </header>
-
-      <nav className="category-nav">
         <button 
-          className="hamburger-menu"
+          className="hamburger-menu-hero"
           onClick={() => setShowMobileMenu(!showMobileMenu)}
           aria-label="Toggle menu"
         >
@@ -329,71 +286,228 @@ function MainApp() {
           <span></span>
         </button>
         
-        <div className={`nav-container ${showMobileMenu ? 'mobile-menu-open' : ''}`}>
-          <div className="nav-scroll">
-            {categories.map(cat => (
-              <button
-                key={cat.id}
-                className={`category-btn ${activeCategory === cat.id ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveCategory(cat.id)
-                  setShowMobileMenu(false)
-                }}
-              >
-                <span className="cat-icon">{cat.icon}</span>
-                {cat.name}
-              </button>
-            ))}
-          </div>
-          {showMobileMenu && (
-            <div className="mobile-auth-links">
-              {user ? (
-                <>
-                  <button onClick={() => {
-                    setCurrentRoute('my-orders')
-                    window.history.pushState({}, '', '/my-orders')
-                    setShowMobileMenu(false)
-                  }} className="mobile-link-btn">My Orders</button>
-                  <button onClick={() => {
-                    setCurrentRoute('contact')
-                    window.history.pushState({}, '', '/contact')
-                    setShowMobileMenu(false)
-                  }} className="mobile-link-btn">Contact</button>
-                  <button onClick={() => {
-                    logout()
-                    setShowMobileMenu(false)
-                  }} className="mobile-link-btn">Logout</button>
-                </>
-              ) : (
-                <>
-                  <button onClick={() => {
-                    setShowAuth(true)
-                    setAuthMode('login')
-                    setShowMobileMenu(false)
-                  }} className="mobile-link-btn">Login</button>
-                  <button onClick={() => {
-                    setShowAuth(true)
-                    setAuthMode('register')
-                    setShowMobileMenu(false)
-                  }} className="mobile-link-btn">Register</button>
-                  <button onClick={() => {
-                    setCurrentRoute('contact')
-                    window.history.pushState({}, '', '/contact')
-                    setShowMobileMenu(false)
-                  }} className="mobile-link-btn">Contact</button>
-                </>
-              )}
-            </div>
+        {/* Cart Icon */}
+        <button 
+          className="cart-icon-btn"
+          onClick={() => setShowCart(!showCart)}
+          aria-label="View cart"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="9" cy="21" r="1"/>
+            <circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+          </svg>
+          {cartItems.length > 0 && (
+            <span className="cart-badge">{cartItems.length}</span>
           )}
+        </button>
+      </header>
+
+      <nav className="category-nav">
+        <div className="nav-scroll">
+          {categories.map(cat => (
+            <button
+              key={cat.id}
+              className={`category-btn ${activeCategory === cat.id ? 'active' : ''}`}
+              onClick={() => {
+                setActiveCategory(cat.id)
+              }}
+            >
+              <span className="cat-icon">{cat.icon}</span>
+              {cat.name}
+            </button>
+          ))}
         </div>
-        
-        {showMobileMenu && (
+      </nav>
+
+      {/* Mobile User Menu Overlay */}
+      {showMobileMenu && (
+        <>
           <div 
             className="mobile-menu-overlay" 
             onClick={() => setShowMobileMenu(false)}
           />
+          <div className="mobile-user-menu">
+            {user ? (
+              <>
+                <div className="mobile-user-header">
+                  <span>Welcome, {user.username}!</span>
+                </div>
+                {isAdmin && (
+                  <button onClick={() => {
+                    setShowAdminPanel(true)
+                    setCurrentRoute('admin')
+                    window.history.pushState({}, '', '/admin')
+                    setShowMobileMenu(false)
+                  }} className="mobile-link-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+                      <path d="M2 17L12 22L22 17"/>
+                      <path d="M2 12L12 17L22 12"/>
+                    </svg>
+                    Admin Panel
+                  </button>
+                )}
+                {(isOrderManager || isSuperAdmin) && (
+                  <button onClick={() => {
+                    setCurrentRoute('order-management')
+                    window.history.pushState({}, '', '/order-management')
+                    setShowMobileMenu(false)
+                  }} className="mobile-link-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/>
+                      <path d="M3 9h18"/>
+                      <path d="M9 21V9"/>
+                    </svg>
+                    Order Management
+                  </button>
+                )}
+                {isFeedbackManager && (
+                  <button onClick={() => {
+                    setCurrentRoute('feedback-management')
+                    window.history.pushState({}, '', '/feedback-management')
+                    setShowMobileMenu(false)
+                  }} className="mobile-link-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    Feedback Management
+                  </button>
+                )}
+                {isDelivery && (
+                  <button onClick={() => {
+                    setCurrentRoute('delivery')
+                    window.history.pushState({}, '', '/delivery')
+                    setShowMobileMenu(false)
+                  }} className="mobile-link-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="1" y="3" width="15" height="13"/>
+                      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                      <circle cx="5.5" cy="18.5" r="2.5"/>
+                      <circle cx="18.5" cy="18.5" r="2.5"/>
+                    </svg>
+                    Delivery Dashboard
+                  </button>
+                )}
+                <button onClick={() => {
+                  setCurrentRoute('my-orders')
+                  window.history.pushState({}, '', '/my-orders')
+                  setShowMobileMenu(false)
+                }} className="mobile-link-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 01-8 0"/>
+                  </svg>
+                  My Orders
+                </button>
+                <button onClick={() => {
+                  setCurrentRoute('contact')
+                  window.history.pushState({}, '', '/contact')
+                  setShowMobileMenu(false)
+                }} className="mobile-link-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 8L10.89 13.26C11.2187 13.4793 11.6049 13.5963 12 13.5963C12.3951 13.5963 12.7813 13.4793 13.11 13.26L21 8M5 19H19C19.5304 19 20.0391 18.7893 20.4142 18.4142C20.7893 18.0391 21 17.5304 21 17V7C21 6.46957 20.7893 5.96086 20.4142 5.58579C20.0391 5.21071 19.5304 5 19 5H5C4.46957 5 3.96086 5.21071 3.58579 5.58579C3.21071 5.96086 3 6.46957 3 7V17C3 17.5304 3.21071 18.0391 3.58579 18.4142C3.96086 18.7893 4.46957 19 5 19Z"/>
+                  </svg>
+                  Contact
+                </button>
+                <button onClick={() => {
+                  logout()
+                  setShowMobileMenu(false)
+                }} className="mobile-link-btn logout-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={() => {
+                  setShowAuth(true)
+                  setAuthMode('login')
+                  setShowMobileMenu(false)
+                }} className="mobile-link-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/>
+                    <polyline points="10 17 15 12 10 7"/>
+                    <line x1="15" y1="12" x2="3" y2="12"/>
+                  </svg>
+                  Login
+                </button>
+                <button onClick={() => {
+                  setShowAuth(true)
+                  setAuthMode('register')
+                  setShowMobileMenu(false)
+                }} className="mobile-link-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="8.5" cy="7" r="4"/>
+                    <line x1="20" y1="8" x2="20" y2="14"/>
+                    <line x1="23" y1="11" x2="17" y2="11"/>
+                  </svg>
+                  Register
+                </button>
+                <button onClick={() => {
+                  setCurrentRoute('contact')
+                  window.history.pushState({}, '', '/contact')
+                  setShowMobileMenu(false)
+                }} className="mobile-link-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 8L10.89 13.26C11.2187 13.4793 11.6049 13.5963 12 13.5963C12.3951 13.5963 12.7813 13.4793 13.11 13.26L21 8M5 19H19C19.5304 19 20.0391 18.7893 20.4142 18.4142C20.7893 18.0391 21 17.5304 21 17V7C21 6.46957 20.7893 5.96086 20.4142 5.58579C20.0391 5.21071 19.5304 5 19 5H5C4.46957 5 3.96086 5.21071 3.58579 5.58579C3.21071 5.96086 3 6.46957 3 7V17C3 17.5304 3.21071 18.0391 3.58579 18.4142C3.96086 18.7893 4.46957 19 5 19Z"/>
+                  </svg>
+                  Contact
+                </button>
+              </>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Desktop User Menu */}
+      <div className="desktop-user-menu">
+        {user ? (
+          <div className="user-menu">
+            <span>Welcome, {user.username}!</span>
+            {isAdmin && (
+              <button onClick={() => {
+                setShowAdminPanel(true)
+                setCurrentRoute('admin')
+                window.history.pushState({}, '', '/admin')
+              }}>Admin Panel</button>
+            )}
+            {(isOrderManager || isSuperAdmin) && (
+              <button onClick={() => {
+                setCurrentRoute('order-management')
+                window.history.pushState({}, '', '/order-management')
+              }}>Order Management</button>
+            )}
+            {isFeedbackManager && (
+              <button onClick={() => {
+                setCurrentRoute('feedback-management')
+                window.history.pushState({}, '', '/feedback-management')
+              }}>Feedback Management</button>
+            )}
+            {isDelivery && (
+              <button onClick={() => {
+                setCurrentRoute('delivery')
+                window.history.pushState({}, '', '/delivery')
+              }}>Delivery Dashboard</button>
+            )}
+            <button onClick={() => {
+              setCurrentRoute('my-orders')
+              window.history.pushState({}, '', '/my-orders')
+            }}>My Orders</button>
+            <button onClick={logout}>Logout</button>
+          </div>
+        ) : (
+          <button className="login-btn" onClick={() => setShowAuth(true)}>
+            Login / Register
+          </button>
         )}
-      </nav>
+      </div>
 
       {message && (
         <div className="toast-message">
@@ -403,37 +517,52 @@ function MainApp() {
 
       <main className="main-content">
         <div className="container">
-          <div className="content-grid">
-            <section className={`menu-section ${activeCategory !== 'all' ? activeCategory + '-bg' : ''}`}>
-              <h2 className="section-title">
-                {categories.find(c => c.id === activeCategory)?.name || 'Menu'}
-              </h2>
-              <div className="menu-grid">
-                {filteredMenu.length > 0 ? (
-                  filteredMenu.map(item => (
-                    <MenuItem 
-                      key={item.id} 
-                      item={item} 
-                      onAddToCart={addToCart}
-                    />
-                  ))
-                ) : (
-                  <p className="empty-message">No items available in this category</p>
-                )}
-              </div>
-            </section>
+          <section className={`menu-section ${activeCategory !== 'all' ? activeCategory + '-bg' : ''}`}>
+            <h2 className="section-title">
+              {categories.find(c => c.id === activeCategory)?.name || 'Menu'}
+            </h2>
+            <div className="menu-grid">
+              {filteredMenu.length > 0 ? (
+                filteredMenu.map(item => (
+                  <MenuItem 
+                    key={item.id} 
+                    item={item} 
+                    onAddToCart={addToCart}
+                  />
+                ))
+              ) : (
+                <p className="empty-message">No items available in this category</p>
+              )}
+            </div>
+          </section>
+        </div>
+      </main>
 
-            <aside className="cart-sidebar">
+      {/* Cart Modal */}
+      {showCart && (
+        <>
+          <div className="cart-modal-overlay" onClick={() => setShowCart(false)} />
+          <div className="cart-modal">
+            <div className="cart-modal-header">
+              <h3>Your Cart</h3>
+              <button className="close-cart-btn" onClick={() => setShowCart(false)}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div className="cart-modal-content">
               <Cart 
                 items={cartItems}
                 onRemove={removeFromCart}
                 onCheckout={handleCheckout}
                 onUpdateQuantity={updateQuantity}
               />
-            </aside>
+            </div>
           </div>
-        </div>
-      </main>
+        </>
+      )}
 
       {/* Feedback Chatbot - Available for all logged-in users */}
       {user && <FeedbackChatbot />}
