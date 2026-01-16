@@ -614,6 +614,20 @@
   .add-btn {
     width: 100%;
   }
+  
+  /* Make admin form responsive */
+  .admin-form {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Make users table responsive */
+  .users-list {
+    overflow-x: auto;
+  }
+  
+  .users-list table {
+    min-width: 600px;
+  }
 
   .menu-items-grid {
     grid-template-columns: 1fr;
@@ -661,6 +675,21 @@
 
   .user-card-actions button {
     width: 100%;
+  }
+  
+  /* Responsive role checkboxes */
+  .role-checkboxes {
+    gap: 8px;
+  }
+  
+  .role-checkbox-label {
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  /* Responsive admin panel sections */
+  .admin-panel {
+    padding: 16px;
   }
 }
 
