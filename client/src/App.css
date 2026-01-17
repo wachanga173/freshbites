@@ -22,6 +22,77 @@
   background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(255,99,71,0.4) 100%);
 }
 
+/* Desktop Menu Row at top of hero */
+.hero-top-menu {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 20px;
+  flex-wrap: wrap;
+}
+
+.hero-top-menu .welcome-text {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-top-menu button {
+  background: rgba(255,255,255,0.95);
+  color: #667eea;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.hero-top-menu button:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.hero-top-menu .login-btn {
+  background: white;
+  color: #667eea;
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.hero-top-menu .cart-icon-only {
+  background: white;
+  border: none;
+  color: #667eea;
+  padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.hero-top-menu .cart-icon-only:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
 .hero-content {
   position: relative;
   z-index: 2;

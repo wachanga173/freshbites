@@ -272,6 +272,82 @@ function MainApp() {
     <div className="app">
       <header className="hero">
         <div className="hero-overlay"></div>
+        
+        {/* Desktop User Menu Row - Top of hero */}
+        {window.innerWidth > 768 && (
+          <div className="hero-top-menu">
+            {user ? (
+              <>
+                <span className="welcome-text">Welcome, {user.username}!</span>
+                {isAdmin && (
+                  <button onClick={() => {
+                    setShowAdminPanel(true)
+                    setCurrentRoute('admin')
+                    window.history.pushState({}, '', '/admin')
+                  }}>Admin Panel</button>
+                )}
+                {(isOrderManager || isSuperAdmin) && (
+                  <button onClick={() => {
+                    setCurrentRoute('order-management')
+                    window.history.pushState({}, '', '/order-management')
+                  }}>Order Management</button>
+                )}
+                {isFeedbackManager && (
+                  <button onClick={() => {
+                    setCurrentRoute('feedback-management')
+                    window.history.pushState({}, '', '/feedback-management')
+                  }}>Feedback Management</button>
+                )}
+                {isDelivery && (
+                  <button onClick={() => {
+                    setCurrentRoute('delivery')
+                    window.history.pushState({}, '', '/delivery')
+                  }}>Delivery Dashboard</button>
+                )}
+                <button onClick={() => {
+                  setCurrentRoute('my-orders')
+                  window.history.pushState({}, '', '/my-orders')
+                }}>My Orders</button>
+                <button onClick={logout}>Logout</button>
+                <button 
+                  className="cart-icon-only"
+                  onClick={() => setShowCart(!showCart)}
+                  title="View cart"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="9" cy="21" r="1"/>
+                    <circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                  </svg>
+                  {cartItems.length > 0 && (
+                    <span className="cart-badge">{cartItems.length}</span>
+                  )}
+                </button>
+              </>
+            ) : (
+              <>
+                <button className="login-btn" onClick={() => setShowAuth(true)}>
+                  Login / Register
+                </button>
+                <button 
+                  className="cart-icon-only"
+                  onClick={() => setShowCart(!showCart)}
+                  title="View cart"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="9" cy="21" r="1"/>
+                    <circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                  </svg>
+                  {cartItems.length > 0 && (
+                    <span className="cart-badge">{cartItems.length}</span>
+                  )}
+                </button>
+              </>
+            )}
+          </div>
+        )}
+        
         <div className="hero-content">
           <h1 className="hero-title">Fresh Bites Café</h1>
           <p className="hero-subtitle">Delicious meals, delivered fresh to your door</p>
