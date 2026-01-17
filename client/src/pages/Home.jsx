@@ -59,6 +59,22 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Our Story Section */}
+      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-purple-50 to-blue-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-gray-800">Our Story</h2>
+          <p className="text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed mb-6">
+            At Fresh Bites Café, we believe that great food brings people together. What started as a small passion project has evolved into a thriving community hub, serving delicious, freshly-prepared meals to food lovers across the region.
+          </p>
+          <p className="text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed mb-6">
+            Our journey began with a simple vision: to make quality, restaurant-grade food accessible to everyone, delivered right to their doorstep. Today, we continue to evolve, constantly improving our menu, service, and technology to serve you better.
+          </p>
+          <p className="text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed">
+            From farm-fresh ingredients to cutting-edge delivery tracking, we're committed to excellence at every step. Join us in this delicious journey and experience the Fresh Bites difference!
+          </p>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-12 sm:py-16 lg:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -130,6 +146,8 @@ export default function Home() {
                 <button onClick={handleMenuClick} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-primary transition-colors">Menu</button>
                 <button onClick={handleAboutClick} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-primary transition-colors">About</button>
                 <button onClick={handleContactClick} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-primary transition-colors">Contact</button>
+                <button onClick={() => window.location.href = '/privacy'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-primary transition-colors">Privacy Policy</button>
+                <button onClick={() => window.location.href = '/terms'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-primary transition-colors">Terms & Conditions</button>
               </div>
             </div>
             <div className="text-center sm:text-left">

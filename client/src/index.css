@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+:root {
+  --color-primary: #667eea;
+  --color-primary-dark: #5568d3;
+  --color-primary-light: #764ba2;
+}
+
 body {
   background-color: rgb(249 250 251);
   color: rgb(17 24 39);
@@ -9,4 +15,39 @@ body {
 
 #root {
   min-height: 100vh;
+}
+
+/* Primary color utilities */
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-primary-dark {
+  background-color: var(--color-primary-dark);
+}
+
+.bg-primary-light {
+  background-color: var(--color-primary-light);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.hover\:bg-primary-dark:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.hover\:text-primary:hover {
+  color: var(--color-primary);
+}
+
+.from-primary {
+  --tw-gradient-from: var(--color-primary);
+  --tw-gradient-to: rgb(102 126 234 / 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-primary-light {
+  --tw-gradient-to: var(--color-primary-light);
 }
