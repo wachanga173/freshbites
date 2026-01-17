@@ -374,9 +374,13 @@ app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
 
 // ========== MENU ROUTES ==========
 
+// Handle preflight requests for CORS
+app.options('/api/menu', cors(corsOptions))
+
 // API: get menu (public)
-app.get('/api/menu', async (req, res) => {
+app.get('/api/menu', cors(corsOptions), async (req, res) => {
   try {
+    console.log('Menu request received from origin:', req.headers.origin)
     const menu = await getMenuByCategory()
     res.json(menu)
   } catch (err) {

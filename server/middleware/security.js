@@ -24,11 +24,25 @@ const securityHeaders = helmet({
 
 // CORS Configuration
 const corsOptions = {
-  origin: 'https://cafeteria-eta-khaki.vercel.app',
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'https://cafeteria-eta-khaki.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:3000'
+    ]
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      console.log('CORS blocked origin:', origin)
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Length', 'Content-Type']
 }
 
 // Rate Limiting
