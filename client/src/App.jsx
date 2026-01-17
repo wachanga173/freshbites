@@ -35,6 +35,7 @@ function MainApp() {
   const [currentRoute, setCurrentRoute] = useState('home')
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [showCart, setShowCart] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth > 768)
 
   const isFeedbackManager = user && (user.roles?.includes('feedback_manager') || user.roles?.includes('superadmin'))
   const isSuperAdmin = user && user.roles?.includes('superadmin')
@@ -47,6 +48,10 @@ function MainApp() {
       })
       .then(setMenu)
       .catch(() => setMessage('Could not load menu from server'))
+
+    // Track window size for responsive menu
+    const handleResize = () => setIsDesktop(window.innerWidth > 768)
+    window.addEventListener('resize', handleResize)
 
     // Simple routing based on URL path
     const path = window.location.pathname
@@ -76,6 +81,8 @@ function MainApp() {
     } else {
       setCurrentRoute('home')
     }
+
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
   if (currentRoute === 'my-orders' && user) {
     return <OrderTracking />
@@ -274,7 +281,7 @@ function MainApp() {
         <div className="hero-overlay"></div>
         
         {/* Desktop User Menu Row - Top of hero */}
-        {window.innerWidth > 768 && (
+        {isDesktop && (
           <div className="hero-top-menu">
             {user ? (
               <>
