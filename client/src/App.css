@@ -140,6 +140,53 @@
   background: #667eea;
 }
 
+/* Hero Cart Button */
+.hero-cart-btn {
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: #667eea;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.hero-cart-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: scale(1.05);
+}
+
+.hero-cart-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.cart-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff6b6b;
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
 /* Desktop User Menu */
 .desktop-user-menu {
   position: fixed;
@@ -782,21 +829,28 @@
   }
   
   /* Show cart icon on mobile */
-  .cart-icon-btn {
+  .hero-cart-btn {
     display: flex !important;
     position: absolute;
-    top: 20px;
+    top: 15px;
     left: 20px;
     z-index: 4;
-    background: white;
+    background: rgba(255, 255, 255, 0.95) !important;
     border: none;
-    padding: 12px;
     border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
     align-items: center;
     justify-content: center;
+    width: 45px;
+    height: 45px;
+  }
+
+  .hero-cart-btn:hover {
+    background: #667eea !important;
+    color: white !important;
+    transform: scale(1.05);
   }
 
   /* Show mobile user menu when active */
@@ -896,5 +950,12 @@
   .user-menu button {
     padding: 8px 12px;
     font-size: 13px;
+  }
+}
+
+/* Hide cart button on desktop */
+@media (min-width: 769px) {
+  .hero-cart-btn {
+    display: none !important;
   }
 }
