@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import MenuItem from '../components/MenuItem'
 import Cart from '../components/Cart'
+import FeedbackChatbot from '../components/FeedbackChatbot'
 import { getApiUrl } from '../config/api'
 
 export default function Menu() {
@@ -131,7 +132,7 @@ export default function Menu() {
             {/* Cart Button */}
             {user && (
               <button 
-                className="flex-shrink-0 bg-primary text-white rounded-full w-11 h-11 flex items-center justify-center hover:bg-primary-dark hover:scale-105 transition-all shadow-md relative ml-2"
+                className="flex-shrink-0 bg-purple-600 text-white rounded-full w-11 h-11 flex items-center justify-center hover:bg-purple-700 hover:scale-105 transition-all shadow-lg relative ml-2"
                 onClick={() => setShowCart(!showCart)}
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -169,7 +170,7 @@ export default function Menu() {
       </nav>
 
       {/* Header */}
-      <div className="bg-gradient-to-br from-primary to-primary-light text-white text-center py-8 sm:py-12">
+      <div className="bg-purple-600 text-white text-center py-8 sm:py-12">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-2">Our Menu</h1>
         <p className="text-base sm:text-lg lg:text-xl opacity-95">Explore our delicious selection</p>
       </div>
@@ -250,6 +251,7 @@ export default function Menu() {
           </div>
         </>
       )}
+      <FeedbackChatbot />
     </div>
   )
 }

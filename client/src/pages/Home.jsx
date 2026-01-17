@@ -1,4 +1,5 @@
 import { useAuth } from '../context/AuthContext'
+import FeedbackChatbot from '../components/FeedbackChatbot'
 
 export default function Home() {
   const { user, logout } = useAuth()
@@ -126,7 +127,7 @@ export default function Home() {
               <p className="text-sm sm:text-base text-gray-600">Rich and decadent dessert</p>
             </div>
           </div>
-          <button onClick={handleMenuClick} className="px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold bg-gradient-to-r from-primary to-primary-light text-white rounded-full hover:-translate-y-1 hover:shadow-2xl transition-all shadow-lg">
+          <button onClick={handleMenuClick} className="px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold bg-purple-600 text-white rounded-full hover:-translate-y-1 hover:shadow-2xl hover:bg-purple-700 transition-all shadow-lg">
             View Full Menu
           </button>
         </div>
@@ -162,6 +163,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      <FeedbackChatbot />
     </div>
   )
 }
