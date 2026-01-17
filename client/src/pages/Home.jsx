@@ -1,7 +1,9 @@
 import { useAuth } from '../context/AuthContext'
+import { useState } from 'react'
 
 export default function Home() {
   const { user, logout } = useAuth()
+  const [showMobileNav, setShowMobileNav] = useState(false)
 
   const handleMenuClick = () => {
     window.history.pushState({}, '', '/menu')
@@ -27,23 +29,57 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav className="bg-white shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="text-2xl font-bold text-primary">Fresh Bites Café</div>
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
-              <button onClick={() => window.location.href = '/'} className="px-3 py-2 sm:px-4 text-sm sm:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all">Home</button>
-              <button onClick={handleMenuClick} className="px-3 py-2 sm:px-4 text-sm sm:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all">Menu</button>
-              <button onClick={handleAboutClick} className="px-3 py-2 sm:px-4 text-sm sm:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all">About</button>
-              <button onClick={handleContactClick} className="px-3 py-2 sm:px-4 text-sm sm:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all">Contact</button>
+          <div className="flex items-center gap-4">
+            <div className="text-xl sm:text-2xl font-bold text-purple-600 flex-shrink-0">Fresh Bites Café</div>
+            
+            {/* Mobile Menu Toggle */}
+            <button 
+              className="md:hidden flex flex-col gap-1.5 p-1 ml-auto"
+              onClick={() => setShowMobileNav(!showMobileNav)}
+            >
+              <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
+              <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
+              <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
+            </button>
+
+            {/* Desktop Navigation - Scrollable left section */}
+            <div className="hidden md:flex items-center gap-2 lg:gap-3 overflow-x-auto flex-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-1">
+              <button onClick={() => window.location.href = '/'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">Home</button>
+              <button onClick={handleMenuClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">Menu</button>
+              <button onClick={handleAboutClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">About</button>
+              <button onClick={handleContactClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">Contact</button>
+              {user && (
+                <button onClick={() => window.location.href = '/my-orders'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">My Orders</button>
+              )}
+            </div>
+
+            {/* Login/Logout - Fixed on right */}
+            <div className="hidden md:flex items-center gap-3 flex-shrink-0">
               {user ? (
-                <>
-                  <button onClick={() => window.location.href = '/my-orders'} className="px-3 py-2 sm:px-4 text-sm sm:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all">My Orders</button>
-                  <button onClick={logout} className="px-4 py-2 sm:px-6 text-sm sm:text-base font-semibold text-white bg-primary rounded-full hover:bg-primary-dark hover:-translate-y-0.5 transition-all shadow-md">Logout</button>
-                </>
+                <button onClick={logout} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Logout</button>
               ) : (
-                <button onClick={handleLoginClick} className="px-4 py-2 sm:px-6 text-sm sm:text-base font-semibold text-white bg-primary rounded-full hover:bg-primary-dark hover:-translate-y-0.5 transition-all shadow-md">Login</button>
+                <button onClick={handleLoginClick} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Login</button>
               )}
             </div>
           </div>
+
+          {/* Mobile Navigation Dropdown */}
+          {showMobileNav && (
+            <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg flex flex-col p-4 space-y-2 border-t z-50">
+              <button onClick={() => { window.location.href = '/'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">Home</button>
+              <button onClick={() => { handleMenuClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">Menu</button>
+              <button onClick={() => { handleAboutClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">About</button>
+              <button onClick={() => { handleContactClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">Contact</button>
+              {user ? (
+                <>
+                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">My Orders</button>
+                  <button onClick={() => { logout(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-all">Logout</button>
+                </>
+              ) : (
+                <button onClick={() => { handleLoginClick(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-all">Login</button>
+              )}
+            </div>
+          )}
         </div>
       </nav>
 
