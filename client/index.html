@@ -40,24 +40,45 @@
     <meta property="twitter:image:alt" content="Fresh Bites Café - Online Food Delivery" />
     <meta property="twitter:creator" content="@freshbitescafe" />
     
-    <!-- Mobile App Capable -->
+    <!-- PWA Configuration -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Fresh Bites Café" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Fresh Bites Café" />
     
-    <!-- Favicon -->
+    <!-- Favicon and PWA Icons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/favicon.ico" />
     <link rel="manifest" href="/manifest.json" />
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://cafeteria-eta-khaki.vercel.app/" />
     
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#FF6B6B" />
-    <meta name="msapplication-TileColor" content="#FF6B6B" />
-    <meta name="msapplication-navbutton-color" content="#FF6B6B" />
+    <!-- Theme Color for PWA -->
+    <meta name="theme-color" content="#667eea" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#667eea" media="(prefers-color-scheme: dark)" />
+    <meta name="msapplication-TileColor" content="#667eea" />
+    <meta name="msapplication-navbutton-color" content="#667eea" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#667eea" />
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
     
     <!-- Structured Data (Schema.org) -->
     <script type="application/ld+json">

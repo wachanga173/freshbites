@@ -14,6 +14,13 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false
-  }
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
+  },
+  // Ensure service worker and manifest are copied to dist
+  publicDir: 'public'
 })
