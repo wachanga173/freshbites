@@ -13,17 +13,22 @@ The cafeteria application includes an AI-powered diet assistant that can answer 
 2. **Add Environment Variables:**
    - Click on "Environment" in the left sidebar
    - Click "Add Environment Variable"
-   - Add the following variables:
+   - **Minimum Required - Just add this:**
 
    ```
    Key: AI_API_KEY
    Value: sk-your-openai-api-key-here
+   ```
 
+   That's it! The system will use default settings (OpenAI with gpt-3.5-turbo).
+
+   **Optional - For custom configuration:**
+   ```
    Key: AI_PROVIDER
-   Value: openai
+   Value: openai (or anthropic, gemini)
 
    Key: AI_MODEL
-   Value: gpt-3.5-turbo
+   Value: gpt-4 (or claude-3-sonnet-20240229, gemini-pro)
    ```
 
 3. **Save and Deploy:**
