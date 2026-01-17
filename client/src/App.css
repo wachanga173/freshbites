@@ -684,6 +684,21 @@
    RESPONSIVE BREAKPOINTS (The Fix)
    ======================================== */
 
+/* Desktop - Explicitly show menu, hide mobile controls */
+@media (min-width: 1025px) {
+  .hero-top-menu {
+    display: flex !important;
+  }
+  
+  .hamburger-menu-hero {
+    display: none !important;
+  }
+  
+  .hero-cart-btn {
+    display: none !important;
+  }
+}
+
 /* Combined Tablet and Mobile styles.
    We apply these styles for any screen smaller than 1024px.
    This prevents the "too many buttons" explosion on tablets/rotated phones.

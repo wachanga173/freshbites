@@ -40,13 +40,21 @@ function MainApp() {
   const isSuperAdmin = user && user.roles?.includes('superadmin')
 
   useEffect(() => {
+    console.log('Fetching menu from:', getApiUrl('/api/menu'))
     fetch(getApiUrl('/api/menu'))
       .then(r => {
-        if (!r.ok) throw new Error('Menu endpoint not found')
+        console.log('Menu response status:', r.status)
+        if (!r.ok) throw new Error(`Menu endpoint returned ${r.status}`)
         return r.json()
       })
-      .then(setMenu)
-      .catch(() => setMessage('Could not load menu from server'))
+      .then(data => {
+        console.log('Menu data received:', data)
+        setMenu(data)
+      })
+      .catch(err => {
+        console.error('Menu fetch error:', err)
+        setMessage(`Could not load menu from server: ${err.message}`)
+      })
 
     // Simple routing based on URL path
     const path = window.location.pathname
