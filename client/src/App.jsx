@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Home from './pages/Home'
 import Menu from './pages/Menu'
+import News from './pages/News'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import AdminDashboard from './pages/AdminDashboard'
@@ -59,6 +60,8 @@ function MainApp() {
       setCurrentRoute('about')
     } else if (path === '/contact') {
       setCurrentRoute('contact')
+    } else if (path === '/news') {
+      setCurrentRoute('news')
     } else if (path === '/menu') {
       setCurrentRoute('menu')
     } else {
@@ -93,6 +96,10 @@ function MainApp() {
 
   if (currentRoute === 'contact') {
     return <Contact />
+  }
+
+  if (currentRoute === 'news') {
+    return <News />
   }
 
   // Auth routes

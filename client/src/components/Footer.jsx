@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import './Footer.css'
 
 export default function Footer() {
-  const [email, setEmail] = useState('')
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [showInstallButton, setShowInstallButton] = useState(false)
 
@@ -50,12 +49,6 @@ export default function Footer() {
       window.removeEventListener('appinstalled', installedHandler)
     }
   }, [])
-
-  const handleSubscribe = (e) => {
-    e.preventDefault()
-    alert('Thank you for subscribing!')
-    setEmail('')
-  }
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
@@ -135,6 +128,7 @@ export default function Footer() {
             <ul className="footer-links">
               <li><a href="/" onClick={(e) => { e.preventDefault(); window.location.href = '/' }}>Home</a></li>
               <li><a href="/menu" onClick={(e) => { e.preventDefault(); window.location.href = '/menu' }}>Menu</a></li>
+              <li><a href="/news" onClick={(e) => { e.preventDefault(); window.location.href = '/news' }}>Food & Diet News</a></li>
               <li><a href="/my-orders" onClick={(e) => { e.preventDefault(); window.location.href = '/my-orders' }}>My Orders</a></li>
               <li><a href="/about" onClick={(e) => { e.preventDefault(); window.location.href = '/about' }}>About Us</a></li>
               <li><a href="/contact" onClick={(e) => { e.preventDefault(); window.location.href = '/contact' }}>Contact Us</a></li>
@@ -212,41 +206,6 @@ export default function Footer() {
               </svg>
               Collaborate With Us
             </button>
-          </div>
-        </div>
-
-        {/* Newsletter Section */}
-        <div className="newsletter-section">
-          <div className="newsletter-content">
-            <div className="newsletter-info">
-              <h4 className="newsletter-title">Stay in the Loop</h4>
-              <p className="newsletter-description">
-                Subscribe to get special offers, exclusive deals, and the latest updates delivered to your inbox.
-              </p>
-            </div>
-            <form className="newsletter-form" onSubmit={handleSubscribe}>
-              <div className="newsletter-input-wrapper">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="input-icon">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-                <input 
-                  type="email" 
-                  placeholder="Enter your email address" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="newsletter-input"
-                />
-              </div>
-              <button type="submit" className="newsletter-btn">
-                <span>Subscribe</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                  <polyline points="12 5 19 12 12 19"/>
-                </svg>
-              </button>
-            </form>
           </div>
         </div>
 
