@@ -31,7 +31,7 @@ export default function Contact() {
             </div>
             <h3 className="text-lg sm:text-xl font-semibold mb-2 text-gray-900">Email Us</h3>
             <p className="text-sm sm:text-base text-gray-600 mb-4">Send us an email anytime</p>
-            <a href="mailto:info@freshbitescafe.com" className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-primary to-primary-light text-white rounded-lg font-semibold hover:-translate-y-1 hover:shadow-xl transition-all text-sm sm:text-base">
+            <a href="mailto:info@freshbitescafe.com" className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-purple-600 text-white rounded-lg font-semibold hover:-translate-y-1 hover:shadow-xl hover:bg-purple-700 transition-all text-sm sm:text-base">
               info@freshbitescafe.com
             </a>
           </div>
@@ -44,7 +44,7 @@ export default function Contact() {
             </div>
             <h3 className="text-lg sm:text-xl font-semibold mb-2 text-gray-900">Call Us</h3>
             <p className="text-sm sm:text-base text-gray-600 mb-4">Available 24/7 for your queries</p>
-            <button onClick={handleCall} className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-primary to-primary-light text-white rounded-lg font-semibold hover:-translate-y-1 hover:shadow-xl transition-all border-none cursor-pointer text-sm sm:text-base">
+            <button onClick={handleCall} className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-purple-600 text-white rounded-lg font-semibold hover:-translate-y-1 hover:shadow-xl hover:bg-purple-700 transition-all border-none cursor-pointer text-sm sm:text-base">
               Call Now
             </button>
           </div>
@@ -69,7 +69,7 @@ export default function Contact() {
             </div>
             <h3 className="text-lg sm:text-xl font-semibold mb-2 text-gray-900">Support</h3>
             <p className="text-sm sm:text-base text-gray-600 mb-4">Need help with your order?</p>
-            <a href="/my-orders" className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-primary to-primary-light text-white rounded-lg font-semibold hover:-translate-y-1 hover:shadow-xl transition-all text-sm sm:text-base">
+            <a href="/my-orders" className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-purple-600 text-white rounded-lg font-semibold hover:-translate-y-1 hover:shadow-xl hover:bg-purple-700 transition-all text-sm sm:text-base">
               Track Your Order
             </a>
           </div>
@@ -81,7 +81,7 @@ export default function Contact() {
             Fresh Bites Café is an evolutionary platform built for scalability. 
             We welcome developers and innovators who want to collaborate in expanding our capabilities.
           </p>
-          <button onClick={handleCall} className="inline-flex items-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-primary to-primary-light text-white rounded-lg text-base sm:text-lg font-semibold hover:-translate-y-1 hover:shadow-2xl transition-all shadow-lg border-none cursor-pointer">
+          <button onClick={handleCall} className="inline-flex items-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-purple-600 text-white rounded-lg text-base sm:text-lg font-semibold hover:-translate-y-1 hover:shadow-2xl hover:bg-purple-700 transition-all shadow-lg border-none cursor-pointer">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="sm:w-6 sm:h-6">
               <path d="M3 5C3 3.89543 3.89543 3 5 3H8.27924C8.70967 3 9.09181 3.27543 9.22792 3.68377L10.7257 8.17721C10.8831 8.64932 10.6694 9.16531 10.2243 9.38787L7.96701 10.5165C9.06925 12.9612 11.0388 14.9308 13.4835 16.033L14.6121 13.7757C14.8347 13.3306 15.3507 13.1169 15.8228 13.2743L20.3162 14.7721C20.7246 14.9082 21 15.2903 21 15.7208V19C21 20.1046 20.1046 21 19 21H18C9.71573 21 3 14.2843 3 6V5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>

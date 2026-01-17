@@ -28,15 +28,25 @@ export default function FeedbackChatbot() {
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      setMessages([
-        {
-          sender: 'bot',
-          message: activeTab === 'feedback' 
-            ? 'Hello! I\'m here to help you with your feedback. Please share your experience or concern.'
-            : 'Hello! I\'m your AI diet assistant. Ask me anything about nutrition, calories, allergies, or dietary recommendations!',
-          timestamp: new Date()
-        }
-      ])
+      if (!user) {
+        setMessages([
+          {
+            sender: 'bot',
+            message: 'Welcome! Please login to use the Feedback and AI Diet Assistant features. Click the Login button in the top navigation.',
+            timestamp: new Date()
+          }
+        ])
+      } else {
+        setMessages([
+          {
+            sender: 'bot',
+            message: activeTab === 'feedback' 
+              ? 'Hello! I\'m here to help you with your feedback. Please share your experience or concern.'
+              : 'Hello! I\'m your AI diet assistant. Ask me anything about nutrition, calories, allergies, or dietary recommendations!',
+            timestamp: new Date()
+          }
+        ])
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, activeTab])
@@ -144,6 +154,10 @@ export default function FeedbackChatbot() {
   }
 
   const handleSend = () => {
+    if (!user) {
+      alert('Please login to use this feature')
+      return
+    }
     if (activeTab === 'feedback') {
       handleSubmitFeedback()
     } else {
@@ -157,8 +171,6 @@ export default function FeedbackChatbot() {
       handleSend()
     }
   }
-
-  if (!user) return null
 
   return (
     <>
