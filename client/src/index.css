@@ -43,11 +43,21 @@ body {
 }
 
 .from-primary {
-  --tw-gradient-from: var(--color-primary);
-  --tw-gradient-to: rgb(102 126 234 / 0);
+  --tw-gradient-from: var(--color-primary) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(102 126 234 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
 .to-primary-light {
-  --tw-gradient-to: var(--color-primary-light);
+  --tw-gradient-to: var(--color-primary-light) var(--tw-gradient-to-position);
+}
+
+.from-primary\/80 {
+  --tw-gradient-from: rgb(102 126 234 / 0.8) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(102 126 234 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-primary-light\/80 {
+  --tw-gradient-to: rgb(118 75 162 / 0.8) var(--tw-gradient-to-position);
 }
