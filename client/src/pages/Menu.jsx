@@ -25,10 +25,10 @@ export default function Menu() {
   useEffect(() => {
     fetch(getApiUrl('/api/menu'))
       .then(r => {
-        if (!r.ok) throw new Error(`Menu endpoint returned ${r.status}`)
+        if (!r.ok) throw new Error('Server error')
         const contentType = r.headers.get('content-type')
         if (!contentType || !contentType.includes('application/json')) {
-          throw new Error('Server returned HTML instead of JSON. Is the server running?')
+          throw new Error('Server unavailable')
         }
         return r.json()
       })
@@ -37,7 +37,7 @@ export default function Menu() {
       })
       .catch(err => {
         console.error('Menu fetch error:', err)
-        setMessage(`Could not load menu: ${err.message}`)
+        setMessage('Could not load menu from server')
       })
   }, [])
 
