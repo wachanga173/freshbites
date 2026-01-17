@@ -8,20 +8,45 @@ export default function Footer() {
 
   useEffect(() => {
     const handler = (e) => {
+      console.log('✅ beforeinstallprompt event fired!', e)
       e.preventDefault()
       setDeferredPrompt(e)
       window.deferredPrompt = e
       setShowInstallButton(true)
     }
 
-    window.addEventListener('beforeinstallprompt', handler)
-    
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    const installedHandler = () => {
+      console.log('✅ App installed successfully!')
       setShowInstallButton(false)
     }
 
-    return () => window.removeEventListener('beforeinstallprompt', handler)
+    window.addEventListener('beforeinstallprompt', handler)
+    window.addEventListener('appinstalled', installedHandler)
+    
+    // Check if already installed
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone
+    if (isStandalone) {
+      console.log('ℹ️ App is already installed')
+      setShowInstallButton(false)
+    } else {
+      console.log('ℹ️ App not installed yet. Waiting for beforeinstallprompt event...')
+    }
+
+    // Check if service worker is registered
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistration().then(reg => {
+        if (reg) {
+          console.log('✅ Service Worker is registered:', reg)
+        } else {
+          console.log('❌ Service Worker not registered yet')
+        }
+      })
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler)
+      window.removeEventListener('appinstalled', installedHandler)
+    }
   }, [])
 
   const handleSubscribe = (e) => {

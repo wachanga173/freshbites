@@ -1,0 +1,21 @@
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background with rounded corners -->
+  <rect width="192" height="192" rx="38" fill="url(#bgGradient192)"/>
+  
+  <!-- Layers icon -->
+  <g stroke="white" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Top layer -->
+    <path d="M 48 86 L 96 48 L 144 86"/>
+    <!-- Middle layer -->
+    <path d="M 48 115 L 96 77 L 144 115"/>
+    <!-- Bottom layer -->
+    <path d="M 48 144 L 96 106 L 144 144"/>
+  </g>
+</svg>

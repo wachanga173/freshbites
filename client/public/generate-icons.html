@@ -1,0 +1,76 @@
+<!-- Temporary HTML file to create PWA icons -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate PWA Icons</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        // Generate icons programmatically
+        const sizes = [192, 512];
+        
+        sizes.forEach(size => {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Add rounded corners
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, size * 0.2);
+            ctx.fill();
+            
+            // Reset composite operation
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Draw layers icon in white
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.05;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            const padding = size * 0.25;
+            const w = size - padding * 2;
+            const h = size - padding * 2;
+            
+            // Top layer
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + h * 0.3);
+            ctx.lineTo(size / 2, padding);
+            ctx.lineTo(size - padding, padding + h * 0.3);
+            ctx.stroke();
+            
+            // Middle layer
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + h * 0.6);
+            ctx.lineTo(size / 2, padding + h * 0.3);
+            ctx.lineTo(size - padding, padding + h * 0.6);
+            ctx.stroke();
+            
+            // Bottom layer
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + h);
+            ctx.lineTo(size / 2, padding + h * 0.7);
+            ctx.lineTo(size - padding, padding + h);
+            ctx.stroke();
+            
+            // Download
+            const link = document.createElement('a');
+            link.download = `icon-${size}x${size}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+        
+        document.body.innerHTML = '<h1>Icons generated! Check your downloads folder.</h1>';
+    </script>
+</body>
+</html>
