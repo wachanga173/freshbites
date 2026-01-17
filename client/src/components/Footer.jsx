@@ -234,7 +234,7 @@ export default function Footer() {
                     <rect width="45" height="28" rx="4" fill="#003087" opacity="0.5"/>
                     <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">PayPal</text>
                   </svg>
-                  <span className="coming-soon-badge">Soon</span>
+                  <span className="coming-soon-badge">PayPal Coming Soon</span>
                 </div>
               </div>
             </div>
