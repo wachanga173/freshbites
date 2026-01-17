@@ -34,6 +34,18 @@ body {
   color: var(--color-primary);
 }
 
+.text-purple-400 {
+  color: rgb(192 132 252);
+}
+
+.hover\:text-purple-400:hover {
+  color: rgb(192 132 252);
+}
+
+.hover\:text-purple-600:hover {
+  color: rgb(147 51 234);
+}
+
 .border-primary {
   border-color: var(--color-primary);
 }

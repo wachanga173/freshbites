@@ -99,12 +99,12 @@ export default function Menu() {
       {/* Navigation Bar */}
       <nav className="bg-white shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center relative">
-            <div className="text-xl sm:text-2xl font-bold text-primary flex-shrink-0">Fresh Bites Café</div>
+          <div className="flex items-center gap-4">
+            <div className="text-xl sm:text-2xl font-bold text-purple-600 flex-shrink-0">Fresh Bites Café</div>
             
             {/* Mobile Menu Toggle */}
             <button 
-              className="md:hidden flex flex-col gap-1.5 p-1"
+              className="md:hidden flex flex-col gap-1.5 p-1 ml-auto"
               onClick={() => setShowMobileNav(!showMobileNav)}
             >
               <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
@@ -112,19 +112,23 @@ export default function Menu() {
               <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
             </button>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-2 lg:gap-4 flex-wrap">
-              <button onClick={() => window.location.href = '/'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all whitespace-nowrap">Home</button>
-              <button onClick={() => window.location.href = '/menu'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all whitespace-nowrap">Menu</button>
-              <button onClick={() => window.location.href = '/about'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all whitespace-nowrap">About</button>
-              <button onClick={() => window.location.href = '/contact'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all whitespace-nowrap">Contact</button>
+            {/* Desktop Navigation - Scrollable left section */}
+            <div className="hidden md:flex items-center gap-2 lg:gap-3 overflow-x-auto flex-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-1">
+              <button onClick={() => window.location.href = '/'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">Home</button>
+              <button onClick={() => window.location.href = '/menu'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">Menu</button>
+              <button onClick={() => window.location.href = '/about'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">About</button>
+              <button onClick={() => window.location.href = '/contact'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">Contact</button>
+              {user && (
+                <button onClick={() => window.location.href = '/my-orders'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">My Orders</button>
+              )}
+            </div>
+
+            {/* Login/Logout - Fixed on right */}
+            <div className="hidden md:flex items-center gap-3 flex-shrink-0">
               {user ? (
-                <>
-                  <button onClick={() => window.location.href = '/my-orders'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all whitespace-nowrap">My Orders</button>
-                  <button onClick={logout} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-primary rounded-full hover:bg-primary-dark hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Logout</button>
-                </>
+                <button onClick={logout} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Logout</button>
               ) : (
-                <button onClick={() => window.location.href = '/login'} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-primary rounded-full hover:bg-primary-dark hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Login</button>
+                <button onClick={() => window.location.href = '/login'} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Login</button>
               )}
             </div>
 
@@ -258,6 +262,37 @@ export default function Menu() {
           </div>
         </>
       )}
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white py-8 sm:py-12 mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            <div className="text-center sm:text-left">
+              <h4 className="text-lg sm:text-xl font-semibold mb-4 text-purple-400">Fresh Bites Café</h4>
+              <p className="text-sm sm:text-base text-gray-300">Quality food delivered to your doorstep</p>
+            </div>
+            <div className="text-center sm:text-left">
+              <h4 className="text-lg sm:text-xl font-semibold mb-4 text-purple-400">Quick Links</h4>
+              <div className="space-y-2">
+                <button onClick={() => window.location.href = '/'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">Home</button>
+                <button onClick={() => window.location.href = '/menu'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">Menu</button>
+                <button onClick={() => window.location.href = '/about'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">About</button>
+                <button onClick={() => window.location.href = '/contact'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">Contact</button>
+                <button onClick={() => window.location.href = '/privacy'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">Privacy Policy</button>
+                <button onClick={() => window.location.href = '/terms'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">Terms & Conditions</button>
+              </div>
+            </div>
+            <div className="text-center sm:text-left">
+              <h4 className="text-lg sm:text-xl font-semibold mb-4 text-purple-400">Contact</h4>
+              <p className="text-sm sm:text-base text-gray-300 mb-2">Email: info@freshbitescafe.com</p>
+              <p className="text-sm sm:text-base text-gray-300">Location: Kenya</p>
+            </div>
+          </div>
+          <div className="text-center pt-8 border-t border-gray-700">
+            <p className="text-sm sm:text-base text-gray-400">&copy; 2026 Fresh Bites Café. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
