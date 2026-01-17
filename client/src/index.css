@@ -34,12 +34,20 @@ body {
   color: var(--color-primary);
 }
 
+.border-primary {
+  border-color: var(--color-primary);
+}
+
 .hover\:bg-primary-dark:hover {
   background-color: var(--color-primary-dark);
 }
 
 .hover\:text-primary:hover {
   color: var(--color-primary);
+}
+
+.hover\:border-primary:hover {
+  border-color: var(--color-primary);
 }
 
 .from-primary {
