@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import MenuItem from '../components/MenuItem'
 import Cart from '../components/Cart'
+import Footer from '../components/Footer'
 import { getApiUrl } from '../config/api'
 
 export default function Menu() {
@@ -264,35 +265,7 @@ export default function Menu() {
       )}
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8 sm:py-12 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-            <div className="text-center sm:text-left">
-              <h4 className="text-lg sm:text-xl font-semibold mb-4 text-purple-400">Fresh Bites Café</h4>
-              <p className="text-sm sm:text-base text-gray-300">Quality food delivered to your doorstep</p>
-            </div>
-            <div className="text-center sm:text-left">
-              <h4 className="text-lg sm:text-xl font-semibold mb-4 text-purple-400">Quick Links</h4>
-              <div className="space-y-2">
-                <button onClick={() => window.location.href = '/'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">Home</button>
-                <button onClick={() => window.location.href = '/menu'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">Menu</button>
-                <button onClick={() => window.location.href = '/about'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">About</button>
-                <button onClick={() => window.location.href = '/contact'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">Contact</button>
-                <button onClick={() => window.location.href = '/privacy'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">Privacy Policy</button>
-                <button onClick={() => window.location.href = '/terms'} className="block w-full sm:w-auto text-left text-sm sm:text-base text-gray-300 hover:text-purple-400 transition-colors">Terms & Conditions</button>
-              </div>
-            </div>
-            <div className="text-center sm:text-left">
-              <h4 className="text-lg sm:text-xl font-semibold mb-4 text-purple-400">Contact</h4>
-              <p className="text-sm sm:text-base text-gray-300 mb-2">Email: info@freshbitescafe.com</p>
-              <p className="text-sm sm:text-base text-gray-300">Location: Kenya</p>
-            </div>
-          </div>
-          <div className="text-center pt-8 border-t border-gray-700">
-            <p className="text-sm sm:text-base text-gray-400">&copy; 2026 Fresh Bites Café. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
