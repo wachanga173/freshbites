@@ -308,39 +308,11 @@ function MainApp() {
                 window.history.pushState({}, '', '/my-orders')
               }}>My Orders</button>
               <button onClick={logout}>Logout</button>
-              <button 
-                className="cart-icon-only"
-                onClick={() => setShowCart(!showCart)}
-                title="View cart"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="9" cy="21" r="1"/>
-                  <circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-                </svg>
-                {cartItems.length > 0 && (
-                  <span className="cart-badge">{cartItems.length}</span>
-                )}
-              </button>
             </>
           ) : (
             <>
               <button className="login-btn" onClick={() => setShowAuth(true)}>
                 Login / Register
-              </button>
-              <button 
-                className="cart-icon-only"
-                onClick={() => setShowCart(!showCart)}
-                title="View cart"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="9" cy="21" r="1"/>
-                  <circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-                </svg>
-                {cartItems.length > 0 && (
-                  <span className="cart-badge">{cartItems.length}</span>
-                )}
               </button>
             </>
           )}
@@ -358,22 +330,6 @@ function MainApp() {
           <span></span>
           <span></span>
           <span></span>
-        </button>
-
-        {/* Mobile Cart Icon */}
-        <button 
-          className="cart-icon-btn"
-          onClick={() => setShowCart(!showCart)}
-          aria-label="View cart"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="9" cy="21" r="1"/>
-            <circle cx="20" cy="21" r="1"/>
-            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-          </svg>
-          {cartItems.length > 0 && (
-            <span className="cart-badge">{cartItems.length}</span>
-          )}
         </button>
       </header>
 
