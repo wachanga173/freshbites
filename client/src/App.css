@@ -31,20 +31,9 @@
   z-index: 1;
 }
 
-/* Desktop Menu Row */
+/* Desktop Menu Row - Hidden on all screens */
 .hero-top-menu {
-  position: absolute;
-  top: 15px;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 0 20px;
-  flex-wrap: wrap;
-  pointer-events: none;
+  display: none !important;
 }
 
 /* Allow buttons to be clickable */
@@ -121,48 +110,65 @@
   z-index: 3;
 }
 
-/* Hamburger Menu in Hero - Default State */
+/* Hamburger Menu in Hero - Show on all screens */
 .hamburger-menu-hero {
-  display: none;
-  background: transparent;
+  display: flex !important;
+  flex-direction: column;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.95);
   border: none;
+  padding: 10px;
   cursor: pointer;
+  position: absolute;
+  right: 20px;
+  top: 20px;
   z-index: 20;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .hamburger-menu-hero span {
   width: 25px;
   height: 3px;
-  background: white;
+  background: #333;
   border-radius: 2px;
   transition: all 0.3s ease;
   display: block;
-  margin: 5px 0;
 }
 
-/* Hero Cart Button */
+.hamburger-menu-hero:hover span {
+  background: #667eea;
+}
+
+/* Hero Cart Button - Show on all screens */
 .hero-cart-btn {
   position: absolute;
-  top: 15px;
+  top: 20px;
   left: 20px;
   background: rgba(255, 255, 255, 0.95);
   border: none;
   border-radius: 50%;
   width: 45px;
   height: 45px;
-  display: none;
+  display: flex !important;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10;
   color: #667eea;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .hero-cart-btn:hover {
   background: #667eea;
   color: white;
   transform: scale(1.05);
+}
+
+.hero-cart-btn svg {
+  width: 24px;
+  height: 24px;
 }
 
 .cart-count {
@@ -688,49 +694,11 @@
 }
 
 /* ========================================
-   RESPONSIVE BREAKPOINTS (The Fix)
+   RESPONSIVE BREAKPOINTS
    ======================================== */
 
-/* Desktop - Explicitly show menu, hide mobile controls */
-@media (min-width: 1025px) {
-  .hero-top-menu {
-    display: flex !important;
-  }
-  
-  .hamburger-menu-hero {
-    display: none !important;
-  }
-  
-  .hero-cart-btn {
-    display: none !important;
-  }
-}
-
-/* Combined Tablet and Mobile styles.
-   We apply these styles for any screen smaller than 1024px.
-   This prevents the "too many buttons" explosion on tablets/rotated phones.
-*/
+/* Tablet and smaller screens */
 @media (max-width: 1024px) {
-  /* Hide the crowded Desktop Top Menu */
-  .hero-top-menu {
-    display: none !important;
-  }
-
-  /* Show the Hamburger Menu Button */
-  .hamburger-menu-hero {
-    display: flex !important;
-    flex-direction: column;
-    position: absolute;
-    right: 20px;
-    top: 20px;
-  }
-  
-  /* Show the Cart Button */
-  .hero-cart-btn {
-    display: flex !important;
-  }
-
-  /* Adjust Hero */
   .hero {
     height: 350px;
   }
