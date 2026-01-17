@@ -75,6 +75,10 @@ body {
   background-color: rgb(0 0 0 / 0.4);
 }
 
+.bg-black\/50 {
+  background-color: rgb(0 0 0 / 0.5);
+}
+
 .bg-purple-600 {
   background-color: rgb(147 51 234);
 }

@@ -1,5 +1,4 @@
 import { useAuth } from '../context/AuthContext'
-import FeedbackChatbot from '../components/FeedbackChatbot'
 
 export default function Home() {
   const { user, logout } = useAuth()
@@ -163,7 +162,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-      <FeedbackChatbot />
     </div>
   )
 }

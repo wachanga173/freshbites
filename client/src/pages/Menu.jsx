@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import MenuItem from '../components/MenuItem'
 import Cart from '../components/Cart'
-import FeedbackChatbot from '../components/FeedbackChatbot'
 import { getApiUrl } from '../config/api'
 
 export default function Menu() {
@@ -130,11 +129,16 @@ export default function Menu() {
             </div>
 
             {/* Cart Button */}
-            {user && (
-              <button 
-                className="flex-shrink-0 bg-purple-600 text-white rounded-full w-11 h-11 flex items-center justify-center hover:bg-purple-700 hover:scale-105 transition-all shadow-lg relative ml-2"
-                onClick={() => setShowCart(!showCart)}
-              >
+            <button 
+              className="flex-shrink-0 bg-purple-600 text-white rounded-full w-11 h-11 flex items-center justify-center hover:bg-purple-700 hover:scale-105 transition-all shadow-lg relative ml-2"
+              onClick={() => {
+                if (!user) {
+                  window.location.href = '/login'
+                  return
+                }
+                setShowCart(!showCart)
+              }}
+            >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="9" cy="21" r="1"/>
                   <circle cx="20" cy="21" r="1"/>
@@ -145,8 +149,7 @@ export default function Menu() {
                     {cartItems.length}
                   </span>
                 )}
-              </button>
-            )}
+            </button>
           </div>
 
           {/* Mobile Navigation Dropdown */}
@@ -170,9 +173,13 @@ export default function Menu() {
       </nav>
 
       {/* Header */}
-      <div className="bg-purple-600 text-white text-center py-8 sm:py-12">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-2">Our Menu</h1>
-        <p className="text-base sm:text-lg lg:text-xl opacity-95">Explore our delicious selection</p>
+      <div className="relative bg-gray-900 text-white text-center py-20 sm:py-24 lg:py-32">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="relative z-10">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-2 drop-shadow-lg">Our Menu</h1>
+          <p className="text-base sm:text-lg lg:text-xl opacity-95 drop-shadow-md">Explore our delicious selection</p>
+        </div>
       </div>
 
       {/* Category Navigation */}
@@ -251,7 +258,6 @@ export default function Menu() {
           </div>
         </>
       )}
-      <FeedbackChatbot />
     </div>
   )
 }

@@ -17,6 +17,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import RoleSwitcher from './components/RoleSwitcher'
+import FeedbackChatbot from './components/FeedbackChatbot'
 import './App.css'
 
 function MainApp() {
@@ -186,6 +187,7 @@ export default function App() {
   return (
     <AuthProvider>
       <MainApp />
+      <FeedbackChatbot />
     </AuthProvider>
   )
 }
