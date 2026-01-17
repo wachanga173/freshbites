@@ -107,7 +107,7 @@ export default function Home() {
             Our journey began with a simple vision: to make quality, restaurant-grade food accessible to everyone, delivered right to their doorstep. Today, we continue to evolve, constantly improving our menu, service, and technology to serve you better.
           </p>
           <p className="text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed">
-            From farm-fresh ingredients to cutting-edge delivery tracking, we're committed to excellence at every step. Join us in this delicious journey and experience the Fresh Bites difference!
+            From farm-fresh ingredients to cutting-edge delivery tracking, we&apos;re committed to excellence at every step. Join us in this delicious journey and experience the Fresh Bites difference!
           </p>
         </div>
       </section>
