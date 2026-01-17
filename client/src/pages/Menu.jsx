@@ -26,12 +26,17 @@ export default function Menu() {
     fetch(getApiUrl('/api/menu'))
       .then(r => {
         if (!r.ok) throw new Error(`Menu endpoint returned ${r.status}`)
+        const contentType = r.headers.get('content-type')
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Server returned HTML instead of JSON. Is the server running?')
+        }
         return r.json()
       })
       .then(data => {
         setMenu(data)
       })
       .catch(err => {
+        console.error('Menu fetch error:', err)
         setMessage(`Could not load menu: ${err.message}`)
       })
   }, [])
