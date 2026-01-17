@@ -223,18 +223,11 @@ export default function Footer() {
             <div className="payment-section">
               <span className="payment-label">Secure Payments</span>
               <div className="payment-methods">
-                <div className="payment-icon" title="M-Pesa - Available Now">
+                <div className="payment-icon" title="M-Pesa">
                   <svg width="45" height="28" viewBox="0 0 45 28" fill="none">
                     <rect width="45" height="28" rx="4" fill="#00A950"/>
                     <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">M-PESA</text>
                   </svg>
-                </div>
-                <div className="payment-icon payment-coming-soon" title="PayPal - Coming Soon">
-                  <svg width="45" height="28" viewBox="0 0 45 28" fill="none">
-                    <rect width="45" height="28" rx="4" fill="#003087" opacity="0.5"/>
-                    <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">PayPal</text>
-                  </svg>
-                  <span className="coming-soon-badge">PayPal Coming Soon</span>
                 </div>
               </div>
             </div>
