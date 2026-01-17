@@ -7,6 +7,7 @@ export default function Footer() {
   const [showInstallButton, setShowInstallButton] = useState(false)
 
   useEffect(() => {
+    /* eslint-disable no-console */
     const handler = (e) => {
       console.log('✅ beforeinstallprompt event fired!', e)
       e.preventDefault()
@@ -42,6 +43,7 @@ export default function Footer() {
         }
       })
     }
+    /* eslint-enable no-console */
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handler)
