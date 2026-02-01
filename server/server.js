@@ -1880,13 +1880,6 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
     const AI_PROVIDER = process.env.AI_PROVIDER || 'openai'
     const AI_MODEL = process.env.AI_MODEL || 'gpt-3.5-turbo'
 
-    console.log('AI Config Check:', {
-      hasKey: !!AI_API_KEY,
-      keyLength: AI_API_KEY ? AI_API_KEY.length : 0,
-      provider: AI_PROVIDER,
-      model: AI_MODEL
-    })
-
     let response = ''
 
     // If AI is configured, use it (check if key exists and is longer than 10 chars)
@@ -1943,24 +1936,17 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
           response = openaiResponse.data.choices[0].message.content
         }
 
-        console.log('AI Diet Assistant - Successfully used AI API')
       } catch (aiError) {
-        console.error('AI API Error Details:', {
-          message: aiError.message,
-          response: aiError.response?.data,
-          status: aiError.response?.status
-        })
         // Fall back to keyword matching if AI fails
         response = getFallbackResponse(question)
       }
     } else {
-      console.log('AI not configured - using fallback responses')
       // No AI configured, use keyword matching
       response = getFallbackResponse(question)
     }
 
     // Log the interaction for improvement
-    console.log('Diet AI Query:', { userId: req.user.id, question, timestamp: new Date() })
+    console.log('Diet AI Query:', { userId: req.user.id, timestamp: new Date() })
 
     res.json({
       success: true,
@@ -1973,31 +1959,6 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
     console.error('Diet assistant error:', err)
     res.status(500).json({ error: 'Failed to process diet query' })
   }
-})
-
-// Test endpoint to check AI configuration (no auth required)
-app.get('/api/ai/config-test', (req, res) => {
-  const AI_API_KEY = process.env.AI_API_KEY
-  const AI_PROVIDER = process.env.AI_PROVIDER || 'openai'
-  const AI_MODEL = process.env.AI_MODEL || 'gpt-3.5-turbo'
-  
-  const configStatus = {
-    hasKey: !!AI_API_KEY,
-    keyLength: AI_API_KEY ? AI_API_KEY.length : 0,
-    keyPreview: AI_API_KEY ? AI_API_KEY.substring(0, 7) + '...' : 'none',
-    provider: AI_PROVIDER,
-    model: AI_MODEL,
-    isConfigured: AI_API_KEY && AI_API_KEY.length > 10 && !AI_API_KEY.includes('your-'),
-    timestamp: new Date().toISOString()
-  }
-  
-  console.log('AI Configuration Check:', configStatus)
-  
-  res.json({
-    success: true,
-    config: configStatus,
-    message: configStatus.isConfigured ? 'AI is configured and ready' : 'AI is not configured - using fallback responses'
-  })
 })
 
 // Fallback response function for when AI is not configured
