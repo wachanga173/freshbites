@@ -1880,10 +1880,17 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
     const AI_PROVIDER = process.env.AI_PROVIDER || 'openai'
     const AI_MODEL = process.env.AI_MODEL || 'gpt-3.5-turbo'
 
+    console.log('AI Config Check:', {
+      hasKey: !!AI_API_KEY,
+      keyLength: AI_API_KEY ? AI_API_KEY.length : 0,
+      provider: AI_PROVIDER,
+      model: AI_MODEL
+    })
+
     let response = ''
 
-    // If AI is configured, use it
-    if (AI_API_KEY && AI_API_KEY !== 'your-openai-or-anthropic-api-key-here') {
+    // If AI is configured, use it (check if key exists and is longer than 10 chars)
+    if (AI_API_KEY && AI_API_KEY.length > 10 && !AI_API_KEY.includes('your-')) {
       try {
         const systemPrompt = `You are a helpful nutrition and diet assistant for Fresh Bites Café. 
         You provide accurate, helpful advice about nutrition, dietary restrictions, allergies, and meal planning.
@@ -1938,11 +1945,16 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
 
         console.log('AI Diet Assistant - Successfully used AI API')
       } catch (aiError) {
-        console.error('AI API Error:', aiError.response?.data || aiError.message)
+        console.error('AI API Error Details:', {
+          message: aiError.message,
+          response: aiError.response?.data,
+          status: aiError.response?.status
+        })
         // Fall back to keyword matching if AI fails
         response = getFallbackResponse(question)
       }
     } else {
+      console.log('AI not configured - using fallback responses')
       // No AI configured, use keyword matching
       response = getFallbackResponse(question)
     }
