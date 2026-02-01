@@ -130,7 +130,10 @@ export default function Menu() {
               <button onClick={() => window.location.href = '/about'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">About</button>
               <button onClick={() => window.location.href = '/contact'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">Contact</button>
               {user && (
-                <button onClick={() => window.location.href = '/my-orders'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">My Orders</button>
+                <>
+                  <button onClick={() => window.location.href = '/my-orders'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">My Orders</button>
+                  <button onClick={() => window.location.href = '/profile'} className="px-3 py-2 text-sm lg:text-base font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-md transition-all whitespace-nowrap flex items-center gap-1">👤 Profile</button>
+                </>
               )}
             </div>
 
@@ -179,7 +182,8 @@ export default function Menu() {
               <button onClick={() => { window.location.href = '/contact'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">Contact</button>
               {user ? (
                 <>
-                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">My Orders</button>
+                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">📦 My Orders</button>
+                  <button onClick={() => { window.location.href = '/profile'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-md transition-all">👤 My Profile</button>
                   <button onClick={() => { logout(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-all">Logout</button>
                 </>
               ) : (

@@ -5,6 +5,7 @@ import Menu from './pages/Menu'
 import News from './pages/News'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Profile from './pages/Profile'
 import AdminDashboard from './pages/AdminDashboard'
 import OrderManagementDashboard from './pages/OrderManagementDashboard'
 import DeliveryDashboard from './pages/DeliveryDashboard'
@@ -40,6 +41,8 @@ function MainApp() {
       setCurrentRoute('login')
     } else if (path === '/register') {
       setCurrentRoute('register')
+    } else if (path === '/profile') {
+      setCurrentRoute('profile')
     } else if (path === '/admin') {
       setCurrentRoute('admin')
     } else if (path === '/order-management') {
@@ -109,6 +112,11 @@ function MainApp() {
 
   if (currentRoute === 'register') {
     return <Register onSwitch={() => window.location.href = '/login'} />
+  }
+
+  // Profile
+  if (currentRoute === 'profile' && user) {
+    return <Profile />
   }
 
   // My Orders
