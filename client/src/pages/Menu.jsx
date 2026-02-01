@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import MenuItem from '../components/MenuItem'
 import Cart from '../components/Cart'
 import Footer from '../components/Footer'
+import RoleSwitcher from '../components/RoleSwitcher'
 import { getApiUrl } from '../config/api'
 
 export default function Menu() {
@@ -102,6 +103,9 @@ export default function Menu() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Role Switcher for logged-in users */}
+      {user && <RoleSwitcher />}
+      
       {/* Navigation Bar */}
       <nav className="bg-white shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -110,8 +114,9 @@ export default function Menu() {
             
             {/* Mobile Menu Toggle */}
             <button 
-              className="md:hidden flex flex-col gap-1.5 p-1 ml-auto"
+              className="md:hidden flex flex-col gap-1.5 p-2 ml-auto bg-gray-100 rounded-lg hover:bg-gray-200 transition-all"
               onClick={() => setShowMobileNav(!showMobileNav)}
+              aria-label="Toggle menu"
             >
               <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
               <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
@@ -130,11 +135,14 @@ export default function Menu() {
             </div>
 
             {/* Login/Logout - Fixed on right */}
-            <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+            <div className="hidden md:flex items-center gap-2 flex-shrink-0">
               {user ? (
                 <button onClick={logout} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Logout</button>
               ) : (
-                <button onClick={() => window.location.href = '/login'} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Login</button>
+                <>
+                  <button onClick={() => window.location.href = '/login'} className="px-4 py-2 text-sm lg:text-base font-semibold text-purple-600 border-2 border-purple-600 rounded-full hover:bg-purple-50 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Login</button>
+                  <button onClick={() => window.location.href = '/register'} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Sign Up</button>
+                </>
               )}
             </div>
 
@@ -164,18 +172,21 @@ export default function Menu() {
 
           {/* Mobile Navigation Dropdown */}
           {showMobileNav && (
-            <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg flex flex-col p-4 space-y-2 border-t">
-              <button onClick={() => { window.location.href = '/'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all">Home</button>
-              <button onClick={() => { window.location.href = '/menu'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all">Menu</button>
-              <button onClick={() => { window.location.href = '/about'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all">About</button>
-              <button onClick={() => { window.location.href = '/contact'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all">Contact</button>
+            <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg flex flex-col p-4 space-y-2 border-t z-50">
+              <button onClick={() => { window.location.href = '/'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">Home</button>
+              <button onClick={() => { window.location.href = '/menu'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">Menu</button>
+              <button onClick={() => { window.location.href = '/about'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">About</button>
+              <button onClick={() => { window.location.href = '/contact'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">Contact</button>
               {user ? (
                 <>
-                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-primary rounded-md transition-all">My Orders</button>
-                  <button onClick={() => { logout(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-primary rounded-md hover:bg-primary-dark transition-all">Logout</button>
+                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">My Orders</button>
+                  <button onClick={() => { logout(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-all">Logout</button>
                 </>
               ) : (
-                <button onClick={() => { window.location.href = '/login'; setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-primary rounded-md hover:bg-primary-dark transition-all">Login</button>
+                <>
+                  <button onClick={() => { window.location.href = '/login'; setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-purple-600 border-2 border-purple-600 rounded-md hover:bg-purple-50 transition-all">Login</button>
+                  <button onClick={() => { window.location.href = '/register'; setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-all">Sign Up</button>
+                </>
               )}
             </div>
           )}

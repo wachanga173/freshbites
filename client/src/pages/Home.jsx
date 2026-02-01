@@ -1,6 +1,7 @@
 import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 import Footer from '../components/Footer'
+import RoleSwitcher from '../components/RoleSwitcher'
 
 export default function Home() {
   const { user, logout } = useAuth()
@@ -27,6 +28,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Role Switcher for logged-in users */}
+      {user && <RoleSwitcher />}
+      
       {/* Navigation Bar */}
       <nav className="bg-white shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -35,8 +39,9 @@ export default function Home() {
             
             {/* Mobile Menu Toggle */}
             <button 
-              className="md:hidden flex flex-col gap-1.5 p-1 ml-auto"
+              className="md:hidden flex flex-col gap-1.5 p-2 ml-auto bg-gray-100 rounded-lg hover:bg-gray-200 transition-all"
               onClick={() => setShowMobileNav(!showMobileNav)}
+              aria-label="Toggle menu"
             >
               <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
               <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
@@ -55,11 +60,14 @@ export default function Home() {
             </div>
 
             {/* Login/Logout - Fixed on right */}
-            <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+            <div className="hidden md:flex items-center gap-2 flex-shrink-0">
               {user ? (
                 <button onClick={logout} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Logout</button>
               ) : (
-                <button onClick={handleLoginClick} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Login</button>
+                <>
+                  <button onClick={handleLoginClick} className="px-4 py-2 text-sm lg:text-base font-semibold text-purple-600 border-2 border-purple-600 rounded-full hover:bg-purple-50 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Login</button>
+                  <button onClick={() => window.location.href = '/register'} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Sign Up</button>
+                </>
               )}
             </div>
           </div>
@@ -77,7 +85,10 @@ export default function Home() {
                   <button onClick={() => { logout(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-all">Logout</button>
                 </>
               ) : (
-                <button onClick={() => { handleLoginClick(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-all">Login</button>
+                <>
+                  <button onClick={() => { handleLoginClick(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-purple-600 border-2 border-purple-600 rounded-md hover:bg-purple-50 transition-all">Login</button>
+                  <button onClick={() => { window.location.href = '/register'; setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-all">Sign Up</button>
+                </>
               )}
             </div>
           )}
