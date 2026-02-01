@@ -20,16 +20,31 @@ self.addEventListener('install', (event) => {
 
 // Fetch events - Network First Strategy
 self.addEventListener('fetch', (event) => {
+  // Skip caching for:
+  // - Non-GET requests (POST, PUT, DELETE, etc.)
+  // - Chrome extension requests
+  // - Non-http(s) schemes
+  if (
+    event.request.method !== 'GET' ||
+    event.request.url.startsWith('chrome-extension://') ||
+    !event.request.url.startsWith('http')
+  ) {
+    return
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Clone the response
-        const responseClone = response.clone()
-        
-        // Cache the fetched response
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone)
-        })
+        // Only cache successful responses
+        if (response && response.status === 200 && response.type === 'basic') {
+          // Clone the response
+          const responseClone = response.clone()
+          
+          // Cache the fetched response
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone)
+          })
+        }
         
         return response
       })

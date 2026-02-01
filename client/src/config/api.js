@@ -6,7 +6,7 @@
 const isDevelopment = import.meta.env.DEV
 const API_BASE_URL = isDevelopment 
   ? '' // Empty string means relative URLs, which Vite will proxy to localhost:3000
-  : (import.meta.env.VITE_API_URL || 'https://cafeteria-ftwf.onrender.com')
+  : (import.meta.env.VITE_API_URL || 'https://cafeteria-api-dyh2.onrender.com')
 
 // Helper function to build API URLs
 export const getApiUrl = (endpoint) => {
