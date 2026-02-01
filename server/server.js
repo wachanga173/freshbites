@@ -1876,25 +1876,75 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Question is required' })
     }
 
-    // This is a placeholder for AI integration
-    // You would integrate with OpenAI, Anthropic, or another AI service here
-    // For now, return a structured response based on simple keyword matching
+    const AI_API_KEY = process.env.AI_API_KEY
+    const AI_PROVIDER = process.env.AI_PROVIDER || 'openai'
+    const AI_MODEL = process.env.AI_MODEL || 'gpt-3.5-turbo'
 
-    const lowerQuestion = question.toLowerCase()
     let response = ''
 
-    if (lowerQuestion.includes('calorie') || lowerQuestion.includes('nutrition')) {
-      response = 'Our menu items include detailed nutritional information. For specific calorie counts, please check the menu details or ask about a particular item. Generally, our salads and grilled items are lower in calories, while our desserts and fried items are more indulgent.'
-    } else if (lowerQuestion.includes('allerg') || lowerQuestion.includes('gluten') || lowerQuestion.includes('dairy')) {
-      response = 'We take allergies seriously. Please inform our staff about any dietary restrictions. Many of our items can be modified to accommodate gluten-free, dairy-free, and other dietary needs. Our staff can provide detailed allergen information for each menu item.'
-    } else if (lowerQuestion.includes('vegan') || lowerQuestion.includes('vegetarian')) {
-      response = 'We offer several vegetarian and vegan options! Look for items marked as "Vegetarian" or "Vegan" on our menu. Our chefs can also modify many dishes to suit plant-based diets.'
-    } else if (lowerQuestion.includes('protein') || lowerQuestion.includes('workout') || lowerQuestion.includes('fitness')) {
-      response = 'For high-protein options, consider our grilled chicken dishes, fish entrees, or legume-based meals. These are excellent for post-workout nutrition and muscle recovery.'
-    } else if (lowerQuestion.includes('weight loss') || lowerQuestion.includes('diet')) {
-      response = 'For weight management, focus on our lighter options like salads, grilled proteins, and vegetable-based dishes. Portion control and balanced nutrition are key. Consider our smaller portions or sharing larger entrees.'
+    // If AI is configured, use it
+    if (AI_API_KEY && AI_API_KEY !== 'your-openai-or-anthropic-api-key-here') {
+      try {
+        const systemPrompt = `You are a helpful nutrition and diet assistant for Fresh Bites Café. 
+        You provide accurate, helpful advice about nutrition, dietary restrictions, allergies, and meal planning.
+        Be concise, friendly, and practical in your responses. Always remind users to consult healthcare professionals for specific medical advice.
+        Base your answers on general nutritional knowledge and common dietary guidelines.`
+
+        if (AI_PROVIDER === 'anthropic') {
+          // Anthropic Claude API
+          const claudeResponse = await axios.post('https://api.anthropic.com/v1/messages', {
+            model: AI_MODEL,
+            max_tokens: 500,
+            messages: [
+              {
+                role: 'user',
+                content: `${systemPrompt}\n\nUser question: ${question}`
+              }
+            ]
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': AI_API_KEY,
+              'anthropic-version': '2023-06-01'
+            }
+          })
+
+          response = claudeResponse.data.content[0].text
+        } else {
+          // OpenAI API (default)
+          const openaiResponse = await axios.post('https://api.openai.com/v1/chat/completions', {
+            model: AI_MODEL,
+            messages: [
+              {
+                role: 'system',
+                content: systemPrompt
+              },
+              {
+                role: 'user',
+                content: question
+              }
+            ],
+            max_tokens: 500,
+            temperature: 0.7
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${AI_API_KEY}`
+            }
+          })
+
+          response = openaiResponse.data.choices[0].message.content
+        }
+
+        console.log('AI Diet Assistant - Successfully used AI API')
+      } catch (aiError) {
+        console.error('AI API Error:', aiError.response?.data || aiError.message)
+        // Fall back to keyword matching if AI fails
+        response = getFallbackResponse(question)
+      }
     } else {
-      response = 'Thank you for your question! Our AI diet assistant can help with nutrition advice, dietary restrictions, allergies, calorie information, and meal recommendations. Please feel free to ask specific questions about our menu items or dietary concerns.'
+      // No AI configured, use keyword matching
+      response = getFallbackResponse(question)
     }
 
     // Log the interaction for improvement
@@ -1912,6 +1962,25 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to process diet query' })
   }
 })
+
+// Fallback response function for when AI is not configured
+function getFallbackResponse(question) {
+  const lowerQuestion = question.toLowerCase()
+  
+  if (lowerQuestion.includes('calorie') || lowerQuestion.includes('nutrition')) {
+    return 'Our menu items include detailed nutritional information. For specific calorie counts, please check the menu details or ask about a particular item. Generally, our salads and grilled items are lower in calories, while our desserts and fried items are more indulgent.'
+  } else if (lowerQuestion.includes('allerg') || lowerQuestion.includes('gluten') || lowerQuestion.includes('dairy')) {
+    return 'We take allergies seriously. Please inform our staff about any dietary restrictions. Many of our items can be modified to accommodate gluten-free, dairy-free, and other dietary needs. Our staff can provide detailed allergen information for each menu item.'
+  } else if (lowerQuestion.includes('vegan') || lowerQuestion.includes('vegetarian')) {
+    return 'We offer several vegetarian and vegan options! Look for items marked as "Vegetarian" or "Vegan" on our menu. Our chefs can also modify many dishes to suit plant-based diets.'
+  } else if (lowerQuestion.includes('protein') || lowerQuestion.includes('workout') || lowerQuestion.includes('fitness')) {
+    return 'For high-protein options, consider our grilled chicken dishes, fish entrees, or legume-based meals. These are excellent for post-workout nutrition and muscle recovery.'
+  } else if (lowerQuestion.includes('weight loss') || lowerQuestion.includes('diet')) {
+    return 'For weight management, focus on our lighter options like salads, grilled proteins, and vegetable-based dishes. Portion control and balanced nutrition are key. Consider our smaller portions or sharing larger entrees.'
+  } else {
+    return 'Thank you for your question! Our AI diet assistant can help with nutrition advice, dietary restrictions, allergies, calorie information, and meal recommendations. Please feel free to ask specific questions about our menu items or dietary concerns.'
+  }
+}
 
 // Serve client static files if present (optional)
 const clientPath = path.join(__dirname, '..', 'client')
