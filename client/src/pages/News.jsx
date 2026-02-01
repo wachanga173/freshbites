@@ -7,54 +7,151 @@ function News() {
   const [error, setError] = useState(null)
   const [category, setCategory] = useState('food')
 
+  const getMockArticles = (cat) => {
+    const mockData = {
+      'food': [
+        {
+          title: 'The Rise of Sustainable Food Practices in Restaurants',
+          description: 'How modern restaurants are adopting eco-friendly practices and sourcing locally to reduce their carbon footprint.',
+          url: 'https://www.theguardian.com/food',
+          image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
+          publishedAt: new Date(Date.now() - 86400000).toISOString(),
+          source: { name: 'Food Industry News' }
+        },
+        {
+          title: 'Global Food Trends for 2026: What to Expect',
+          description: 'From fermented foods to alternative proteins, explore the culinary trends shaping the future of dining.',
+          url: 'https://www.bbc.com/food',
+          image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800',
+          publishedAt: new Date(Date.now() - 172800000).toISOString(),
+          source: { name: 'Culinary Times' }
+        },
+        {
+          title: 'Street Food Revolution: How Food Trucks Are Changing Cities',
+          description: 'The mobile food industry is booming, bringing diverse flavors to urban streets worldwide.',
+          url: 'https://www.seriouseats.com/',
+          image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800',
+          publishedAt: new Date(Date.now() - 259200000).toISOString(),
+          source: { name: 'Street Eats Weekly' }
+        }
+      ],
+      'diet': [
+        {
+          title: 'Intermittent Fasting: Benefits and Common Mistakes',
+          description: 'Understanding the science behind intermittent fasting and how to implement it safely for optimal health.',
+          url: 'https://www.healthline.com/nutrition',
+          image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800',
+          publishedAt: new Date(Date.now() - 86400000).toISOString(),
+          source: { name: 'Diet & Wellness Today' }
+        },
+        {
+          title: 'The Flexitarian Diet: Best of Both Worlds',
+          description: 'How a flexible approach to vegetarianism is helping people transition to healthier eating habits.',
+          url: 'https://www.healthline.com/nutrition',
+          image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
+          publishedAt: new Date(Date.now() - 172800000).toISOString(),
+          source: { name: 'Healthy Living Magazine' }
+        },
+        {
+          title: 'Debunking Common Diet Myths in 2026',
+          description: 'Separating fact from fiction in the world of diets and weight loss strategies.',
+          url: 'https://www.webmd.com/diet',
+          image: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800',
+          publishedAt: new Date(Date.now() - 259200000).toISOString(),
+          source: { name: 'Science of Nutrition' }
+        }
+      ],
+      'nutrition': [
+        {
+          title: 'Understanding Micronutrients: The Essential Vitamins Guide',
+          description: 'A comprehensive look at essential vitamins and minerals your body needs for optimal function.',
+          url: 'https://www.nutritionsource.hsph.harvard.edu/',
+          image: 'https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=800',
+          publishedAt: new Date(Date.now() - 86400000).toISOString(),
+          source: { name: 'Nutrition Science Journal' }
+        },
+        {
+          title: 'Gut Health: The Key to Overall Wellness',
+          description: 'New research reveals how the gut microbiome affects everything from immunity to mental health.',
+          url: 'https://www.ncbi.nlm.nih.gov/',
+          image: 'https://images.unsplash.com/photo-1543362906-acfc16c67564?w=800',
+          publishedAt: new Date(Date.now() - 172800000).toISOString(),
+          source: { name: 'Medical Nutrition Review' }
+        },
+        {
+          title: 'Protein Requirements: How Much Do You Really Need?',
+          description: 'Breaking down protein needs by age, activity level, and health goals for optimal nutrition.',
+          url: 'https://www.eatright.org/',
+          image: 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=800',
+          publishedAt: new Date(Date.now() - 259200000).toISOString(),
+          source: { name: 'Dietitian Today' }
+        }
+      ],
+      'healthy eating': [
+        {
+          title: 'Meal Prep Mastery: Save Time While Eating Healthy',
+          description: 'Expert tips for planning and preparing nutritious meals for the entire week ahead.',
+          url: 'https://www.eatingwell.com/',
+          image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800',
+          publishedAt: new Date(Date.now() - 86400000).toISOString(),
+          source: { name: 'Healthy Eating Guide' }
+        },
+        {
+          title: 'Rainbow Diet: Eating Colorful for Better Health',
+          description: 'Why eating a variety of colorful fruits and vegetables is the key to getting essential nutrients.',
+          url: 'https://www.health.com/',
+          image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800',
+          publishedAt: new Date(Date.now() - 172800000).toISOString(),
+          source: { name: 'Wellness Weekly' }
+        },
+        {
+          title: 'Smart Snacking: Healthy Options for Busy Lifestyles',
+          description: 'Nutritious snack ideas that keep you energized throughout your day without compromising health.',
+          url: 'https://www.cookinglight.com/',
+          image: 'https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=800',
+          publishedAt: new Date(Date.now() - 259200000).toISOString(),
+          source: { name: 'Smart Nutrition Tips' }
+        }
+      ],
+      'recipes': [
+        {
+          title: '15-Minute Healthy Dinner Recipes for Busy Weeknights',
+          description: 'Quick and nutritious dinner ideas that take less than 15 minutes to prepare from start to finish.',
+          url: 'https://www.allrecipes.com/',
+          image: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=800',
+          publishedAt: new Date(Date.now() - 86400000).toISOString(),
+          source: { name: 'Quick Kitchen' }
+        },
+        {
+          title: 'Plant-Based Comfort Food: Vegan Versions of Classics',
+          description: 'Delicious vegan takes on traditional comfort foods that everyone will love.',
+          url: 'https://minimalistbaker.com/',
+          image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
+          publishedAt: new Date(Date.now() - 172800000).toISOString(),
+          source: { name: 'Plant-Based Kitchen' }
+        },
+        {
+          title: 'Mediterranean Bowl Recipes: Fresh & Flavorful',
+          description: 'Colorful and nutritious Mediterranean-inspired bowl recipes packed with flavor and nutrients.',
+          url: 'https://www.loveandlemons.com/',
+          image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=800',
+          publishedAt: new Date(Date.now() - 259200000).toISOString(),
+          source: { name: 'Recipe Collection' }
+        }
+      ]
+    }
+    
+    return mockData[cat] || mockData['food']
+  }
+
   const fetchNews = useCallback(async () => {
     setLoading(true)
     setError(null)
     
-    try {
-      // Using gnews.io free API (no API key required for basic usage)
-      const response = await fetch(
-        `https://gnews.io/api/v4/search?q=${category}&lang=en&max=10&apikey=demo`
-      )
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch news')
-      }
-      
-      const data = await response.json()
-      setArticles(data.articles || [])
-    } catch (err) {
-      setError(err.message)
-      // Fallback to mock data if API fails
-      setArticles([
-        {
-          title: '10 Superfoods You Should Include in Your Diet',
-          description: 'Discover the health benefits of incorporating these nutrient-rich superfoods into your daily meals.',
-          url: '#',
-          image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
-          publishedAt: new Date().toISOString(),
-          source: { name: 'Health & Nutrition Today' }
-        },
-        {
-          title: 'The Mediterranean Diet: A Guide to Healthy Eating',
-          description: 'Learn how the Mediterranean diet can improve your health and well-being with delicious, balanced meals.',
-          url: '#',
-          image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800',
-          publishedAt: new Date().toISOString(),
-          source: { name: 'Nutrition Weekly' }
-        },
-        {
-          title: 'Plant-Based Protein Sources for Vegetarians',
-          description: 'Explore the best plant-based protein options to meet your nutritional needs on a vegetarian diet.',
-          url: '#',
-          image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
-          publishedAt: new Date().toISOString(),
-          source: { name: 'Vegan Life Magazine' }
-        }
-      ])
-    } finally {
-      setLoading(false)
-    }
+    // Use category-specific mock data since free APIs are limited
+    // In production, replace with a paid news API
+    setArticles(getMockArticles(category))
+    setLoading(false)
   }, [category])
 
   useEffect(() => {
