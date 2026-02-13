@@ -6,7 +6,18 @@ import './AdminDashboard.css'
 export default function AdminDashboard() {
   const { token, user, isSuperAdmin } = useAuth()
   const [menu, setMenu] = useState({ appetizers: [], breakfast: [], lunch: [], dinner: [], desserts: [], snacks: [], drinks: [] })
-  const [activeTab, setActiveTab] = useState('menu')
+  
+  // Set default tab based on user role
+  const getDefaultTab = () => {
+    if (!user?.roles) return 'settings'
+    if (user.roles.includes('superadmin') || user.roles.includes('admin')) return 'menu'
+    if (user.roles.includes('ordermanager')) return 'orders'
+    if (user.roles.includes('delivery')) return 'delivery'
+    if (user.roles.includes('feedback_manager')) return 'feedback'
+    return 'settings'
+  }
+  
+  const [activeTab, setActiveTab] = useState(getDefaultTab())
   const [users, setUsers] = useState([])
   const [editingItem, setEditingItem] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -15,14 +26,40 @@ export default function AdminDashboard() {
   const [imagePreview, setImagePreview] = useState(null)
   const [showChangePassword, setShowChangePassword] = useState(false)
   const [passwordMessage, setPasswordMessage] = useState('')
+  
+  // Feedback management state
+  const [feedbacks, setFeedbacks] = useState([])
+  const [selectedFeedback, setSelectedFeedback] = useState(null)
+  const [responseMessage, setResponseMessage] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [categoryFilter, setCategoryFilter] = useState('all')
+  
+  // Order management state
+  const [orders, setOrders] = useState([])
+  const [selectedOrder, setSelectedOrder] = useState(null)
+  const [deliveryPersonnel, setDeliveryPersonnel] = useState([])
+  const [orderFilter, setOrderFilter] = useState('all')
+  
+  // Delivery state
+  const [activeDeliveries, setActiveDeliveries] = useState([])
 
   useEffect(() => {
     loadMenu()
     if (isSuperAdmin) {
       loadUsers()
     }
+    if (activeTab === 'feedback') {
+      loadFeedbacks()
+    }
+    if (activeTab === 'orders') {
+      loadOrders()
+      loadDeliveryPersonnel()
+    }
+    if (activeTab === 'delivery') {
+      loadActiveDeliveries()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [activeTab, statusFilter, categoryFilter, orderFilter])
 
   async function loadMenu() {
     const res = await fetch(getApiUrl('/api/menu'))
@@ -35,7 +72,193 @@ export default function AdminDashboard() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (res.ok) {
+   
+
+  async function loadFeedbacks() {
+    try {
+      const queryParams = new URLSearchParams()
+      if (statusFilter !== 'all') queryParams.append('status', statusFilter)
+      if (categoryFilter !== 'all') queryParams.append('category', categoryFilter)
+      
+      const res = await fetch(getApiUrl(`/api/feedback/all?${queryParams}`), {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      
+      if (res.ok) {
+        const data = await res.json()
+        setFeedbacks(Array.isArray(data) ? data : [])
+      }
+    } catch (error) {
+      console.error('Failed to load feedbacks:', error)
+    }
+  }
+
+  async function handleRespondToFeedback(feedbackId) {
+    if (!responseMessage.trim()) {
+      alert('Please enter a response message')
+      return
+    }
+
+    try {
+      const res = await fetch(getApiUrl(`/api/feedback/${feedbackId}/respond`), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          message: responseMessage,
+          status: 'in_progress'
+        })
+      })
+
       const data = await res.json()
+
+      if (data.success) {
+        alert('Response sent successfully!')
+        setResponseMessage('')
+        setSelectedFeedback(null)
+        loadFeedbacks()
+      } else {
+        alert(data.error || 'Failed to send response')
+      }
+    } catch (error) {
+      console.error('Respond to feedback error:', error)
+      alert('Failed to send response')
+    }
+  }
+
+  async function handleUpdateFeedbackStatus(feedbackId, newStatus) {
+    try {
+      const res = await fetch(getApiUrl(`/api/feedback/${feedbackId}/status`), {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      })
+
+      const data = await res.json()
+
+      if (data.success) {
+        loadFeedbacks()
+      } else {
+        alert(data.error || 'Failed to update status')
+      }
+    } catch (error) {
+      console.error('Update status error:', error)
+      alert('Failed to update status')
+    }
+  }
+
+  const getCategoryIcon = (category) => {
+    const icons = {
+      food_quality: '🍽️',
+   
+
+  async function loadOrders() {
+    try {
+      const endpoint = orderFilter === 'all' ? '/api/orders/manage' : `/api/orders/manage?status=${orderFilter}`
+      const res = await fetch(getApiUrl(endpoint), {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      const data = await res.json()
+      setOrders(Array.isArray(data) ? data : [])
+    } catch (error) {
+      console.error('Failed to load orders:', error)
+    }
+  }
+
+  async function loadDeliveryPersonnel() {
+    try {
+      const res = await fetch(getApiUrl('/api/delivery-personnel'), {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setDeliveryPersonnel(data)
+      }
+    } catch (error) {
+      console.error('Failed to load delivery personnel:', error)
+    }
+  }
+
+  async function loadActiveDeliveries() {
+    try {
+      const res = await fetch(getApiUrl('/api/delivery/my-deliveries'), {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      const data = await res.json()
+      setActiveDeliveries(Array.isArray(data) ? data : [])
+    } catch (error) {
+      console.error('Failed to load deliveries:', error)
+    }
+  }
+
+  async function updateOrderStatus(orderId, newStatus, note = '') {
+    try {
+      const res = await fetch(getApiUrl(`/api/orders/${orderId}/status`), {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus, note })
+      })
+      
+      if (res.ok) {
+        alert(`Order status updated to: ${newStatus}`)
+        loadOrders()
+        if (selectedOrder?.orderId === orderId) {
+          setSelectedOrder(null)
+        }
+      }
+    } catch (error) {
+      alert('Failed to update order status')
+    }
+  }
+
+  async function assignDelivery(orderId, deliveryPersonId) {
+    try {
+      const res = await fetch(getApiUrl(`/api/orders/${orderId}/assign`), {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ deliveryPersonId })
+      })
+      
+      if (res.ok) {
+        alert('Delivery person assigned successfully')
+        loadOrders()
+      }
+    } catch (error) {
+      alert('Failed to assign delivery person')
+    }
+  }
+
+  const getStatusColor = (status) => {
+    const colors = {
+      pending: '#ffa500',
+      confirmed: '#4169e1',
+      preparing: '#9370db',
+      ready: '#32cd32',
+      out_for_delivery: '#ff6347',
+      delivered: '#00ff00',
+      picked_up: '#00ff00',
+      completed: '#228b22'
+    }
+    return colors[status] || '#666'
+  }   service: '👨‍💼',
+      delivery: '🚚',
+      general: '💬',
+      complaint: '⚠️',
+      suggestion: '💡'
+    }
+    return icons[category] || '💬'
+  }   const data = await res.json()
       setUsers(data)
     }
   }
@@ -301,16 +524,21 @@ export default function AdminDashboard() {
     <div className="admin-dashboard">
       <header className="admin-header">
         <h1>Admin Dashboard</h1>
-        <p>Welcome, {user?.username} ({user?.role})</p>
+        <p>Welcome, {user?.username} ({user?.roles?.join(', ') || user?.role})</p>
       </header>
 
       <nav className="admin-nav">
-        <button
-          className={activeTab === 'menu' ? 'active' : ''}
-          onClick={() => setActiveTab('menu')}
-        >
-          Menu Management
-        </button>
+        {/* Menu Management - Admin and SuperAdmin */}
+        {(user?.roles?.includes('admin') || isSuperAdmin) && (
+          <button
+            className={activeTab === 'menu' ? 'active' : ''}
+            onClick={() => setActiveTab('menu')}
+          >
+            Menu Management
+          </button>
+        )}
+        
+        {/* User Management - SuperAdmin only */}
         {isSuperAdmin && (
           <button
             className={activeTab === 'users' ? 'active' : ''}
@@ -319,6 +547,42 @@ export default function AdminDashboard() {
             User Management
           </button>
         )}
+        
+        {/* Order Management - Admin, SuperAdmin, OrderManager */}
+        {(user?.roles?.includes('admin') || 
+          user?.roles?.includes('ordermanager') || 
+          isSuperAdmin) && (
+          <button
+            className={activeTab === 'orders' ? 'active' : ''}
+            onClick={() => setActiveTab('orders')}
+          >
+            📦 Orders
+          </button>
+        )}
+        
+        {/* Delivery - SuperAdmin and Delivery Personnel */}
+        {(user?.roles?.includes('delivery') || isSuperAdmin) && (
+          <button
+            className={activeTab === 'delivery' ? 'active' : ''}
+            onClick={() => setActiveTab('delivery')}
+          >
+            🚚 Delivery
+          </button>
+        )}
+        
+        {/* Feedback - Admin, SuperAdmin, Feedback Manager */}
+        {(user?.roles?.includes('admin') || 
+          user?.roles?.includes('feedback_manager') || 
+          isSuperAdmin) && (
+          <button
+            className={activeTab === 'feedback' ? 'active' : ''}
+            onClick={() => setActiveTab('feedback')}
+          >
+            💬 Feedback
+          </button>
+        )}
+        
+        {/* Settings - Everyone */}
         <button
           className={activeTab === 'settings' ? 'active' : ''}
           onClick={() => setActiveTab('settings')}
@@ -327,7 +591,8 @@ export default function AdminDashboard() {
         </button>
       </nav>
 
-      {activeTab === 'menu' && (
+      {/* Menu Management - Admin and SuperAdmin only */}
+      {activeTab === 'menu' && (user?.roles?.includes('admin') || isSuperAdmin) && (
         <div className="admin-content">
           <div className="admin-toolbar">
             <select
@@ -690,6 +955,363 @@ export default function AdminDashboard() {
         </div>
       )}
 
+      {/* Order Management - Admin, SuperAdmin, OrderManager only */}
+      {activeTab === 'orders' && 
+       (user?.roles?.includes('admin') || 
+        user?.roles?.includes('ordermanager') || 
+        isSuperAdmin) && (
+        <div className="admin-content">
+          <div className="orders-header">
+            <h2>📦 Order Management</h2>
+            <div className="orders-stats">
+              <div className="stat-card">
+                <span className="stat-number">{orders.filter(o => o.status === 'pending').length}</span>
+                <span className="stat-label">Pending</span>
+              </div>
+              <div className="stat-card">
+                <span className="stat-number">{orders.filter(o => o.status === 'preparing').length}</span>
+                <span className="stat-label">Preparing</span>
+              </div>
+              <div className="stat-card">
+                <span className="stat-number">{orders.filter(o => o.status === 'ready').length}</span>
+                <span className="stat-label">Ready</span>
+              </div>
+              <div className="stat-card">
+                <span className="stat-number">{orders.filter(o => o.status === 'out_for_delivery').length}</span>
+                <span className="stat-label">Delivering</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="orders-filters">
+            <select 
+              value={orderFilter} 
+              onChange={(e) => setOrderFilter(e.target.value)}
+              className="filter-select"
+            >
+              <option value="all">All Orders</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="preparing">Preparing</option>
+              <option value="ready">Ready</option>
+              <option value="out_for_delivery">Out for Delivery</option>
+              <option value="delivered">Delivered</option>
+              <option value="completed">Completed</option>
+            </select>
+            <button onClick={loadOrders} className="refresh-btn">🔄 Refresh</button>
+          </div>
+
+          {orders.length === 0 ? (
+            <div className="no-data">No orders found</div>
+          ) : (
+            <div className="orders-grid">
+              {orders.map(order => (
+                <div key={order._id} className="order-card">
+                  <div className="order-card-header">
+                    <h3>Order #{order.orderId}</h3>
+                    <span 
+                      className="order-status-badge" 
+                      style={{ backgroundColor: getStatusColor(order.status) }}
+                    >
+                      {order.status.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+
+                  <div className="order-details">
+                    <p><strong>Customer:</strong> {order.customerName || order.username}</p>
+                    <p><strong>Items:</strong> {order.items.length}</p>
+                    <p><strong>Total:</strong> KSH {order.grandTotal}</p>
+                    <p><strong>Type:</strong> {order.orderType || order.deliveryType}</p>
+                    <p><strong>Payment:</strong> {order.paymentMethod}</p>
+                    <p><strong>Date:</strong> {new Date(order.createdAt).toLocaleString()}</p>
+                  </div>
+
+                  {order.deliveryAddress && (
+                    <div className="delivery-info">
+                      <strong>📍 Delivery Address:</strong>
+                      <p>{order.deliveryAddress.street}, {order.deliveryAddress.city}</p>
+                      <p>📞 {order.deliveryAddress.phone}</p>
+                    </div>
+                  )}
+
+                  <div className="order-actions">
+                    <select
+                      value={order.status}
+                      onChange={(e) => updateOrderStatus(order.orderId, e.target.value)}
+                      className="status-select"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="preparing">Preparing</option>
+                      <option value="ready">Ready</option>
+                      <option value="out_for_delivery">Out for Delivery</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="completed">Completed</option>
+                    </select>
+
+                    {(order.orderType === 'delivery' || order.deliveryType === 'delivery') && 
+                     order.status !== 'delivered' && 
+                     order.status !== 'completed' && (
+                      <select
+                        value={order.assignedTo?._id || ''}
+                        onChange={(e) => assignDelivery(order.orderId, e.target.value)}
+                        className="delivery-select"
+                      >
+                        <option value="">Assign Driver</option>
+                        {deliveryPersonnel.map(person => (
+                          <option key={person._id} value={person._id}>
+                            {person.username}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+
+                  {order.assignedTo && (
+                    <div className="assigned-driver">
+                      <strong>🚴 Driver:</strong> {order.assignedTo.username}
+                      {order.assignedTo.phone && <span> • 📞 {order.assignedTo.phone}</span>}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+       /* Delivery Management - SuperAdmin and Delivery Personnel only */}
+      {activeTab === 'delivery' && 
+       (user?.roles?.includes('delivery') || isSuperAdmin)
+        </div>
+      )}
+
+      {activeTab === 'delivery' && (
+        <div className="admin-content">
+          <div className="delivery-header">
+            <h2>🚚 Active Deliveries</h2>
+            <div className="delivery-stats">
+              <div className="stat-card">
+                <span className="stat-number">{activeDeliveries.length}</span>
+                <span className="stat-label">Active Deliveries</span>
+              </div>
+              <div className="stat-card">
+                <span className="stat-number">{activeDeliveries.filter(d => d.status === 'out_for_delivery').length}</span>
+                <span className="stat-label">In Transit</span>
+              </div>
+            </div>
+          </div>
+
+          <button onClick={loadActiveDeliveries} className="refresh-btn">🔄 Refresh</button>
+
+          {activeDeliveries.length === 0 ? (
+            <div className="no-data">
+              <p>No active deliveries at the moment</p>
+            </div>
+          ) : (
+            <div className="deliveries-grid">
+              {activeDeliveries.map(delivery => (
+                <div key={delivery._id} className="delivery-card">
+                  <div className="delivery-card-header">
+                    <h3>Order #{delivery.orderId}</h3>
+                    <span 
+                      className="delivery-status-badge" 
+                      style={{ backgroundColor: getStatusColor(delivery.status) }}
+                    >
+                      {delivery.status.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+
+                  <div className="delivery-details">
+                    <p><strong>Customer:</strong> {delivery.customerName}</p>
+                    <p><strong>Total:</strong> KSH {delivery.grandTotal}</p>
+                    {delivery.deliveryAddress && (
+                      <>
+                        <p><strong>📍 Address:</strong></p>
+                        <p>{delivery.deliveryAddress.street}</p>
+                        <p>{delivery.deliveryAddress.city}</p>
+                        <p>📞 {delivery.deliveryAddress.phone}</p>
+                      </>
+                    )}
+                    {delivery.assignedTo && (
+                      <p><strong>🚴 Driver:</strong> {delivery.assignedTo.username}</p>
+                    )}
+                  </div>
+
+                  <div className="delivery-items">
+                    <strong>Items:</strong>
+                    <ul>
+                      {delivery.items.map((item, idx) => (
+                        <li key={idx}>{item.name} x{item.quantity}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )/* Feedback Management - Admin, SuperAdmin, Feedback Manager only */}
+      {activeTab === 'feedback' && 
+       (user?.roles?.includes('admin') || 
+        user?.roles?.includes('feedback_manager') || 
+        isSuperAdmin)
+
+      {activeTab === 'feedback' && (
+        <div className="admin-content">
+          <div className="feedback-header">
+            <h2>📋 Customer Feedback</h2>
+            <div className="feedback-stats">
+              <div className="stat-card">
+                <span className="stat-number">{feedbacks.filter(f => f.status === 'pending').length}</span>
+                <span className="stat-label">Pending</span>
+              </div>
+              <div className="stat-card">
+                <span className="stat-number">{feedbacks.filter(f => f.status === 'in_progress').length}</span>
+                <span className="stat-label">In Progress</span>
+              </div>
+              <div className="stat-card">
+                <span className="stat-number">{feedbacks.filter(f => f.status === 'resolved').length}</span>
+                <span className="stat-label">Resolved</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="feedback-filters">
+            <select 
+              value={statusFilter} 
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="filter-select"
+            >
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+              <option value="closed">Closed</option>
+            </select>
+
+            <select 
+              value={categoryFilter} 
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="filter-select"
+            >
+              <option value="all">All Categories</option>
+              <option value="food_quality">Food Quality</option>
+              <option value="service">Service</option>
+              <option value="delivery">Delivery</option>
+              <option value="general">General</option>
+              <option value="complaint">Complaint</option>
+              <option value="suggestion">Suggestion</option>
+            </select>
+
+            <button onClick={loadFeedbacks} className="refresh-btn">
+              🔄 Refresh
+            </button>
+          </div>
+
+          {feedbacks.length === 0 ? (
+            <div className="no-data">No feedback found</div>
+          ) : (
+            <div className="feedbacks-grid">
+              {feedbacks.map(feedback => (
+                <div key={feedback._id} className="feedback-card">
+                  <div className="feedback-card-header">
+                    <div className="feedback-meta">
+                      <span className="feedback-category">
+                        {getCategoryIcon(feedback.category)} {feedback.category.replace('_', ' ')}
+                      </span>
+                      <span className={`feedback-status status-${feedback.status}`}>
+                        {feedback.status.replace('_', ' ')}
+                      </span>
+                    </div>
+                    {feedback.rating && (
+                      <div className="feedback-rating">
+                        {'⭐'.repeat(feedback.rating)}
+                      </div>
+                    )}
+                  </div>
+
+                  <h3 className="feedback-subject">{feedback.subject}</h3>
+                  <p className="feedback-message">{feedback.message}</p>
+
+                  <div className="feedback-user-info">
+                    <span>👤 {feedback.username}</span>
+                    <span>📅 {new Date(feedback.createdAt).toLocaleDateString()}</span>
+                  </div>
+
+                  {feedback.response && (
+                    <div className="feedback-response">
+                      <strong>Response:</strong>
+                      <p>{feedback.response.message}</p>
+                      <small>
+                        Responded on {new Date(feedback.response.respondedAt).toLocaleDateString()}
+                      </small>
+                    </div>
+                  )}
+
+                  <div className="feedback-actions">
+                    {!feedback.response && (
+                      <button 
+                        onClick={() => setSelectedFeedback(feedback)}
+                        className="btn-respond"
+                      >
+                        💬 Respond
+                      </button>
+                    )}
+                    
+                    <select
+                      value={feedback.status}
+                      onChange={(e) => handleUpdateFeedbackStatus(feedback.feedbackId, e.target.value)}
+                      className="status-select"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="resolved">Resolved</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Response Modal */}
+          {selectedFeedback && (
+            <div className="modal-overlay" onClick={() => setSelectedFeedback(null)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h2>Respond to Feedback</h2>
+                  <button onClick={() => setSelectedFeedback(null)} className="modal-close">✕</button>
+                </div>
+                <div className="modal-body">
+                  <div className="feedback-details">
+                    <h3>{selectedFeedback.subject}</h3>
+                    <p><strong>From:</strong> {selectedFeedback.username}</p>
+                    <p><strong>Category:</strong> {selectedFeedback.category}</p>
+                    <p><strong>Message:</strong></p>
+                    <p className="original-message">{selectedFeedback.message}</p>
+                  </div>
+                  <textarea
+                    value={responseMessage}
+                    onChange={(e) => setResponseMessage(e.target.value)}
+                    placeholder="Type your response here..."
+                    rows="6"
+                    className="response-textarea"
+                  />
+                </div>
+                <div className="modal-footer">
+                  <button onClick={() => setSelectedFeedback(null)} className="btn-cancel">
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={() => handleRespondToFeedback(selectedFeedback.feedbackId)}
+                    className="btn-send"
+                  >
+                    Send Response
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {activeTab === 'settings' && (
         <div className="admin-content">
           <div className="settings-container">
@@ -698,7 +1320,13 @@ export default function AdminDashboard() {
               <div className="account-info">
                 <p><strong>Username:</strong> {user?.username}</p>
                 <p><strong>Email:</strong> {user?.email}</p>
-                <p><strong>Role:</strong> <span className={`role-badge ${user?.role}`}>{user?.role}</span></p>
+                <p><strong>Roles:</strong> 
+                  {user?.roles?.map(role => (
+                    <span key={role} className={`role-badge ${role}`} style={{ marginLeft: '0.5rem' }}>
+                      {role}
+                    </span>
+                  )) || <span className={`role-badge ${user?.role}`}>{user?.role}</span>}
+                </p>
               </div>
             </div>
 
@@ -765,18 +1393,39 @@ export default function AdminDashboard() {
               )}
             </div>
 
-            {isSuperAdmin && (
-              <div className="settings-section">
-                <h3>⚠️ Super Admin Privileges</h3>
-                <p>You have full access to:</p>
-                <ul>
-                  <li>Menu Management - Add, edit, delete items</li>
-                  <li>User Management - Create and manage admin accounts</li>
-                  <li>Settings - Change your credentials</li>
-                  <li>Order History - View all orders</li>
-                </ul>
-              </div>
-            )}
+            {/* Role-based Privileges Section */}
+            <div className="settings-section">
+              <h3>🔐 Your Access & Privileges</h3>
+              <p><strong>Roles:</strong> {user?.roles?.join(', ') || user?.role}</p>
+              <p>You have access to:</p>
+              <ul>
+                {(user?.roles?.includes('admin') || isSuperAdmin) && (
+                  <li>✅ Menu Management - Add, edit, delete menu items</li>
+                )}
+                {isSuperAdmin && (
+                  <li>✅ User Management - Create and manage admin accounts</li>
+                )}
+                {(user?.roles?.includes('admin') || 
+                  user?.roles?.includes('ordermanager') || 
+                  isSuperAdmin) && (
+                  <li>✅ Order Management - View and manage all orders</li>
+                )}
+                {(user?.roles?.includes('delivery') || isSuperAdmin) && (
+                  <li>✅ Delivery Management - Track and manage deliveries</li>
+                )}
+                {(user?.roles?.includes('admin') || 
+                  user?.roles?.includes('feedback_manager') || 
+                  isSuperAdmin) && (
+                  <li>✅ Feedback Management - View and respond to customer feedback</li>
+                )}
+                <li>✅ Settings - Change your credentials</li>
+              </ul>
+              {isSuperAdmin && (
+                <div className="superadmin-badge">
+                  <strong>⭐ Super Admin</strong> - You have full system access
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

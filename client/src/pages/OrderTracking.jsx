@@ -11,6 +11,9 @@ export default function OrderTracking() {
   const [tracking, setTracking] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [filterStatus, setFilterStatus] = useState('all')
+  const [filterType, setFilterType] = useState('all')
+  const [searchQuery, setSearchQuery] = useState('')
 
   const handleGoBack = () => {
     window.location.href = '/'
@@ -145,30 +148,156 @@ export default function OrderTracking() {
     }
   }
 
+  // Filter and search logic
+  const filteredOrders = orders.filter(order => {
+    const matchesStatus = filterStatus === 'all' || order.status === filterStatus
+    const matchesType = filterType === 'all' || (order.orderType || order.deliveryType) === filterType
+    const matchesSearch = searchQuery === '' || 
+      order.orderId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.items.some(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    
+    return matchesStatus && matchesType && matchesSearch
+  })
+
+  // Get order statistics
+  const orderStats = {
+    total: orders.length,
+    active: orders.filter(o => ['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery'].includes(o.status)).length,
+    completed: orders.filter(o => ['delivered', 'picked_up', 'dined', 'completed'].includes(o.status)).length,
+    cancelled: orders.filter(o => ['cancelled', 'failed'].includes(o.status)).length
+  }
+
   if (loading) {
-    return <div className="loading-container">Loading your orders...</div>
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading your orders...</p>
+      </div>
+    )
   }
 
   return (
     <div className="order-tracking-container">
+      {/* Enhanced Header */}
       <div className="order-tracking-header">
-        <button className="back-to-home-btn" onClick={handleGoBack}>
-          ← Back
-        </button>
-        <h1>My Orders</h1>
+        <div className="header-content">
+          <button className="back-to-home-btn" onClick={handleGoBack}>
+            ← Back
+          </button>
+          <div className="header-text">
+            <h1>📦 My Orders</h1>
+            <p className="header-subtitle">Track and manage your orders</p>
+          </div>
+        </div>
       </div>
 
       {error && <div className="error-message">{error}</div>}
 
       {!Array.isArray(orders) || orders.length === 0 ? (
         <div className="no-orders">
+          <div className="no-orders-icon">📭</div>
+          <h2>No Orders Yet</h2>
           <p>You haven&apos;t placed any orders yet.</p>
+          <button onClick={() => window.location.href = '/menu'} className="browse-menu-btn">
+            Browse Menu
+          </button>
         </div>
       ) : (
-        <div className="orders-layout">
-          {/* Orders List */}
-          <div className="orders-list">
-            {(Array.isArray(orders) ? orders : []).map((order) => (
+        <>
+          {/* Statistics Cards */}
+          <div className="order-stats">
+            <div className="stat-card">
+              <div className="stat-icon">📊</div>
+              <div className="stat-content">
+                <div className="stat-value">{orderStats.total}</div>
+                <div className="stat-label">Total Orders</div>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">⏳</div>
+              <div className="stat-content">
+                <div className="stat-value">{orderStats.active}</div>
+                <div className="stat-label">Active</div>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">✅</div>
+              <div className="stat-content">
+                <div className="stat-value">{orderStats.completed}</div>
+                <div className="stat-label">Completed</div>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">🚫</div>
+              <div className="stat-content">
+                <div className="stat-value">{orderStats.cancelled}</div>
+                <div className="stat-label">Cancelled</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Filters and Search */}
+          <div className="filters-section">
+            <div className="search-box">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Search by order ID or item name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+            </div>
+            <div className="filters">
+              <select 
+                className="filter-select"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+              >
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="preparing">Preparing</option>
+                <option value="ready">Ready</option>
+                <option value="out_for_delivery">Out for Delivery</option>
+                <option value="delivered">Delivered</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <select 
+                className="filter-select"
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+              >
+                <option value="all">All Types</option>
+                <option value="delivery">🚚 Delivery</option>
+                <option value="pickup">🏪 Pickup</option>
+                <option value="dine-in">🍽️ Dine-In</option>
+              </select>
+            </div>
+          </div>
+
+          {filteredOrders.length === 0 ? (
+            <div className="no-results">
+              <div className="no-results-icon">🔍</div>
+              <h3>No orders found</h3>
+              <p>Try adjusting your filters or search query</p>
+              <button onClick={() => {
+                setFilterStatus('all')
+                setFilterType('all')
+                setSearchQuery('')
+              }} className="reset-filters-btn">
+                Reset Filters
+              </button>
+            </div>
+          ) : (
+            <div className="orders-layout">
+              {/* Orders List */}
+              <div className="orders-list">
+                <div className="orders-list-header">
+                  <h3>Orders ({filteredOrders.length})</h3>
+                </div>
+                {filteredOrders.map((order) => (
               <div
                 key={order.orderId}
                 className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
@@ -179,7 +308,7 @@ export default function OrderTracking() {
                   }
                 }}
               >
-                <div className="order-card-header">
+                  <div className="order-card-header">
                   <span className="order-id">#{order.orderId}</span>
                   <span 
                     className="order-status-badge" 
@@ -189,22 +318,32 @@ export default function OrderTracking() {
                   </span>
                 </div>
                 <div className="order-card-body">
-                  <p><strong>{order.items.length}</strong> items</p>
-                  <p><strong>KSH {order.grandTotal}</strong></p>
-                  <p className="order-type">
-                    {(order.orderType || order.deliveryType) === 'delivery' ? '🚚 Delivery' : 
-                      (order.orderType || order.deliveryType) === 'pickup' ? '🏪 Pickup' : '🍽️ Dine-In'}
-                  </p>
+                  <div className="order-info-row">
+                    <span className="info-label">Items:</span>
+                    <span className="info-value">{order.items.length}</span>
+                  </div>
+                  <div className="order-info-row">
+                    <span className="info-label">Total:</span>
+                    <span className="info-value price">KSH {order.grandTotal}</span>
+                  </div>
+                  <div className="order-info-row">
+                    <span className="info-label">Type:</span>
+                    <span className="order-type">
+                      {(order.orderType || order.deliveryType) === 'delivery' ? '🚚 Delivery' : 
+                        (order.orderType || order.deliveryType) === 'pickup' ? '🏪 Pickup' : '🍽️ Dine-In'}
+                    </span>
+                  </div>
                 </div>
                 <div className="order-card-footer">
-                  <small>{new Date(order.createdAt).toLocaleString()}</small>
+                  <span className="order-date-badge">📅 {new Date(order.createdAt).toLocaleDateString()}</span>
+                  <span className="order-time-badge">🕐 {new Date(order.createdAt).toLocaleTimeString()}</span>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Order Details */}
-          {selectedOrder && (
+          {selectedOrder ? (
             <div className="order-details">
               <h2>Order Details</h2>
               
@@ -372,8 +511,16 @@ export default function OrderTracking() {
                 </div>
               )}
             </div>
+          ) : (
+            <div className="no-selection">
+              <div className="no-selection-icon">👈</div>
+              <h3>Select an order</h3>
+              <p>Click on any order from the list to view its details</p>
+            </div>
           )}
         </div>
+          )}
+        </>
       )}
     </div>
   )
