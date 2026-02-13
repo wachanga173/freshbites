@@ -1,5 +1,4 @@
 import { useAuth } from '../context/AuthContext'
-import RoleSwitcher from '../components/RoleSwitcher'
 import Footer from '../components/Footer'
 import './Auth.css'
 

@@ -72,7 +72,10 @@ export default function AdminDashboard() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (res.ok) {
-   
+      const data = await res.json()
+      setUsers(data)
+    }
+  }
 
   async function loadFeedbacks() {
     try {
@@ -154,8 +157,15 @@ export default function AdminDashboard() {
 
   const getCategoryIcon = (category) => {
     const icons = {
+      general: '💬',
       food_quality: '🍽️',
-   
+      service: '👨‍🍳',
+      delivery: '🚚',
+      complaint: '⚠️',
+      suggestion: '💡'
+    }
+    return icons[category] || '📝'
+  }
 
   async function loadOrders() {
     try {
@@ -251,16 +261,6 @@ export default function AdminDashboard() {
       completed: '#228b22'
     }
     return colors[status] || '#666'
-  }   service: '👨‍💼',
-      delivery: '🚚',
-      general: '💬',
-      complaint: '⚠️',
-      suggestion: '💡'
-    }
-    return icons[category] || '💬'
-  }   const data = await res.json()
-      setUsers(data)
-    }
   }
 
   async function handleImageUpload(file) {
@@ -671,36 +671,6 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="modal-buttons">
-                    <label style={{fontWeight: 'bold', display: 'block', marginBottom: '8px'}}>Order Type (select all that apply):</label>
-                    <label style={{display: 'block', marginBottom: '5px'}}>
-                      <input type="checkbox" name="orderCategory" value="dine-in" defaultChecked />
-                      🍽️ Dine-In
-                    </label>
-                    <label style={{display: 'block', marginBottom: '5px'}}>
-                      <input type="checkbox" name="orderCategory" value="pickup" />
-                      🛍️ Pickup
-                    </label>
-                    <label style={{display: 'block', marginBottom: '5px'}}>
-                      <input type="checkbox" name="orderCategory" value="delivery" id="deliveryCheckbox" />
-                      🚚 Delivery
-                    </label>
-                    <div id="shippingFeeSection" style={{marginLeft: '24px', marginTop: '5px', display: 'none'}}>
-                      <input 
-                        type="number" 
-                        name="shippingFee" 
-                        placeholder="Shipping Fee (KSH)" 
-                        defaultValue="200"
-                        step="0.01"
-                        style={{width: '180px'}}
-                      />
-                    </div>
-                  </div>
-                  <script dangerouslySetInnerHTML={{__html: `
-                    document.getElementById('deliveryCheckbox')?.addEventListener('change', function(e) {
-                      document.getElementById('shippingFeeSection').style.display = e.target.checked ? 'block' : 'none';
-                    });
-                  `}} />
-                  <div className="modal-buttons">
                     <button type="submit" disabled={uploadingImage}>
                       {uploadingImage ? 'Uploading...' : 'Add Item'}
                     </button>
@@ -787,52 +757,6 @@ export default function AdminDashboard() {
                       />
                     </div>
                   </div>
-                  <div className="modal-buttons">
-                    <label style={{fontWeight: 'bold', display: 'block', marginBottom: '8px'}}>Order Type (select all that apply):</label>
-                    <label style={{display: 'block', marginBottom: '5px'}}>
-                      <input 
-                        type="checkbox" 
-                        name="orderCategory" 
-                        value="dine-in" 
-                        defaultChecked={Array.isArray(editingItem.orderCategory) ? editingItem.orderCategory.includes('dine-in') : true}
-                      />
-                      🍽️ Dine-In
-                    </label>
-                    <label style={{display: 'block', marginBottom: '5px'}}>
-                      <input 
-                        type="checkbox" 
-                        name="orderCategory" 
-                        value="pickup"
-                        defaultChecked={Array.isArray(editingItem.orderCategory) && editingItem.orderCategory.includes('pickup')}
-                      />
-                      🛍️ Pickup
-                    </label>
-                    <label style={{display: 'block', marginBottom: '5px'}}>
-                      <input 
-                        type="checkbox" 
-                        name="orderCategory" 
-                        value="delivery" 
-                        id="editDeliveryCheckbox"
-                        defaultChecked={Array.isArray(editingItem.orderCategory) && editingItem.orderCategory.includes('delivery')}
-                      />
-                      🚚 Delivery
-                    </label>
-                    <div id="editShippingFeeSection" style={{marginLeft: '24px', marginTop: '5px', display: editingItem.deliverable ? 'block' : 'none'}}>
-                      <input 
-                        type="number" 
-                        name="shippingFee" 
-                        placeholder="Shipping Fee (KSH)" 
-                        defaultValue={editingItem.shippingFee || 200}
-                        step="0.01"
-                        style={{width: '180px'}}
-                      />
-                    </div>
-                  </div>
-                  <script dangerouslySetInnerHTML={{__html: `
-                    document.getElementById('editDeliveryCheckbox')?.addEventListener('change', function(e) {
-                      document.getElementById('editShippingFeeSection').style.display = e.target.checked ? 'block' : 'none';
-                    });
-                  `}} />
                   <div className="modal-buttons">
                     <button type="submit" disabled={uploadingImage}>
                       {uploadingImage ? 'Uploading...' : 'Update Item'}
@@ -1076,13 +1000,12 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
-       /* Delivery Management - SuperAdmin and Delivery Personnel only */}
-      {activeTab === 'delivery' && 
-       (user?.roles?.includes('delivery') || isSuperAdmin)
+          )}
         </div>
       )}
 
-      {activeTab === 'delivery' && (
+      {/* Delivery Management - SuperAdmin and Delivery Personnel only */}
+      {activeTab === 'delivery' && (isSuperAdmin || user?.roles?.includes('delivery')) && (
         <div className="admin-content">
           <div className="delivery-header">
             <h2>🚚 Active Deliveries</h2>
@@ -1147,13 +1070,13 @@ export default function AdminDashboard() {
             </div>
           )}
         </div>
-      )/* Feedback Management - Admin, SuperAdmin, Feedback Manager only */}
+      )}
+
+      {/* Feedback Management - Admin, SuperAdmin, Feedback Manager only */}
       {activeTab === 'feedback' && 
        (user?.roles?.includes('admin') || 
         user?.roles?.includes('feedback_manager') || 
-        isSuperAdmin)
-
-      {activeTab === 'feedback' && (
+        isSuperAdmin) && (
         <div className="admin-content">
           <div className="feedback-header">
             <h2>📋 Customer Feedback</h2>

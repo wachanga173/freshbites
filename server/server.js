@@ -1964,7 +1964,7 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
 // Fallback response function for when AI is not configured
 function getFallbackResponse(question) {
   const lowerQuestion = question.toLowerCase()
-  
+
   if (lowerQuestion.includes('calorie') || lowerQuestion.includes('nutrition')) {
     return 'Our menu items include detailed nutritional information. For specific calorie counts, please check the menu details or ask about a particular item. Generally, our salads and grilled items are lower in calories, while our desserts and fried items are more indulgent.'
   } else if (lowerQuestion.includes('allerg') || lowerQuestion.includes('gluten') || lowerQuestion.includes('dairy')) {

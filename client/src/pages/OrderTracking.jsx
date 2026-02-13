@@ -298,227 +298,227 @@ export default function OrderTracking() {
                   <h3>Orders ({filteredOrders.length})</h3>
                 </div>
                 {filteredOrders.map((order) => (
-              <div
-                key={order.orderId}
-                className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
-                onClick={() => {
-                  setSelectedOrder(order)
-                  if ((order.orderType || order.deliveryType) === 'delivery') {
-                    fetchTrackingInfo(order.orderId)
-                  }
-                }}
-              >
-                  <div className="order-card-header">
-                  <span className="order-id">#{order.orderId}</span>
-                  <span 
-                    className="order-status-badge" 
-                    style={{ backgroundColor: getStatusColor(order.status) }}
+                  <div
+                    key={order.orderId}
+                    className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
+                    onClick={() => {
+                      setSelectedOrder(order)
+                      if ((order.orderType || order.deliveryType) === 'delivery') {
+                        fetchTrackingInfo(order.orderId)
+                      }
+                    }}
                   >
-                    {getStatusIcon(order.status)} {order.status.replace(/_/g, ' ')}
-                  </span>
-                </div>
-                <div className="order-card-body">
-                  <div className="order-info-row">
-                    <span className="info-label">Items:</span>
-                    <span className="info-value">{order.items.length}</span>
-                  </div>
-                  <div className="order-info-row">
-                    <span className="info-label">Total:</span>
-                    <span className="info-value price">KSH {order.grandTotal}</span>
-                  </div>
-                  <div className="order-info-row">
-                    <span className="info-label">Type:</span>
-                    <span className="order-type">
-                      {(order.orderType || order.deliveryType) === 'delivery' ? '🚚 Delivery' : 
-                        (order.orderType || order.deliveryType) === 'pickup' ? '🏪 Pickup' : '🍽️ Dine-In'}
-                    </span>
-                  </div>
-                </div>
-                <div className="order-card-footer">
-                  <span className="order-date-badge">📅 {new Date(order.createdAt).toLocaleDateString()}</span>
-                  <span className="order-time-badge">🕐 {new Date(order.createdAt).toLocaleTimeString()}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Order Details */}
-          {selectedOrder ? (
-            <div className="order-details">
-              <h2>Order Details</h2>
-              
-              {/* Order Info */}
-              <div className="detail-section">
-                <h3>Order #{selectedOrder.orderId}</h3>
-                <p className="order-date">{new Date(selectedOrder.createdAt).toLocaleString()}</p>
-                <div className="current-status" style={{ borderLeftColor: getStatusColor(selectedOrder.status) }}>
-                  <span className="status-icon">{getStatusIcon(selectedOrder.status)}</span>
-                  <div>
-                    <strong>Status: {selectedOrder.status.replace(/_/g, ' ').toUpperCase()}</strong>
-                    {selectedOrder.statusHistory && selectedOrder.statusHistory.length > 0 && (
-                      <p className="status-update-time">
-                        Last updated: {new Date(selectedOrder.statusHistory[selectedOrder.statusHistory.length - 1].timestamp).toLocaleString()}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Items */}
-              <div className="detail-section">
-                <h3>Items</h3>
-                <div className="order-items-list">
-                  {(selectedOrder && Array.isArray(selectedOrder.items) ? selectedOrder.items : []).map((item, idx) => (
-                    <div key={idx} className="order-item-row">
-                      <img src={item.image} alt={item.name} />
-                      <div className="item-info">
-                        <strong>{item.name}</strong>
-                        <span>x{item.quantity}</span>
-                      </div>
-                      <span className="item-price">KSH {item.price * item.quantity}</span>
+                    <div className="order-card-header">
+                      <span className="order-id">#{order.orderId}</span>
+                      <span 
+                        className="order-status-badge" 
+                        style={{ backgroundColor: getStatusColor(order.status) }}
+                      >
+                        {getStatusIcon(order.status)} {order.status.replace(/_/g, ' ')}
+                      </span>
                     </div>
-                  ))}
-                </div>
+                    <div className="order-card-body">
+                      <div className="order-info-row">
+                        <span className="info-label">Items:</span>
+                        <span className="info-value">{order.items.length}</span>
+                      </div>
+                      <div className="order-info-row">
+                        <span className="info-label">Total:</span>
+                        <span className="info-value price">KSH {order.grandTotal}</span>
+                      </div>
+                      <div className="order-info-row">
+                        <span className="info-label">Type:</span>
+                        <span className="order-type">
+                          {(order.orderType || order.deliveryType) === 'delivery' ? '🚚 Delivery' : 
+                            (order.orderType || order.deliveryType) === 'pickup' ? '🏪 Pickup' : '🍽️ Dine-In'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="order-card-footer">
+                      <span className="order-date-badge">📅 {new Date(order.createdAt).toLocaleDateString()}</span>
+                      <span className="order-time-badge">🕐 {new Date(order.createdAt).toLocaleTimeString()}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              {/* Delivery Address */}
-              {selectedOrder.deliveryType === 'delivery' && selectedOrder.deliveryAddress && (
-                <div className="detail-section">
-                  <h3>Delivery Address</h3>
-                  <p>{selectedOrder.deliveryAddress.street}</p>
-                  <p>{selectedOrder.deliveryAddress.city}</p>
-                  <p>Phone: {selectedOrder.deliveryAddress.phone}</p>
-                  {selectedOrder.deliveryAddress.instructions && (
-                    <p className="instructions">Instructions: {selectedOrder.deliveryAddress.instructions}</p>
-                  )}
-                </div>
-              )}
+              {/* Order Details */}
+              {selectedOrder ? (
+                <div className="order-details">
+                  <h2>Order Details</h2>
+              
+                  {/* Order Info */}
+                  <div className="detail-section">
+                    <h3>Order #{selectedOrder.orderId}</h3>
+                    <p className="order-date">{new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                    <div className="current-status" style={{ borderLeftColor: getStatusColor(selectedOrder.status) }}>
+                      <span className="status-icon">{getStatusIcon(selectedOrder.status)}</span>
+                      <div>
+                        <strong>Status: {selectedOrder.status.replace(/_/g, ' ').toUpperCase()}</strong>
+                        {selectedOrder.statusHistory && selectedOrder.statusHistory.length > 0 && (
+                          <p className="status-update-time">
+                        Last updated: {new Date(selectedOrder.statusHistory[selectedOrder.statusHistory.length - 1].timestamp).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
 
-              {/* Live Tracking Map */}
-              {selectedOrder.deliveryType === 'delivery' && 
+                  {/* Items */}
+                  <div className="detail-section">
+                    <h3>Items</h3>
+                    <div className="order-items-list">
+                      {(selectedOrder && Array.isArray(selectedOrder.items) ? selectedOrder.items : []).map((item, idx) => (
+                        <div key={idx} className="order-item-row">
+                          <img src={item.image} alt={item.name} />
+                          <div className="item-info">
+                            <strong>{item.name}</strong>
+                            <span>x{item.quantity}</span>
+                          </div>
+                          <span className="item-price">KSH {item.price * item.quantity}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Delivery Address */}
+                  {selectedOrder.deliveryType === 'delivery' && selectedOrder.deliveryAddress && (
+                    <div className="detail-section">
+                      <h3>Delivery Address</h3>
+                      <p>{selectedOrder.deliveryAddress.street}</p>
+                      <p>{selectedOrder.deliveryAddress.city}</p>
+                      <p>Phone: {selectedOrder.deliveryAddress.phone}</p>
+                      {selectedOrder.deliveryAddress.instructions && (
+                        <p className="instructions">Instructions: {selectedOrder.deliveryAddress.instructions}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Live Tracking Map */}
+                  {selectedOrder.deliveryType === 'delivery' && 
                selectedOrder.status === 'out_for_delivery' && 
                tracking && tracking.currentLocation && (
-                <div className="detail-section">
-                  <h3>🗺️ Live GPS Tracking</h3>
-                  <GPSTracker 
-                    deliveryLocation={tracking.currentLocation}
-                    destinationLocation={{
-                      latitude: selectedOrder.deliveryAddress?.latitude || 0,
-                      longitude: selectedOrder.deliveryAddress?.longitude || 0
-                    }}
-                    showControls={false}
-                  />
-                  {selectedOrder.assignedTo && (
-                    <div className="delivery-person-info">
-                      <p><strong>Delivery Person:</strong> {selectedOrder.assignedTo.username}</p>
-                      <p><strong>Phone:</strong> {selectedOrder.assignedTo.phone}</p>
-                      <a 
-                        href={`tel:${selectedOrder.assignedTo.phone}`}
-                        className="call-delivery-btn"
-                      >
+                    <div className="detail-section">
+                      <h3>🗺️ Live GPS Tracking</h3>
+                      <GPSTracker 
+                        deliveryLocation={tracking.currentLocation}
+                        destinationLocation={{
+                          latitude: selectedOrder.deliveryAddress?.latitude || 0,
+                          longitude: selectedOrder.deliveryAddress?.longitude || 0
+                        }}
+                        showControls={false}
+                      />
+                      {selectedOrder.assignedTo && (
+                        <div className="delivery-person-info">
+                          <p><strong>Delivery Person:</strong> {selectedOrder.assignedTo.username}</p>
+                          <p><strong>Phone:</strong> {selectedOrder.assignedTo.phone}</p>
+                          <a 
+                            href={`tel:${selectedOrder.assignedTo.phone}`}
+                            className="call-delivery-btn"
+                          >
                         📞 Call Delivery Person
-                      </a>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Status History */}
-              {selectedOrder.statusHistory && selectedOrder.statusHistory.length > 0 && (
-                <div className="detail-section">
-                  <h3>Status History</h3>
-                  <div className="status-timeline">
-                    {(selectedOrder && Array.isArray(selectedOrder.statusHistory) ? selectedOrder.statusHistory : []).map((history, idx) => (
-                      <div key={idx} className="timeline-item">
-                        <div className="timeline-dot" style={{ backgroundColor: getStatusColor(history.status) }}></div>
-                        <div className="timeline-content">
-                          <strong>{history.status.replace(/_/g, ' ').toUpperCase()}</strong>
-                          <p className="timeline-time">{new Date(history.timestamp).toLocaleString()}</p>
-                          {history.note && <p className="timeline-note">{history.note}</p>}
+                          </a>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Payment Info */}
-              <div className="detail-section">
-                <h3>Payment</h3>
-                <div className="payment-summary">
-                  <div className="summary-row">
-                    <span>Subtotal:</span>
-                    <span>KSH {selectedOrder.total}</span>
-                  </div>
-                  {selectedOrder.shippingFee > 0 && (
-                    <div className="summary-row">
-                      <span>Shipping Fee:</span>
-                      <span>KSH {selectedOrder.shippingFee}</span>
+                      )}
                     </div>
                   )}
-                  <div className="summary-row total">
-                    <span><strong>Total:</strong></span>
-                    <span><strong>KSH {selectedOrder.grandTotal}</strong></span>
-                  </div>
-                  <p className="payment-method">Payment: {selectedOrder.paymentMethod.toUpperCase()}</p>
-                </div>
-              </div>
 
-              {/* Status message for completed orders */}
-              {(selectedOrder.status === 'delivered' || selectedOrder.status === 'picked_up' || selectedOrder.status === 'dined') && (
-                <div className="order-status-message">
-                  <h3>{getStatusMessage(selectedOrder).title}</h3>
-                  <p>{getStatusMessage(selectedOrder).message}</p>
-                  <p className="support-info">{getStatusMessage(selectedOrder).action}</p>
-                  <div className="support-contact">
-                    <h4>📞 Customer Support</h4>
-                    <p>Phone: <a href="tel:+254712345678">+254 712 345 678</a></p>
-                    <p>Email: <a href="mailto:support@freshbites.com">support@freshbites.com</a></p>
-                    <p>Hours: Monday - Sunday, 8:00 AM - 10:00 PM</p>
+                  {/* Status History */}
+                  {selectedOrder.statusHistory && selectedOrder.statusHistory.length > 0 && (
+                    <div className="detail-section">
+                      <h3>Status History</h3>
+                      <div className="status-timeline">
+                        {(selectedOrder && Array.isArray(selectedOrder.statusHistory) ? selectedOrder.statusHistory : []).map((history, idx) => (
+                          <div key={idx} className="timeline-item">
+                            <div className="timeline-dot" style={{ backgroundColor: getStatusColor(history.status) }}></div>
+                            <div className="timeline-content">
+                              <strong>{history.status.replace(/_/g, ' ').toUpperCase()}</strong>
+                              <p className="timeline-time">{new Date(history.timestamp).toLocaleString()}</p>
+                              {history.note && <p className="timeline-note">{history.note}</p>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Payment Info */}
+                  <div className="detail-section">
+                    <h3>Payment</h3>
+                    <div className="payment-summary">
+                      <div className="summary-row">
+                        <span>Subtotal:</span>
+                        <span>KSH {selectedOrder.total}</span>
+                      </div>
+                      {selectedOrder.shippingFee > 0 && (
+                        <div className="summary-row">
+                          <span>Shipping Fee:</span>
+                          <span>KSH {selectedOrder.shippingFee}</span>
+                        </div>
+                      )}
+                      <div className="summary-row total">
+                        <span><strong>Total:</strong></span>
+                        <span><strong>KSH {selectedOrder.grandTotal}</strong></span>
+                      </div>
+                      <p className="payment-method">Payment: {selectedOrder.paymentMethod.toUpperCase()}</p>
+                    </div>
                   </div>
-                  {selectedOrder.completedAt && (
-                    <p className="completed-time">
+
+                  {/* Status message for completed orders */}
+                  {(selectedOrder.status === 'delivered' || selectedOrder.status === 'picked_up' || selectedOrder.status === 'dined') && (
+                    <div className="order-status-message">
+                      <h3>{getStatusMessage(selectedOrder).title}</h3>
+                      <p>{getStatusMessage(selectedOrder).message}</p>
+                      <p className="support-info">{getStatusMessage(selectedOrder).action}</p>
+                      <div className="support-contact">
+                        <h4>📞 Customer Support</h4>
+                        <p>Phone: <a href="tel:+254712345678">+254 712 345 678</a></p>
+                        <p>Email: <a href="mailto:support@freshbites.com">support@freshbites.com</a></p>
+                        <p>Hours: Monday - Sunday, 8:00 AM - 10:00 PM</p>
+                      </div>
+                      {selectedOrder.completedAt && (
+                        <p className="completed-time">
                       Completed on: {new Date(selectedOrder.completedAt).toLocaleString()}
-                    </p>
+                        </p>
+                      )}
+                    </div>
                   )}
-                </div>
-              )}
 
-              {/* Actions */}
-              {(selectedOrder.status === 'delivered' || 
+                  {/* Actions */}
+                  {(selectedOrder.status === 'delivered' || 
                 (selectedOrder.deliveryType === 'pickup' && selectedOrder.status === 'ready')) && (
-                <div className="detail-section">
-                  <button 
-                    className="confirm-completion-btn"
-                    onClick={() => handleConfirmCompletion(selectedOrder.orderId)}
-                  >
+                    <div className="detail-section">
+                      <button 
+                        className="confirm-completion-btn"
+                        onClick={() => handleConfirmCompletion(selectedOrder.orderId)}
+                      >
                     ✓ Confirm Order Completion
-                  </button>
-                  <p className="completion-note">
-                    {selectedOrder.deliveryType === 'pickup' 
-                      ? 'Click after picking up your order' 
-                      : 'Click after receiving your delivery'}
-                  </p>
-                </div>
-              )}
+                      </button>
+                      <p className="completion-note">
+                        {selectedOrder.deliveryType === 'pickup' 
+                          ? 'Click after picking up your order' 
+                          : 'Click after receiving your delivery'}
+                      </p>
+                    </div>
+                  )}
 
-              {selectedOrder.status === 'completed' && (
-                <div className="completion-message">
+                  {selectedOrder.status === 'completed' && (
+                    <div className="completion-message">
                   ✅ This order has been completed!
-                  {selectedOrder.completedAt && (
-                    <p>Completed on: {new Date(selectedOrder.completedAt).toLocaleString()}</p>
+                      {selectedOrder.completedAt && (
+                        <p>Completed on: {new Date(selectedOrder.completedAt).toLocaleString()}</p>
+                      )}
+                    </div>
                   )}
                 </div>
+              ) : (
+                <div className="no-selection">
+                  <div className="no-selection-icon">👈</div>
+                  <h3>Select an order</h3>
+                  <p>Click on any order from the list to view its details</p>
+                </div>
               )}
             </div>
-          ) : (
-            <div className="no-selection">
-              <div className="no-selection-icon">👈</div>
-              <h3>Select an order</h3>
-              <p>Click on any order from the list to view its details</p>
-            </div>
-          )}
-        </div>
           )}
         </>
       )}
