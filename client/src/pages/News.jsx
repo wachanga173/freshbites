@@ -148,9 +148,45 @@ function News() {
     setLoading(true)
     setError(null)
     
-    // Use category-specific mock data since free APIs are limited
-    // In production, replace with a paid news API
-    setArticles(getMockArticles(category))
+    try {
+      // GNews API - Free tier: 100 requests/day
+      // Register at https://gnews.io/ to get your free API key
+      const API_KEY = import.meta.env.VITE_GNEWS_API_KEY || '4fd5ac21e9d5dd3166cd51dcb9a5efdb'
+      
+      // Map categories to relevant search queries
+      const searchQueries = {
+        'food': 'food OR restaurant OR culinary OR cuisine',
+        'diet': 'diet OR weight loss OR dieting OR healthy diet',
+        'nutrition': 'nutrition OR vitamins OR minerals OR nutrients',
+        'healthy eating': 'healthy eating OR organic food OR wellness food',
+        'recipes': 'recipes OR cooking OR meal prep OR chef'
+      }
+      
+      const query = searchQueries[category] || searchQueries['food']
+      const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&max=10&apikey=${API_KEY}`
+      
+      const response = await fetch(url)
+      const data = await response.json()
+      
+      if (data.articles && data.articles.length > 0) {
+        // Filter articles to ensure they're food/health related
+        const filteredArticles = data.articles.filter(article => {
+          const text = `${article.title} ${article.description}`.toLowerCase()
+          const foodKeywords = ['food', 'diet', 'nutrition', 'eating', 'meal', 'recipe', 'cook', 'health', 'restaurant', 'cuisine', 'culinary', 'ingredient', 'vitamin', 'protein', 'vegetable', 'fruit', 'organic', 'chef', 'dining']
+          return foodKeywords.some(keyword => text.includes(keyword))
+        })
+        
+        setArticles(filteredArticles.length > 0 ? filteredArticles : data.articles)
+      } else {
+        // Fallback to mock data if API fails or returns no results
+        setArticles(getMockArticles(category))
+      }
+    } catch (err) {
+      // Fallback to mock data on error
+      setArticles(getMockArticles(category))
+      setError('Using cached articles')
+    }
+    
     setLoading(false)
   }, [category])
 
