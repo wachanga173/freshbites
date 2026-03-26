@@ -4,7 +4,7 @@
 }
 
 .admin-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
   padding: 32px 24px;
   text-align: center;
@@ -38,7 +38,7 @@
 }
 
 .admin-nav button.active {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .add-btn {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -127,7 +127,7 @@
 }
 
 .item-actions button:first-child {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
 }
 
@@ -187,7 +187,7 @@
 }
 
 .modal-buttons button[type="submit"] {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
 }
 
@@ -212,7 +212,7 @@
 }
 
 .admin-form button {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -343,7 +343,7 @@
 }
 
 .role-checkbox-label:hover {
-  border-color: #667eea;
+  border-color: #3D1E0B;
   background: #f5f7ff;
 }
 
@@ -450,12 +450,12 @@
 }
 
 .account-info strong {
-  color: #667eea;
+  color: #3D1E0B;
   margin-right: 8px;
 }
 
 .change-password-btn {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -466,9 +466,9 @@
 }
 
 .change-password-btn:hover {
-  background: #5568d3;
+  background: #291407;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(61,30,11, 0.3);
 }
 
 .password-form {
@@ -497,7 +497,7 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #3D1E0B;
 }
 
 .password-message {
@@ -536,12 +536,12 @@
 }
 
 .form-buttons button[type="submit"] {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
 }
 
 .form-buttons button[type="submit"]:hover {
-  background: #5568d3;
+  background: #291407;
   transform: translateY(-2px);
 }
 
@@ -762,7 +762,7 @@
   display: block;
   font-size: 2rem;
   font-weight: 700;
-  color: #667eea;
+  color: #3D1E0B;
   margin-bottom: 0.5rem;
 }
 
@@ -791,7 +791,7 @@
 
 .feedback-filters .refresh-btn {
   padding: 0.75rem 1.5rem;
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   border: none;
   border-radius: 8px;
@@ -801,7 +801,7 @@
 }
 
 .feedback-filters .refresh-btn:hover {
-  background: #5568d3;
+  background: #291407;
 }
 
 .feedbacks-grid {
@@ -913,12 +913,12 @@
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid #3D1E0B;
 }
 
 .feedback-response strong {
   display: block;
-  color: #667eea;
+  color: #3D1E0B;
   margin-bottom: 0.5rem;
 }
 
@@ -941,7 +941,7 @@
 
 .btn-respond {
   padding: 0.6rem 1rem;
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   border: none;
   border-radius: 6px;
@@ -951,7 +951,7 @@
 }
 
 .btn-respond:hover {
-  background: #5568d3;
+  background: #291407;
 }
 
 .status-select {
@@ -1059,7 +1059,7 @@
 
 .response-textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #3D1E0B;
 }
 
 .modal-footer {
@@ -1087,7 +1087,7 @@
 
 .btn-send {
   padding: 0.75rem 1.5rem;
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   border: none;
   border-radius: 8px;
@@ -1097,7 +1097,7 @@
 }
 
 .btn-send:hover {
-  background: #5568d3;
+  background: #291407;
 }
 
 .no-data {
@@ -1198,12 +1198,12 @@
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid #3D1E0B;
 }
 
 .delivery-info strong {
   display: block;
-  color: #667eea;
+  color: #3D1E0B;
   margin-bottom: 0.5rem;
 }
 
@@ -1248,7 +1248,7 @@
 }
 
 .assigned-driver strong {
-  color: #667eea;
+  color: #3D1E0B;
 }
 
 /* ======================= */
@@ -1369,7 +1369,7 @@
 }
 
 .role-badge.superadmin {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
 }
 
@@ -1396,12 +1396,12 @@
 .superadmin-badge {
   margin-top: 1rem;
   padding: 1rem;
-  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-  border-left: 4px solid #667eea;
+  background: linear-gradient(135deg, #3D1E0B15 0%, #5C321515 100%);
+  border-left: 4px solid #3D1E0B;
   border-radius: 8px;
 }
 
 .superadmin-badge strong {
-  color: #667eea;
+  color: #3D1E0B;
   font-size: 1.05rem;
 }

@@ -1,6 +1,6 @@
 /* Location Button & Help */
 .location-btn {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -18,9 +18,9 @@
 }
 
 .location-btn:hover {
-  background: #5568d3;
+  background: #291407;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(61,30,11, 0.3);
 }
 
 .location-help {

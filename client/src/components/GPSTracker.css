@@ -1,5 +1,5 @@
 .gps-tracker {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   border-radius: 16px;
   padding: 24px;
   color: white;
@@ -129,7 +129,7 @@
   width: 100%;
   padding: 14px 24px;
   background: rgba(255, 255, 255, 0.9);
-  color: #667eea;
+  color: #3D1E0B;
   border: none;
   border-radius: 12px;
   font-size: 1rem;

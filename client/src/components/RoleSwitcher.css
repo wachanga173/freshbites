@@ -11,7 +11,7 @@
   gap: 10px;
   padding: 12px 20px;
   background: white;
-  border: 2px solid #667eea;
+  border: 2px solid #3D1E0B;
   border-radius: 25px;
   cursor: pointer;
   font-size: 14px;
@@ -33,11 +33,11 @@
 }
 
 .role-text strong {
-  color: #667eea;
+  color: #3D1E0B;
 }
 
 .dropdown-arrow {
-  color: #667eea;
+  color: #3D1E0B;
   font-size: 12px;
   margin-left: 5px;
 }
@@ -96,7 +96,7 @@
 
 .role-option.active {
   background: #e7f0ff;
-  color: #667eea;
+  color: #3D1E0B;
   font-weight: 600;
 }
 

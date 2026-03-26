@@ -1,6 +1,6 @@
 .order-mgmt-dashboard {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   padding: 20px;
 }
 
@@ -45,7 +45,7 @@
 }
 
 .filter-bar button.active {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
 }
 
@@ -78,7 +78,7 @@
 }
 
 .order-card.selected {
-  border: 3px solid #667eea;
+  border: 3px solid #3D1E0B;
   background: #f0f4ff;
 }
 
@@ -119,7 +119,7 @@
 .order-details-panel h2 {
   margin-top: 0;
   color: #333;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid #3D1E0B;
   padding-bottom: 10px;
 }
 
@@ -132,7 +132,7 @@
 
 .detail-section h3 {
   margin-top: 0;
-  color: #667eea;
+  color: #3D1E0B;
 }
 
 .item-row {
@@ -168,7 +168,7 @@
   padding: 10px;
   border: none;
   border-radius: 5px;
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   cursor: pointer;
   font-weight: 500;
@@ -176,7 +176,7 @@
 }
 
 .status-actions button:hover {
-  background: #5568d3;
+  background: #291407;
   transform: translateY(-2px);
 }
 
@@ -233,7 +233,7 @@
 .delivery-select {
   width: 100%;
   padding: 10px;
-  border: 2px solid #667eea;
+  border: 2px solid #3D1E0B;
   border-radius: 5px;
   font-size: 14px;
 }

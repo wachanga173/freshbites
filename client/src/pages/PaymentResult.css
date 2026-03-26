@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   padding: 2rem;
 }
 
@@ -28,7 +28,7 @@
   width: 80px;
   height: 80px;
   border: 8px solid #f3f3f3;
-  border-top: 8px solid #667eea;
+  border-top: 8px solid #3D1E0B;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -107,7 +107,7 @@
 
 .order-id {
   font-weight: bold;
-  color: #667eea;
+  color: #3D1E0B;
   font-size: 1.2rem;
 }
 
@@ -119,7 +119,7 @@
 
 .home-btn {
   padding: 1rem 2.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -131,7 +131,7 @@
 
 .home-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 20px rgba(61,30,11, 0.4);
 }
 
 @media (max-width: 600px) {

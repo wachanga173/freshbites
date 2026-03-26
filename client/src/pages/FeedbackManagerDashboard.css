@@ -21,7 +21,7 @@
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
   padding: 20px 30px;
   border-radius: 12px;
@@ -60,7 +60,7 @@
 
 .refresh-btn {
   padding: 10px 20px;
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   border: none;
   border-radius: 8px;
@@ -70,7 +70,7 @@
 }
 
 .refresh-btn:hover {
-  background: #5568d3;
+  background: #291407;
 }
 
 .feedbacks-grid {
@@ -176,13 +176,13 @@
   padding: 12px;
   border-radius: 8px;
   margin-bottom: 15px;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid #3D1E0B;
 }
 
 .feedback-response strong {
   display: block;
   margin-bottom: 8px;
-  color: #667eea;
+  color: #3D1E0B;
 }
 
 .feedback-response p {
@@ -204,7 +204,7 @@
 .btn-respond {
   flex: 1;
   padding: 10px;
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   border: none;
   border-radius: 8px;
@@ -214,7 +214,7 @@
 }
 
 .btn-respond:hover {
-  background: #5568d3;
+  background: #291407;
 }
 
 .status-select {
@@ -317,7 +317,7 @@
 
 .response-textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #3D1E0B;
 }
 
 .modal-footer {
@@ -345,7 +345,7 @@
 
 .btn-send {
   padding: 10px 20px;
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   border: none;
   border-radius: 8px;
@@ -355,7 +355,7 @@
 }
 
 .btn-send:hover {
-  background: #5568d3;
+  background: #291407;
 }
 
 .loading,

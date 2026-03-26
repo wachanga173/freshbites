@@ -7,7 +7,7 @@
 .hero {
   position: relative;
   height: 450px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -27,7 +27,7 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(102,126,234,0.7) 0%, rgba(118,75,162,0.7) 100%);
+  background: linear-gradient(135deg, rgba(61,30,11,0.7) 0%, rgba(92,50,21,0.7) 100%);
   z-index: 1;
 }
 
@@ -53,7 +53,7 @@
 
 .hero-top-menu button {
   background: rgba(255,255,255,0.95);
-  color: #667eea;
+  color: #3D1E0B;
   border: none;
   padding: 8px 16px;
   border-radius: 20px;
@@ -66,15 +66,15 @@
 }
 
 .hero-top-menu button:hover {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(61,30,11, 0.3);
 }
 
 .hero-top-menu .login-btn {
   background: white;
-  color: #667eea;
+  color: #3D1E0B;
   padding: 10px 20px;
   font-size: 14px;
 }
@@ -137,7 +137,7 @@
 }
 
 .hamburger-menu-hero:hover span {
-  background: #667eea;
+  background: #3D1E0B;
 }
 
 /* Hero Cart Button - Show on all screens */
@@ -155,13 +155,13 @@
   justify-content: center;
   cursor: pointer;
   z-index: 10;
-  color: #667eea;
+  color: #3D1E0B;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .hero-cart-btn:hover {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   transform: scale(1.05);
 }
@@ -226,7 +226,7 @@
 }
 
 .mobile-user-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
   padding: 24px 20px;
   font-size: 18px;
@@ -253,7 +253,7 @@
 
 .mobile-user-menu button:hover {
   background: #f8f9fa;
-  color: #667eea;
+  color: #3D1E0B;
 }
 
 .mobile-user-menu button svg {
@@ -367,7 +367,7 @@
 }
 
 .user-menu button {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -383,7 +383,7 @@
 
 .login-btn {
   background: white;
-  color: #667eea;
+  color: #3D1E0B;
   border: none;
   padding: 12px 32px;
   border-radius: 30px;
@@ -403,8 +403,8 @@
   top: 20px;
   left: 20px;
   background: white;
-  border: 2px solid #667eea;
-  color: #667eea;
+  border: 2px solid #3D1E0B;
+  color: #3D1E0B;
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
@@ -418,7 +418,7 @@
   justify-content: center;
   min-height: 100vh;
   font-size: 24px;
-  color: #667eea;
+  color: #3D1E0B;
 }
 
 /* Category Navigation */
@@ -545,8 +545,8 @@
 
 .mobile-link-btn {
   background: white;
-  border: 2px solid #667eea;
-  color: #667eea;
+  border: 2px solid #3D1E0B;
+  color: #3D1E0B;
   padding: 12px 20px;
   border-radius: 8px;
   font-size: 15px;
@@ -558,7 +558,7 @@
 }
 
 .mobile-link-btn:hover {
-  background: #667eea;
+  background: #3D1E0B;
   color: white;
 }
 

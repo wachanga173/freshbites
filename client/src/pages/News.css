@@ -5,7 +5,7 @@
 }
 
 .news-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
   padding: 80px 20px 60px;
   text-align: center;
@@ -61,17 +61,17 @@
 }
 
 .filter-btn:hover {
-  border-color: #667eea;
-  color: #667eea;
+  border-color: #3D1E0B;
+  color: #3D1E0B;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 12px rgba(61,30,11, 0.2);
 }
 
 .filter-btn.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
   border-color: transparent;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(61,30,11, 0.4);
 }
 
 .news-content {
@@ -89,7 +89,7 @@
   width: 50px;
   height: 50px;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #667eea;
+  border-top: 4px solid #3D1E0B;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
@@ -165,7 +165,7 @@
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #667eea;
+  color: #3D1E0B;
 }
 
 .news-card-content {
@@ -213,7 +213,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #667eea;
+  color: #3D1E0B;
   font-weight: 600;
   font-size: 1rem;
   text-decoration: none;
@@ -222,7 +222,7 @@
 
 .news-read-more:hover {
   gap: 12px;
-  color: #764ba2;
+  color: #5C3215;
 }
 
 .news-read-more svg {
@@ -240,7 +240,7 @@
 
 .back-home-btn {
   padding: 14px 32px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
   border: none;
   border-radius: 50px;
@@ -248,12 +248,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(61,30,11, 0.3);
 }
 
 .back-home-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(61,30,11, 0.4);
 }
 
 @media (max-width: 768px) {

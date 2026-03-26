@@ -5,7 +5,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
   border: none;
   font-size: 28px;
@@ -52,7 +52,7 @@
 }
 
 .chatbot-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
   padding: 15px;
   display: flex;
@@ -78,7 +78,7 @@
 
 .chatbot-tab.active {
   background: white;
-  color: #667eea;
+  color: #3D1E0B;
   font-weight: 600;
 }
 
@@ -127,7 +127,7 @@
 }
 
 .message.user .message-bubble {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
   border-bottom-right-radius: 4px;
 }
@@ -242,14 +242,14 @@
 
 .chatbot-input textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #3D1E0B;
 }
 
 .send-btn {
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   color: white;
   border: none;
   font-size: 20px;

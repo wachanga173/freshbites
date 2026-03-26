@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #667eea;
-  --color-primary-dark: #5568d3;
-  --color-primary-light: #764ba2;
+  --color-primary: #3D1E0B;
+  --color-primary-dark: #291407;
+  --color-primary-light: #5C3215;
 }
 
 body {
@@ -64,7 +64,7 @@ body {
 
 .from-primary {
   --tw-gradient-from: var(--color-primary) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(102 126 234 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-to: rgb(61 30 11 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
@@ -73,13 +73,13 @@ body {
 }
 
 .from-primary\/80 {
-  --tw-gradient-from: rgb(102 126 234 / 0.8) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(102 126 234 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-from: rgb(61 30 11 / 0.8) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(61 30 11 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
 .to-primary-light\/80 {
-  --tw-gradient-to: rgb(118 75 162 / 0.8) var(--tw-gradient-to-position);
+  --tw-gradient-to: rgb(92 50 21 / 0.8) var(--tw-gradient-to-position);
 }
 
 /* Background opacity utilities */

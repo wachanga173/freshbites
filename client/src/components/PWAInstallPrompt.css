@@ -5,9 +5,9 @@
   transform: translateX(-50%);
   max-width: 400px;
   width: calc(100% - 40px);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 40px rgba(61,30,11, 0.3);
   padding: 24px;
   z-index: 9999;
   animation: slideUp 0.4s ease-out;
@@ -137,7 +137,7 @@
 
 .pwa-btn-primary {
   background: white;
-  color: #667eea;
+  color: #3D1E0B;
 }
 
 .pwa-btn-primary:hover {
