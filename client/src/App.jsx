@@ -23,12 +23,31 @@ import FeedbackChatbot from './components/FeedbackChatbot'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
 import './App.css'
 
+const CART_STORAGE_KEY = 'freshbites-cart'
+
 function MainApp() {
   const { user, isAdmin, isOrderManager, isDelivery, loading } = useAuth()
   const [currentRoute, setCurrentRoute] = useState('home')
 
   const isFeedbackManager = user && (user.roles?.includes('feedback_manager') || user.roles?.includes('superadmin'))
   const isSuperAdmin = user && user.roles?.includes('superadmin')
+
+  const getCheckoutData = () => {
+    try {
+      const raw = localStorage.getItem(CART_STORAGE_KEY)
+      const items = raw ? JSON.parse(raw) : []
+      const safeItems = Array.isArray(items) ? items : []
+      const total = safeItems.reduce((sum, item) => {
+        const price = Number(item?.price) || 0
+        const quantity = Number(item?.quantity) || 0
+        return sum + (price * quantity)
+      }, 0)
+      return { items: safeItems, total }
+    } catch (err) {
+      console.error('Failed to read checkout data:', err)
+      return { items: [], total: 0 }
+    }
+  }
 
   useEffect(() => {
     // Simple routing based on URL path
@@ -126,7 +145,18 @@ function MainApp() {
 
   // Checkout
   if (currentRoute === 'checkout' && user) {
-    return <Checkout />
+    const { items, total } = getCheckoutData()
+    return (
+      <Checkout
+        items={items}
+        total={total}
+        onBack={() => { window.location.href = '/menu' }}
+        onSuccess={() => {
+          localStorage.removeItem(CART_STORAGE_KEY)
+          window.location.href = '/my-orders'
+        }}
+      />
+    )
   }
 
   // Role-specific dashboards

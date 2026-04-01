@@ -34,16 +34,17 @@ body {
   color: var(--color-primary);
 }
 
-.text-purple-400 {
-  color: rgb(192 132 252);
+/* Brown color utilities for replace purple theme */
+.text-primary-dark {
+  color: var(--color-primary);
 }
 
-.hover\:text-purple-400:hover {
-  color: rgb(192 132 252);
+.text-primary-light {
+  color: var(--color-primary-light);
 }
 
-.hover\:text-purple-600:hover {
-  color: rgb(147 51 234);
+.hover\:text-primary:hover {
+  color: var(--color-primary);
 }
 
 .border-primary {
@@ -92,13 +93,13 @@ body {
 }
 
 .bg-purple-600 {
-  background-color: rgb(147 51 234);
+  background-color: var(--color-primary);
 }
 
 .bg-purple-700 {
-  background-color: rgb(126 34 206);
+  background-color: var(--color-primary-light);
 }
 
 .hover\:bg-purple-700:hover {
-  background-color: rgb(126 34 206);
+  background-color: var(--color-primary-light);
 }

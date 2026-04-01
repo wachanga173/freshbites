@@ -24,6 +24,14 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
   const [availableOrderTypes, setAvailableOrderTypes] = useState(['dine-in', 'pickup', 'delivery'])
 
   const safeItems = useMemo(() => Array.isArray(items) ? items : [], [items])
+  const safeTotal = useMemo(() => {
+    if (typeof total === 'number' && Number.isFinite(total)) return total
+    return safeItems.reduce((sum, item) => {
+      const price = Number(item?.price) || 0
+      const quantity = Number(item?.quantity) || 0
+      return sum + (price * quantity)
+    }, 0)
+  }, [total, safeItems])
   
   // Determine available order types based on items in cart
   useEffect(() => {
@@ -145,7 +153,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
           quantity: item.quantity,
           deliverable: item.deliverable || false
         })),
-        total: total,
+        total: safeTotal,
         shippingFee: shippingFee,
         orderType: orderType,
         deliveryType: orderType === 'delivery' ? 'delivery' : 'pickup',
@@ -216,7 +224,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
         },
         body: JSON.stringify({
           phoneNumber: mpesaPhone,
-          amount: Math.round(total),
+          amount: Math.round(safeTotal + shippingFee),
           shippingFee: shippingFee,
           orderType: orderType,
           deliveryType: orderType === 'delivery' ? 'delivery' : 'pickup',
@@ -268,7 +276,9 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
         const data = await response.json()
 
         if (data.status === 'completed') {
-          onSuccess(data.order)
+          if (typeof onSuccess === 'function') {
+            onSuccess(data.order)
+          }
           return
         } else if (data.status === 'failed') {
           setError('Payment failed. Please try again.')
@@ -302,7 +312,13 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
   return (
     <div className="checkout-container">
       <div className="checkout-header">
-        <button className="back-btn" onClick={onBack}>← Back to Cart</button>
+        <button className="back-btn" onClick={() => {
+          if (typeof onBack === 'function') {
+            onBack()
+          } else {
+            window.location.href = '/menu'
+          }
+        }}>← Back to Cart</button>
         <h1>Checkout</h1>
       </div>
 
@@ -533,7 +549,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
             <h3>Payment Details</h3>
             <div className="summary-row">
               <span>Subtotal</span>
-              <span>KSH {total.toFixed(0)}</span>
+              <span>KSH {safeTotal.toFixed(0)}</span>
             </div>
             {orderType === 'delivery' && shippingFee > 0 && (
               <div className="summary-row">
@@ -544,7 +560,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
             <div className="summary-divider"></div>
             <div className="summary-row summary-total">
               <span>Total</span>
-              <span>KSH {(total + shippingFee).toFixed(0)}</span>
+              <span>KSH {(safeTotal + shippingFee).toFixed(0)}</span>
             </div>
 
             <button 
@@ -552,7 +568,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
               onClick={handlePayment}
               disabled={loading || !paymentMethod}
             >
-              {loading ? 'Processing...' : `Pay KSH ${(total + shippingFee).toFixed(0)}`}
+              {loading ? 'Processing...' : `Pay KSH ${(safeTotal + shippingFee).toFixed(0)}`}
             </button>
 
             <div className="secure-payment">

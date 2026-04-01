@@ -35,7 +35,7 @@ export default function Home() {
       <nav className="bg-white shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
-            <div className="text-xl sm:text-2xl font-bold text-purple-600 flex-shrink-0">Fresh Bites Café</div>
+            <div className="text-xl sm:text-2xl font-bold flex-shrink-0" style={{color: '#3D1E0B'}}>Fresh Bites Café</div>
             
             {/* Mobile Menu Toggle */}
             <button 
@@ -50,14 +50,14 @@ export default function Home() {
 
             {/* Desktop Navigation - Scrollable left section */}
             <div className="hidden md:flex items-center gap-2 lg:gap-3 overflow-x-auto flex-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-1">
-              <button onClick={() => window.location.href = '/'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">Home</button>
-              <button onClick={handleMenuClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">Menu</button>
-              <button onClick={handleAboutClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">About</button>
-              <button onClick={handleContactClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">Contact</button>
+              <button onClick={() => window.location.href = '/'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" style={{color: 'inherit'}} onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Home</button>
+              <button onClick={handleMenuClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Menu</button>
+              <button onClick={handleAboutClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>About</button>
+              <button onClick={handleContactClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Contact</button>
               {user && (
                 <>
-                  <button onClick={() => window.location.href = '/my-orders'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all whitespace-nowrap">My Orders</button>
-                  <button onClick={() => window.location.href = '/profile'} className="px-3 py-2 text-sm lg:text-base font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-md transition-all whitespace-nowrap flex items-center gap-1">👤 Profile</button>
+                  <button onClick={() => window.location.href = '/my-orders'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>My Orders</button>
+                  <button onClick={() => window.location.href = '/profile'} className="px-3 py-2 text-sm lg:text-base font-medium rounded-md transition-all whitespace-nowrap flex items-center gap-1" style={{color: '#3D1E0B', backgroundColor: '#F5E6D3'}}>👤 Profile</button>
                 </>
               )}
             </div>
@@ -65,11 +65,11 @@ export default function Home() {
             {/* Login/Logout - Fixed on right */}
             <div className="hidden md:flex items-center gap-2 flex-shrink-0">
               {user ? (
-                <button onClick={logout} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Logout</button>
+                <button onClick={logout} className="px-4 py-2 text-sm lg:text-base font-semibold text-white rounded-full hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Logout</button>
               ) : (
                 <>
-                  <button onClick={handleLoginClick} className="px-4 py-2 text-sm lg:text-base font-semibold text-purple-600 border-2 border-purple-600 rounded-full hover:bg-purple-50 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Login</button>
-                  <button onClick={() => window.location.href = '/register'} className="px-4 py-2 text-sm lg:text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap">Sign Up</button>
+                  <button onClick={handleLoginClick} className="px-4 py-2 text-sm lg:text-base font-semibold rounded-full hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap" style={{color: '#3D1E0B', borderColor: '#3D1E0B', borderWidth: '2px'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#F5E6D3'} onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}>Login</button>
+                  <button onClick={() => window.location.href = '/register'} className="px-4 py-2 text-sm lg:text-base font-semibold text-white rounded-full hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Sign Up</button>
                 </>
               )}
             </div>
@@ -78,20 +78,20 @@ export default function Home() {
           {/* Mobile Navigation Dropdown */}
           {showMobileNav && (
             <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg flex flex-col p-4 space-y-2 border-t z-50">
-              <button onClick={() => { window.location.href = '/'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">Home</button>
-              <button onClick={() => { handleMenuClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">Menu</button>
-              <button onClick={() => { handleAboutClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">About</button>
-              <button onClick={() => { handleContactClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">Contact</button>
+              <button onClick={() => { window.location.href = '/'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Home</button>
+              <button onClick={() => { handleMenuClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Menu</button>
+              <button onClick={() => { handleAboutClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>About</button>
+              <button onClick={() => { handleContactClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Contact</button>
               {user ? (
                 <>
-                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 hover:bg-gray-100 hover:text-purple-600 rounded-md transition-all">📦 My Orders</button>
-                  <button onClick={() => { window.location.href = '/profile'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-md transition-all">👤 My Profile</button>
-                  <button onClick={() => { logout(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-all">Logout</button>
+                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>📦 My Orders</button>
+                  <button onClick={() => { window.location.href = '/profile'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium rounded-md transition-all" style={{color: '#3D1E0B', backgroundColor: '#F5E6D3'}}>👤 My Profile</button>
+                  <button onClick={() => { logout(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white rounded-md transition-all" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Logout</button>
                 </>
               ) : (
                 <>
-                  <button onClick={() => { handleLoginClick(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-purple-600 border-2 border-purple-600 rounded-md hover:bg-purple-50 transition-all">Login</button>
-                  <button onClick={() => { window.location.href = '/register'; setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white bg-purple-600 rounded-md hover:bg-purple-700 transition-all">Sign Up</button>
+                  <button onClick={() => { handleLoginClick(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold rounded-md transition-all" style={{color: '#3D1E0B', borderColor: '#3D1E0B', borderWidth: '2px'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#F5E6D3'} onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}>Login</button>
+                  <button onClick={() => { window.location.href = '/register'; setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white rounded-md transition-all" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Sign Up</button>
                 </>
               )}
             </div>
@@ -106,14 +106,14 @@ export default function Home() {
         <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 drop-shadow-lg tracking-tight">Welcome to Fresh Bites Café</h1>
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 opacity-95 drop-shadow-md">Delicious meals, delivered fresh to your door</p>
-          <button onClick={handleMenuClick} className="inline-block px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold bg-purple-600 text-white rounded-full hover:-translate-y-1 hover:shadow-2xl hover:bg-purple-700 transition-all shadow-xl">
+          <button onClick={handleMenuClick} className="inline-block px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-white rounded-full hover:-translate-y-1 hover:shadow-2xl transition-all shadow-xl" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>
             Explore Menu
           </button>
         </div>
       </section>
 
       {/* Our Story Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-purple-50 to-blue-50">
+      <section className="py-12 sm:py-16 lg:py-20" style={{background: 'linear-gradient(135deg, #F5E6D3 0%, #E8DCC8 100%)'}}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-gray-800">Our Story</h2>
           <p className="text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed mb-6">
@@ -178,7 +178,7 @@ export default function Home() {
               <p className="text-sm sm:text-base text-gray-600">Rich and decadent dessert</p>
             </div>
           </div>
-          <button onClick={handleMenuClick} className="px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold bg-purple-600 text-white rounded-full hover:-translate-y-1 hover:shadow-2xl hover:bg-purple-700 transition-all shadow-lg">
+          <button onClick={handleMenuClick} className="px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-white rounded-full hover:-translate-y-1 hover:shadow-2xl transition-all shadow-lg" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>
             View Full Menu
           </button>
         </div>
