@@ -72,10 +72,20 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
   useEffect(() => {
     const deliveryItems = safeItems.filter(item => item.deliverable)
     setHasDeliveryItems(deliveryItems.length > 0)
-    
-    // Calculate shipping fee based on items (you can customize this logic)
+
     if (orderType === 'delivery' && deliveryItems.length > 0) {
-      setShippingFee(200) // Base shipping fee
+      // Marketing strategy: delivery fee is the quantity-weighted average of deliverable item fees.
+      // As more items are ordered, the per-order fee trends to an average instead of a sum.
+      const totals = deliveryItems.reduce((acc, item) => {
+        const qty = Number(item.quantity) || 0
+        const itemFee = Number(item.shippingFee) || 0
+        acc.totalQty += qty
+        acc.totalFee += (itemFee * qty)
+        return acc
+      }, { totalQty: 0, totalFee: 0 })
+
+      const averagedFee = totals.totalQty > 0 ? Math.round(totals.totalFee / totals.totalQty) : 0
+      setShippingFee(averagedFee)
     } else {
       setShippingFee(0)
     }
@@ -224,7 +234,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
         },
         body: JSON.stringify({
           phoneNumber: mpesaPhone,
-          amount: Math.round(safeTotal + shippingFee),
+          amount: Math.round(safeTotal),
           shippingFee: shippingFee,
           orderType: orderType,
           deliveryType: orderType === 'delivery' ? 'delivery' : 'pickup',

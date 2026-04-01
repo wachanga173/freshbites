@@ -599,12 +599,75 @@ app.post('/api/payment/mpesa/stkpush', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Invalid phone number format. Use 07XXXXXXXX or 254XXXXXXXXX' })
     }
 
+    const parsedItems = Array.isArray(items) ? items : []
+    if (parsedItems.length === 0) {
+      return res.status(400).json({ error: 'Order items are required' })
+    }
+
+    const requestedIds = parsedItems.map(item => item.id).filter(Boolean)
+    if (requestedIds.length === 0) {
+      return res.status(400).json({ error: 'Invalid order items' })
+    }
+
+    const menuItems = await MenuItem.find({ id: { $in: requestedIds }, available: true })
+    const menuById = new Map(menuItems.map(item => [item.id, item]))
+
+    if (menuById.size === 0) {
+      return res.status(400).json({ error: 'No valid items found for this order' })
+    }
+
+    let calculatedSubtotal = 0
+    let shippingTotal = 0
+    let shippingQty = 0
+
+    const normalizedItems = []
+    for (const item of parsedItems) {
+      const menuItem = menuById.get(item.id)
+      if (!menuItem) {
+        continue
+      }
+
+      const qty = Math.max(1, Number(item.quantity) || 1)
+      const unitPrice = Number(menuItem.price) || 0
+
+      calculatedSubtotal += unitPrice * qty
+
+      const isDeliveryOrder = (orderType || deliveryType) === 'delivery'
+      if (isDeliveryOrder && menuItem.deliverable) {
+        const perItemShippingFee = Number(menuItem.shippingFee) || 0
+        shippingTotal += perItemShippingFee * qty
+        shippingQty += qty
+      }
+
+      normalizedItems.push({
+        id: menuItem.id,
+        name: menuItem.name,
+        price: unitPrice,
+        quantity: qty,
+        image: menuItem.image,
+        deliverable: menuItem.deliverable || false,
+        shippingFee: Number(menuItem.shippingFee) || 0
+      })
+    }
+
+    if (normalizedItems.length === 0) {
+      return res.status(400).json({ error: 'No valid items found for this order' })
+    }
+
+    const calculatedShippingFee = shippingQty > 0 ? Math.round(shippingTotal / shippingQty) : 0
+    const calculatedGrandTotal = Math.round(calculatedSubtotal + calculatedShippingFee)
+
     const accessToken = await getMpesaAccessToken()
     const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14)
     const password = Buffer.from(`${MPESA_CONFIG.shortCode}${MPESA_CONFIG.passkey}${timestamp}`).toString('base64')
 
-    // Calculate total amount including shipping fee for delivery orders
-    const totalAmount = Math.round(amount + (shippingFee || 0))
+    // Server-side pricing guard: always charge trusted server-calculated amount.
+    const totalAmount = calculatedGrandTotal
+
+    const clientRequestedTotal = Math.round((Number(amount) || 0) + (Number(shippingFee) || 0))
+    if (clientRequestedTotal !== totalAmount) {
+      logger.warn(`Pricing mismatch corrected for user ${req.user.id}: client=${clientRequestedTotal}, server=${totalAmount}`)
+    }
 
     const stkPushData = {
       BusinessShortCode: MPESA_CONFIG.shortCode,
@@ -638,10 +701,10 @@ app.post('/api/payment/mpesa/stkpush', authenticateToken, async (req, res) => {
         orderId: orderId,
         userId: req.user.id,
         username: req.user.username,
-        items: items || [],
-        total: amount,
-        shippingFee: shippingFee || 0,
-        grandTotal: amount + (shippingFee || 0),
+        items: normalizedItems,
+        total: Math.round(calculatedSubtotal),
+        shippingFee: calculatedShippingFee,
+        grandTotal: totalAmount,
         paymentMethod: 'mpesa',
         checkoutRequestID: response.data.CheckoutRequestID,
         merchantRequestID: response.data.MerchantRequestID,
