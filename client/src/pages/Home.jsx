@@ -27,71 +27,66 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Role Switcher for logged-in users */}
+    <div className="min-h-screen" style={{background: 'var(--color-bg-light)'}}>
       {user && <RoleSwitcher />}
       
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-md sticky top-0 z-50">
+      <nav className="site-nav">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
-            <div className="text-xl sm:text-2xl font-bold flex-shrink-0" style={{color: '#3D1E0B'}}>Fresh Bites Café</div>
+            <div className="nav-brand">Fresh Bites Café</div>
             
-            {/* Mobile Menu Toggle */}
             <button 
-              className="md:hidden flex flex-col gap-1.5 p-2 ml-auto bg-gray-100 rounded-lg hover:bg-gray-200 transition-all"
+              className="hamburger-toggle ml-auto"
               onClick={() => setShowMobileNav(!showMobileNav)}
               aria-label="Toggle menu"
             >
-              <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
-              <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
-              <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
+              <span></span>
+              <span></span>
+              <span></span>
             </button>
 
-            {/* Desktop Navigation - Scrollable left section */}
-            <div className="hidden md:flex items-center gap-2 lg:gap-3 overflow-x-auto flex-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-1">
-              <button onClick={() => window.location.href = '/'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" style={{color: 'inherit'}} onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Home</button>
-              <button onClick={handleMenuClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Menu</button>
-              <button onClick={handleAboutClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>About</button>
-              <button onClick={handleContactClick} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Contact</button>
+            <div className="hidden md:flex items-center gap-1 lg:gap-2 overflow-x-auto flex-1 pb-1">
+              <button onClick={() => window.location.href = '/'} className="nav-link active">Home</button>
+              <button onClick={handleMenuClick} className="nav-link">Menu</button>
+              <button onClick={handleAboutClick} className="nav-link">About</button>
+              <button onClick={handleContactClick} className="nav-link">Contact</button>
               {user && (
                 <>
-                  <button onClick={() => window.location.href = '/my-orders'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>My Orders</button>
-                  <button onClick={() => window.location.href = '/profile'} className="px-3 py-2 text-sm lg:text-base font-medium rounded-md transition-all whitespace-nowrap flex items-center gap-1" style={{color: '#3D1E0B', backgroundColor: '#F5E6D3'}}>👤 Profile</button>
+                  <button onClick={() => window.location.href = '/my-orders'} className="nav-link">My Orders</button>
+                  <button onClick={() => window.location.href = '/profile'} className="nav-profile-btn">👤 Profile</button>
                 </>
               )}
             </div>
 
-            {/* Login/Logout - Fixed on right */}
             <div className="hidden md:flex items-center gap-2 flex-shrink-0">
               {user ? (
-                <button onClick={logout} className="px-4 py-2 text-sm lg:text-base font-semibold text-white rounded-full hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Logout</button>
+                <button onClick={logout} className="nav-btn-solid">Logout</button>
               ) : (
                 <>
-                  <button onClick={handleLoginClick} className="px-4 py-2 text-sm lg:text-base font-semibold rounded-full hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap" style={{color: '#3D1E0B', borderColor: '#3D1E0B', borderWidth: '2px'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#F5E6D3'} onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}>Login</button>
-                  <button onClick={() => window.location.href = '/register'} className="px-4 py-2 text-sm lg:text-base font-semibold text-white rounded-full hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Sign Up</button>
+                  <button onClick={handleLoginClick} className="nav-btn-outline">Login</button>
+                  <button onClick={() => window.location.href = '/register'} className="nav-btn-solid">Sign Up</button>
                 </>
               )}
             </div>
           </div>
 
-          {/* Mobile Navigation Dropdown */}
           {showMobileNav && (
-            <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg flex flex-col p-4 space-y-2 border-t z-50">
-              <button onClick={() => { window.location.href = '/'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Home</button>
-              <button onClick={() => { handleMenuClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Menu</button>
-              <button onClick={() => { handleAboutClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>About</button>
-              <button onClick={() => { handleContactClick(); setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Contact</button>
+            <div className="mobile-nav-dropdown">
+              <button onClick={() => { window.location.href = '/'; setShowMobileNav(false) }} className="nav-link active">Home</button>
+              <button onClick={() => { handleMenuClick(); setShowMobileNav(false) }} className="nav-link">Menu</button>
+              <button onClick={() => { handleAboutClick(); setShowMobileNav(false) }} className="nav-link">About</button>
+              <button onClick={() => { handleContactClick(); setShowMobileNav(false) }} className="nav-link">Contact</button>
               {user ? (
                 <>
-                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>📦 My Orders</button>
-                  <button onClick={() => { window.location.href = '/profile'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium rounded-md transition-all" style={{color: '#3D1E0B', backgroundColor: '#F5E6D3'}}>👤 My Profile</button>
-                  <button onClick={() => { logout(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white rounded-md transition-all" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Logout</button>
+                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="nav-link">📦 My Orders</button>
+                  <button onClick={() => { window.location.href = '/profile'; setShowMobileNav(false) }} className="nav-profile-btn">👤 My Profile</button>
+                  <button onClick={() => { logout(); setShowMobileNav(false) }} className="nav-btn-solid" style={{width: '100%', marginTop: '8px'}}>Logout</button>
                 </>
               ) : (
                 <>
-                  <button onClick={() => { handleLoginClick(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold rounded-md transition-all" style={{color: '#3D1E0B', borderColor: '#3D1E0B', borderWidth: '2px'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#F5E6D3'} onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}>Login</button>
-                  <button onClick={() => { window.location.href = '/register'; setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white rounded-md transition-all" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Sign Up</button>
+                  <button onClick={() => { handleLoginClick(); setShowMobileNav(false) }} className="nav-btn-outline" style={{width: '100%', marginTop: '8px'}}>Login</button>
+                  <button onClick={() => { window.location.href = '/register'; setShowMobileNav(false) }} className="nav-btn-solid" style={{width: '100%'}}>Sign Up</button>
                 </>
               )}
             </div>
@@ -100,91 +95,86 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-gray-900 text-white py-16 sm:py-24 lg:py-32 overflow-hidden">
+      <section className="relative text-white py-20 sm:py-28 lg:py-36 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/A_modern,_stylish_café_interior_with_wooden_accent.png')] bg-cover bg-center"></div>
-        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="absolute inset-0" style={{background: 'linear-gradient(135deg, rgba(27,27,31,0.82) 0%, rgba(45,45,51,0.72) 100%)'}}></div>
         <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 drop-shadow-lg tracking-tight">Welcome to Fresh Bites Café</h1>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 opacity-95 drop-shadow-md">Delicious meals, delivered fresh to your door</p>
-          <button onClick={handleMenuClick} className="inline-block px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-white rounded-full hover:-translate-y-1 hover:shadow-2xl transition-all shadow-xl" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>
-            Explore Menu
+          <p className="text-sm sm:text-base font-medium mb-4 tracking-widest uppercase" style={{color: 'var(--color-accent)', fontFamily: 'var(--font-body)'}}>Welcome to</p>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 drop-shadow-lg" style={{fontFamily: 'var(--font-heading)', letterSpacing: '-0.03em', lineHeight: '1.1'}}>
+            Fresh Bites Café
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl mb-10 font-light" style={{opacity: 0.9, fontFamily: 'var(--font-body)', maxWidth: '540px', margin: '0 auto 2.5rem'}}>
+            Delicious meals crafted with passion, delivered fresh to your door
+          </p>
+          <button onClick={handleMenuClick} className="inline-block px-8 py-4 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold text-white rounded-full transition-all shadow-xl hover:-translate-y-1 hover:shadow-2xl" style={{background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%)', fontFamily: 'var(--font-body)'}}>
+            Explore Our Menu →
           </button>
         </div>
       </section>
 
       {/* Our Story Section */}
-      <section className="py-12 sm:py-16 lg:py-20" style={{background: 'linear-gradient(135deg, #F5E6D3 0%, #E8DCC8 100%)'}}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-gray-800">Our Story</h2>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed mb-6">
+      <section className="py-16 sm:py-20 lg:py-24" style={{background: 'linear-gradient(180deg, var(--color-bg-light) 0%, var(--color-accent-light) 50%, var(--color-bg-light) 100%)'}}>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-sm font-semibold tracking-widest uppercase mb-3" style={{color: 'var(--color-accent-dark)', fontFamily: 'var(--font-body)'}}>Our Story</p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-8" style={{fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)'}}>Crafted with Care, Served with Love</h2>
+          <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-6" style={{fontFamily: 'var(--font-body)'}}>
             At Fresh Bites Café, we believe that great food brings people together. What started as a small passion project has evolved into a thriving community hub, serving delicious, freshly-prepared meals to food lovers across the region.
           </p>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed mb-6">
-            Our journey began with a simple vision: to make quality, restaurant-grade food accessible to everyone, delivered right to their doorstep. Today, we continue to evolve, constantly improving our menu, service, and technology to serve you better.
-          </p>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed">
-            From farm-fresh ingredients to cutting-edge delivery tracking, we&apos;re committed to excellence at every step. Join us in this delicious journey and experience the Fresh Bites difference!
+          <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-6" style={{fontFamily: 'var(--font-body)'}}>
+            From farm-fresh ingredients to cutting-edge delivery tracking, we&apos;re committed to excellence at every step. Join us and experience the Fresh Bites difference!
           </p>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-white">
+      <section className="py-16 sm:py-20 lg:py-24" style={{background: 'var(--color-surface)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 sm:mb-16">
+            <p className="text-sm font-semibold tracking-widest uppercase mb-3" style={{color: 'var(--color-accent-dark)', fontFamily: 'var(--font-body)'}}>Why Choose Us</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold" style={{fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)'}}>The Fresh Bites Experience</h2>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            <div className="text-center p-6 sm:p-8 bg-gray-50 rounded-xl hover:-translate-y-2 hover:shadow-xl transition-all">
-              <div className="text-5xl sm:text-6xl mb-4">🍽️</div>
-              <h3 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800">Fresh Ingredients</h3>
-              <p className="text-sm sm:text-base text-gray-600">Locally sourced, always fresh</p>
-            </div>
-            <div className="text-center p-6 sm:p-8 bg-gray-50 rounded-xl hover:-translate-y-2 hover:shadow-xl transition-all">
-              <div className="text-5xl sm:text-6xl mb-4">🚚</div>
-              <h3 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800">Fast Delivery</h3>
-              <p className="text-sm sm:text-base text-gray-600">Hot meals delivered on time</p>
-            </div>
-            <div className="text-center p-6 sm:p-8 bg-gray-50 rounded-xl hover:-translate-y-2 hover:shadow-xl transition-all">
-              <div className="text-5xl sm:text-6xl mb-4">⭐</div>
-              <h3 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800">Quality Service</h3>
-              <p className="text-sm sm:text-base text-gray-600">Exceptional customer experience</p>
-            </div>
-            <div className="text-center p-6 sm:p-8 bg-gray-50 rounded-xl hover:-translate-y-2 hover:shadow-xl transition-all">
-              <div className="text-5xl sm:text-6xl mb-4">💳</div>
-              <h3 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800">Secure Payment</h3>
-              <p className="text-sm sm:text-base text-gray-600">Safe and easy checkout</p>
-            </div>
+            {[
+              { icon: '🍽️', title: 'Fresh Ingredients', desc: 'Locally sourced, always fresh' },
+              { icon: '🚚', title: 'Fast Delivery', desc: 'Hot meals delivered on time' },
+              { icon: '⭐', title: 'Quality Service', desc: 'Exceptional customer experience' },
+              { icon: '💳', title: 'Secure Payment', desc: 'Safe and easy checkout' }
+            ].map((feature, i) => (
+              <div key={i} className="text-center p-8 sm:p-10 rounded-2xl transition-all duration-300 hover:-translate-y-2 cursor-default" style={{background: 'var(--color-bg-light)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-card)'}}>
+                <div className="text-5xl sm:text-6xl mb-5">{feature.icon}</div>
+                <h3 className="text-lg sm:text-xl font-semibold mb-2" style={{color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)'}}>{feature.title}</h3>
+                <p className="text-sm sm:text-base" style={{color: 'var(--color-text-secondary)', fontFamily: 'var(--font-body)'}}>{feature.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Popular Items Preview */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gray-50 text-center">
+      <section className="py-16 sm:py-20 lg:py-24 text-center" style={{background: 'var(--color-bg-light)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 text-gray-800">Popular Items</h2>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 sm:mb-12">Try our customer favorites</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-8 sm:mb-12">
-            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:-translate-y-2 hover:shadow-2xl transition-all">
-              <div className="text-6xl sm:text-7xl mb-4">🍔</div>
-              <h4 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800">Classic Burger</h4>
-              <p className="text-sm sm:text-base text-gray-600">Juicy beef patty with fresh toppings</p>
-            </div>
-            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:-translate-y-2 hover:shadow-2xl transition-all">
-              <div className="text-6xl sm:text-7xl mb-4">🍝</div>
-              <h4 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800">Pasta Carbonara</h4>
-              <p className="text-sm sm:text-base text-gray-600">Creamy Italian classic</p>
-            </div>
-            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg hover:-translate-y-2 hover:shadow-2xl transition-all">
-              <div className="text-6xl sm:text-7xl mb-4">🍰</div>
-              <h4 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800">Chocolate Cake</h4>
-              <p className="text-sm sm:text-base text-gray-600">Rich and decadent dessert</p>
-            </div>
+          <p className="text-sm font-semibold tracking-widest uppercase mb-3" style={{color: 'var(--color-accent-dark)', fontFamily: 'var(--font-body)'}}>Customer Favorites</p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style={{fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)'}}>Popular Items</h2>
+          <p className="text-base sm:text-lg mb-10 sm:mb-14" style={{color: 'var(--color-text-secondary)', fontFamily: 'var(--font-body)'}}>Try our most-loved dishes</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-10 sm:mb-14">
+            {[
+              { icon: '🍔', name: 'Classic Burger', desc: 'Juicy beef patty with fresh toppings' },
+              { icon: '🍝', name: 'Pasta Carbonara', desc: 'Creamy Italian classic' },
+              { icon: '🍰', name: 'Chocolate Cake', desc: 'Rich and decadent dessert' }
+            ].map((item, i) => (
+              <div key={i} className="p-8 sm:p-10 rounded-2xl transition-all duration-300 hover:-translate-y-2 cursor-default" style={{background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-card)'}}>
+                <div className="text-6xl sm:text-7xl mb-5">{item.icon}</div>
+                <h4 className="text-lg sm:text-xl font-semibold mb-2" style={{color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)'}}>{item.name}</h4>
+                <p className="text-sm sm:text-base" style={{color: 'var(--color-text-secondary)', fontFamily: 'var(--font-body)'}}>{item.desc}</p>
+              </div>
+            ))}
           </div>
-          <button onClick={handleMenuClick} className="px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-white rounded-full hover:-translate-y-1 hover:shadow-2xl transition-all shadow-lg" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>
-            View Full Menu
+          <button onClick={handleMenuClick} className="px-8 py-4 sm:px-10 sm:py-5 text-base sm:text-lg font-semibold text-white rounded-full transition-all hover:-translate-y-1 hover:shadow-2xl" style={{background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%)', boxShadow: 'var(--shadow-lg)', fontFamily: 'var(--font-body)'}}>
+            View Full Menu →
           </button>
         </div>
       </section>
 
-      {/* Footer */}
       <Footer />
     </div>
   )

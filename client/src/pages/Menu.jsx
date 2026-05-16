@@ -124,56 +124,52 @@ export default function Menu() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Role Switcher for logged-in users */}
+    <div className="min-h-screen" style={{background: 'var(--color-bg-light)'}}>
       {user && <RoleSwitcher />}
       
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-md sticky top-0 z-50">
+      <nav className="site-nav">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
-            <div className="text-xl sm:text-2xl font-bold flex-shrink-0" style={{color: '#3D1E0B'}}>Fresh Bites Café</div>
+            <div className="nav-brand">Fresh Bites Café</div>
             
-            {/* Mobile Menu Toggle */}
             <button 
-              className="md:hidden flex flex-col gap-1.5 p-2 ml-auto bg-gray-100 rounded-lg hover:bg-gray-200 transition-all"
+              className="hamburger-toggle ml-auto"
               onClick={() => setShowMobileNav(!showMobileNav)}
               aria-label="Toggle menu"
             >
-              <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
-              <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
-              <span className="w-6 h-0.5 bg-gray-800 rounded transition-all"></span>
+              <span></span>
+              <span></span>
+              <span></span>
             </button>
 
-            {/* Desktop Navigation - Scrollable left section */}
-            <div className="hidden md:flex items-center gap-2 lg:gap-3 overflow-x-auto flex-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-1">
-              <button onClick={() => window.location.href = '/'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Home</button>
-              <button onClick={() => window.location.href = '/menu'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Menu</button>
-              <button onClick={() => window.location.href = '/about'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>About</button>
-              <button onClick={() => window.location.href = '/contact'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Contact</button>
+            <div className="hidden md:flex items-center gap-1 lg:gap-2 overflow-x-auto flex-1 pb-1">
+              <button onClick={() => window.location.href = '/'} className="nav-link">Home</button>
+              <button onClick={() => window.location.href = '/menu'} className="nav-link active">Menu</button>
+              <button onClick={() => window.location.href = '/about'} className="nav-link">About</button>
+              <button onClick={() => window.location.href = '/contact'} className="nav-link">Contact</button>
               {user && (
                 <>
-                  <button onClick={() => window.location.href = '/my-orders'} className="px-3 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all whitespace-nowrap" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>My Orders</button>
-                  <button onClick={() => window.location.href = '/profile'} className="px-3 py-2 text-sm lg:text-base font-medium rounded-md transition-all whitespace-nowrap flex items-center gap-1" style={{color: '#3D1E0B', backgroundColor: '#F5E6D3'}}>👤 Profile</button>
+                  <button onClick={() => window.location.href = '/my-orders'} className="nav-link">My Orders</button>
+                  <button onClick={() => window.location.href = '/profile'} className="nav-profile-btn">👤 Profile</button>
                 </>
               )}
             </div>
 
-            {/* Login/Logout - Fixed on right */}
             <div className="hidden md:flex items-center gap-2 flex-shrink-0">
               {user ? (
-                <button onClick={logout} className="px-4 py-2 text-sm lg:text-base font-semibold text-white rounded-full hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Logout</button>
+                <button onClick={logout} className="nav-btn-solid">Logout</button>
               ) : (
                 <>
-                  <button onClick={() => window.location.href = '/login'} className="px-4 py-2 text-sm lg:text-base font-semibold rounded-full hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap" style={{color: '#3D1E0B', borderColor: '#3D1E0B', borderWidth: '2px'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#F5E6D3'} onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}>Login</button>
-                  <button onClick={() => window.location.href = '/register'} className="px-4 py-2 text-sm lg:text-base font-semibold text-white rounded-full hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Sign Up</button>
+                  <button onClick={() => window.location.href = '/login'} className="nav-btn-outline">Login</button>
+                  <button onClick={() => window.location.href = '/register'} className="nav-btn-solid">Sign Up</button>
                 </>
               )}
             </div>
 
             {/* Cart Button */}
             <button 
-              className="flex-shrink-0 text-white rounded-full w-11 h-11 flex items-center justify-center hover:scale-105 transition-all shadow-lg relative ml-2" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}
+              className="cart-btn-nav ml-2"
               onClick={() => {
                 if (!user) {
                   window.location.href = '/login'
@@ -182,36 +178,33 @@ export default function Menu() {
                 setShowCart(!showCart)
               }}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
               </svg>
               {cartItems.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartItems.length}
-                </span>
+                <span className="cart-badge">{cartItems.length}</span>
               )}
             </button>
           </div>
 
-          {/* Mobile Navigation Dropdown */}
           {showMobileNav && (
-            <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg flex flex-col p-4 space-y-2 border-t z-50">
-              <button onClick={() => { window.location.href = '/'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Home</button>
-              <button onClick={() => { window.location.href = '/menu'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Menu</button>
-              <button onClick={() => { window.location.href = '/about'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>About</button>
-              <button onClick={() => { window.location.href = '/contact'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>Contact</button>
+            <div className="mobile-nav-dropdown">
+              <button onClick={() => { window.location.href = '/'; setShowMobileNav(false) }} className="nav-link">Home</button>
+              <button onClick={() => { window.location.href = '/menu'; setShowMobileNav(false) }} className="nav-link active">Menu</button>
+              <button onClick={() => { window.location.href = '/about'; setShowMobileNav(false) }} className="nav-link">About</button>
+              <button onClick={() => { window.location.href = '/contact'; setShowMobileNav(false) }} className="nav-link">Contact</button>
               {user ? (
                 <>
-                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium text-gray-700 rounded-md transition-all" onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}>📦 My Orders</button>
-                  <button onClick={() => { window.location.href = '/profile'; setShowMobileNav(false) }} className="px-4 py-3 text-left font-medium rounded-md transition-all" style={{color: '#3D1E0B', backgroundColor: '#F5E6D3'}}>👤 My Profile</button>
-                  <button onClick={() => { logout(); setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white rounded-md transition-all" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Logout</button>
+                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="nav-link">📦 My Orders</button>
+                  <button onClick={() => { window.location.href = '/profile'; setShowMobileNav(false) }} className="nav-profile-btn">👤 My Profile</button>
+                  <button onClick={() => { logout(); setShowMobileNav(false) }} className="nav-btn-solid" style={{width: '100%', marginTop: '8px'}}>Logout</button>
                 </>
               ) : (
                 <>
-                  <button onClick={() => { window.location.href = '/login'; setShowMobileNav(false) }} className="px-4 py-3 font-semibold rounded-md transition-all" style={{color: '#3D1E0B', borderColor: '#3D1E0B', borderWidth: '2px'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#F5E6D3'} onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}>Login</button>
-                  <button onClick={() => { window.location.href = '/register'; setShowMobileNav(false) }} className="px-4 py-3 font-semibold text-white rounded-md transition-all" style={{backgroundColor: '#3D1E0B'}} onMouseEnter={(e) => e.target.style.backgroundColor = '#5C3215'} onMouseLeave={(e) => e.target.style.backgroundColor = '#3D1E0B'}>Sign Up</button>
+                  <button onClick={() => { window.location.href = '/login'; setShowMobileNav(false) }} className="nav-btn-outline" style={{width: '100%', marginTop: '8px'}}>Login</button>
+                  <button onClick={() => { window.location.href = '/register'; setShowMobileNav(false) }} className="nav-btn-solid" style={{width: '100%'}}>Sign Up</button>
                 </>
               )}
             </div>
@@ -220,31 +213,33 @@ export default function Menu() {
       </nav>
 
       {/* Header */}
-      <div className="relative bg-gray-900 text-white text-center py-20 sm:py-24 lg:py-32">
+      <div className="relative text-white text-center py-20 sm:py-24 lg:py-32">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80')] bg-cover bg-center"></div>
-        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="absolute inset-0" style={{background: 'linear-gradient(135deg, rgba(27,27,31,0.82) 0%, rgba(45,45,51,0.72) 100%)'}}></div>
         <div className="relative z-10">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-2 drop-shadow-lg">Our Menu</h1>
-          <p className="text-base sm:text-lg lg:text-xl opacity-95 drop-shadow-md">Explore our delicious selection</p>
+          <p className="text-sm font-medium mb-3 tracking-widest uppercase" style={{color: 'var(--color-accent)', fontFamily: 'var(--font-body)'}}>Explore</p>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-2 drop-shadow-lg" style={{fontFamily: 'var(--font-heading)'}}>Our Menu</h1>
+          <p className="text-base sm:text-lg lg:text-xl opacity-90 drop-shadow-md" style={{fontFamily: 'var(--font-body)'}}>Discover our delicious selection</p>
         </div>
       </div>
 
       {/* Category Navigation */}
-      <div className="bg-white border-b-2 border-gray-200 py-4 sticky top-[73px] z-40">
+      <div className="py-4 sticky top-[73px] z-40" style={{background: 'var(--color-surface-glass)', backdropFilter: 'blur(16px)', borderBottom: '1px solid var(--color-border)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary scrollbar-track-gray-100">
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2" style={{scrollbarWidth: 'none'}}>
             {categories.map(cat => (
               <button
                 key={cat.id}
-                className={`flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-full font-medium whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-medium whitespace-nowrap transition-all ${
                   activeCategory === cat.id 
                     ? 'bg-primary text-white shadow-md' 
-                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-primary hover:text-primary hover:-translate-y-0.5'
+                    : 'text-gray-600 hover:-translate-y-0.5'
                 }`}
+                style={activeCategory !== cat.id ? {background: 'var(--color-surface)', border: '1px solid var(--color-border)'} : {}}
                 onClick={() => setActiveCategory(cat.id)}
               >
                 <span className="text-lg sm:text-xl">{cat.icon}</span>
-                <span className="text-sm sm:text-base">{cat.name}</span>
+                <span className="text-sm sm:text-base" style={{fontFamily: 'var(--font-body)'}}>{cat.name}</span>
               </button>
             ))}
           </div>
@@ -253,7 +248,7 @@ export default function Menu() {
 
       {/* Message Toast */}
       {message && (
-        <div className="fixed top-24 right-4 sm:right-6 bg-green-500 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-lg shadow-xl z-50 animate-slide-in-right">
+        <div className="fixed top-24 right-4 sm:right-6 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl shadow-xl z-50 animate-slide-in-right" style={{background: 'var(--color-success)', fontFamily: 'var(--font-body)'}}>
           {message}
         </div>
       )}
@@ -261,7 +256,7 @@ export default function Menu() {
       {/* Menu Grid */}
       <main className="py-8 sm:py-12 lg:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8 text-gray-800">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8" style={{color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)'}}>
             {categories.find(c => c.id === activeCategory)?.name || 'Menu'}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
@@ -274,7 +269,7 @@ export default function Menu() {
                 />
               ))
             ) : (
-              <p className="col-span-full text-center text-gray-600 text-lg py-12">No items available in this category</p>
+              <p className="col-span-full text-center text-lg py-12" style={{color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)'}}>No items available in this category</p>
             )}
           </div>
         </div>
@@ -283,11 +278,11 @@ export default function Menu() {
       {/* Cart Sidebar */}
       {showCart && (
         <>
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 animate-fade-in" onClick={() => setShowCart(false)} />
-          <div className="fixed right-0 top-0 w-full sm:w-96 max-w-full h-full bg-white shadow-2xl z-50 flex flex-col animate-slide-in-from-right">
-            <div className="flex justify-between items-center p-4 sm:p-6 border-b-2 border-gray-200 bg-gray-50">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Your Cart</h3>
-              <button onClick={() => setShowCart(false)} className="text-gray-600 hover:text-red-500 transition-colors">
+          <div className="fixed inset-0 z-50 animate-fade-in" style={{background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)'}} onClick={() => setShowCart(false)} />
+          <div className="fixed right-0 top-0 w-full sm:w-96 max-w-full h-full shadow-2xl z-50 flex flex-col animate-slide-in-from-right" style={{background: 'var(--color-surface)'}}>
+            <div className="flex justify-between items-center p-4 sm:p-6" style={{borderBottom: '1px solid var(--color-border)', background: 'var(--color-bg-light)'}}>
+              <h3 className="text-xl sm:text-2xl font-bold" style={{color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)'}}>Your Cart</h3>
+              <button onClick={() => setShowCart(false)} className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-gray-100">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="6" x2="6" y2="18"/>
                   <line x1="6" y1="6" x2="18" y2="18"/>
@@ -306,7 +301,6 @@ export default function Menu() {
         </>
       )}
 
-      {/* Footer */}
       <Footer />
     </div>
   )

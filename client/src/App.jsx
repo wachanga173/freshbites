@@ -91,7 +91,12 @@ function MainApp() {
     }
   }, [])
   if (loading) {
-    return <div className="loading-screen">Loading...</div>
+    return (
+      <div className="loading-screen">
+        <div className="loading-spinner"></div>
+        <span className="loading-text">Fresh Bites Café</span>
+      </div>
+    )
   }
 
   // Handle payment result routes

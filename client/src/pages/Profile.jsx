@@ -62,13 +62,13 @@ export default function Profile() {
           <div className="flex items-center justify-between">
             <button 
               onClick={() => window.location.href = '/'}
-              className="text-xl sm:text-2xl font-bold" style={{color: '#3D1E0B'}}
+              className="text-xl sm:text-2xl font-bold" style={{color: 'var(--color-primary)'}}
             >
               Fresh Bites Café
             </button>
             <button 
               onClick={() => window.location.href = '/'}
-              className="px-4 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all" style={{color: 'inherit'}} onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = '#3D1E0B'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}
+              className="px-4 py-2 text-sm lg:text-base font-medium text-gray-700 rounded-md transition-all" style={{color: 'inherit'}} onMouseEnter={(e) => {e.target.style.backgroundColor = '#f3f4f6'; e.target.style.color = 'var(--color-primary)'}} onMouseLeave={(e) => {e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'inherit'}}
             >
               ← Back to Home
             </button>
@@ -80,7 +80,7 @@ export default function Profile() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Profile Header */}
-          <div className="px-8 py-12 text-white text-center" style={{background: 'linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%)', color: 'white'}}>
+          <div className="px-8 py-12 text-white text-center" style={{background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)', color: 'white'}}>
             <div className="w-24 h-24 mx-auto mb-4 bg-white rounded-full flex items-center justify-center text-5xl">
               👤
             </div>
@@ -122,7 +122,7 @@ export default function Profile() {
                 {userRoles.map(role => (
                   <div 
                     key={role}
-                    className="rounded-lg p-6 hover:shadow-lg cursor-pointer" style={{background: 'linear-gradient(135deg, #F5E6D3 0%, #E8DCC8 100%)', border: '2px solid #A0826D'}} onMouseEnter={(e) => e.target.style.borderColor = '#3D1E0B'} onMouseLeave={(e) => e.target.style.borderColor = '#A0826D'}
+                    className="rounded-lg p-6 hover:shadow-lg cursor-pointer" style={{background: 'linear-gradient(135deg, var(--color-accent-light) 0%, #E8DCC8 100%)', border: '2px solid #A0826D'}} onMouseEnter={(e) => e.target.style.borderColor = 'var(--color-primary)'} onMouseLeave={(e) => e.target.style.borderColor = '#A0826D'}
                     onClick={() => window.location.href = getRolePath(role)}
                   >
                     <div className="flex items-center gap-4">
@@ -135,7 +135,7 @@ export default function Profile() {
                           Click to access dashboard
                         </p>
                       </div>
-                      <div style={{color: '#3D1E0B', fontSize: '24px'}}>→</div>
+                      <div style={{color: 'var(--color-primary)', fontSize: '24px'}}>→</div>
                     </div>
                   </div>
                 ))}
@@ -162,7 +162,7 @@ export default function Profile() {
                 >
                   <div className="text-3xl">📦</div>
                   <div>
-                    <div className="font-semibold text-gray-800 group-hover:text-white" style={{transition: 'color 0.2s'}}onMouseEnter={(e) => e.target.style.color = '#3D1E0B'} onMouseLeave={(e) => e.target.style.color = '#1f2937'}>My Orders</div>
+                    <div className="font-semibold text-gray-800 group-hover:text-white" style={{transition: 'color 0.2s'}}onMouseEnter={(e) => e.target.style.color = 'var(--color-primary)'} onMouseLeave={(e) => e.target.style.color = '#1f2937'}>My Orders</div>
                     <div className="text-sm text-gray-600">View order history</div>
                   </div>
                 </button>
@@ -172,7 +172,7 @@ export default function Profile() {
                 >
                   <div className="text-3xl">🍽️</div>
                   <div>
-                    <div className="font-semibold text-gray-800" style={{transition: 'color 0.2s'}} onMouseEnter={(e) => e.target.style.color = '#3D1E0B'} onMouseLeave={(e) => e.target.style.color = '#1f2937'}>Browse Menu</div>
+                    <div className="font-semibold text-gray-800" style={{transition: 'color 0.2s'}} onMouseEnter={(e) => e.target.style.color = 'var(--color-primary)'} onMouseLeave={(e) => e.target.style.color = '#1f2937'}>Browse Menu</div>
                     <div className="text-sm text-gray-600">Order delicious food</div>
                   </div>
                 </button>

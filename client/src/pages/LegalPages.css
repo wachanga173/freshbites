@@ -1,6 +1,6 @@
 .legal-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
   padding: 2rem;
 }
 
@@ -17,7 +17,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #E07856;
+  color: var(--color-accent);
   text-decoration: none;
   font-weight: 600;
   margin-bottom: 2rem;
@@ -31,7 +31,7 @@
 }
 
 .back-link:hover {
-  background: rgba(224, 120, 86, 0.1);
+  background: rgba(212, 160, 83, 0.1);
   transform: translateX(-5px);
 }
 
@@ -40,7 +40,7 @@
   color: #1F2937;
   margin: 0 0 0.5rem 0;
   font-weight: 800;
-  background: linear-gradient(135deg, #E07856 0%, #C85A3F 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -68,7 +68,7 @@
   margin: 0 0 1rem 0;
   font-weight: 700;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #E07856;
+  border-bottom: 2px solid var(--color-accent);
 }
 
 .legal-section h3 {
@@ -96,7 +96,7 @@
 }
 
 .legal-section li::marker {
-  color: #3D1E0B;
+  color: var(--color-primary);
   font-weight: bold;
 }
 
@@ -109,7 +109,7 @@
   background: #f8f9fa;
   padding: 1.5rem;
   border-radius: 12px;
-  border-left: 4px solid #3D1E0B;
+  border-left: 4px solid var(--color-primary);
   list-style: none;
   padding-left: 1.5rem;
 }

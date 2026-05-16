@@ -11,18 +11,18 @@
   gap: 10px;
   padding: 12px 20px;
   background: white;
-  border: 2px solid #E07856;
+  border: 2px solid var(--color-accent);
   border-radius: 25px;
   cursor: pointer;
   font-size: 14px;
-  box-shadow: 0 4px 6px rgba(224, 120, 86, 0.15);
+  box-shadow: 0 4px 6px rgba(212, 160, 83, 0.15);
   transition: all 0.3s;
 }
 
 .current-role-btn:hover {
-  box-shadow: 0 6px 12px rgba(224, 120, 86, 0.25);
+  box-shadow: 0 6px 12px rgba(212, 160, 83, 0.25);
   transform: translateY(-2px);
-  background: #FFE8D6;
+  background: var(--color-accent-light);
 }
 
 .role-icon {
@@ -34,11 +34,11 @@
 }
 
 .role-text strong {
-  color: #E07856;
+  color: var(--color-accent);
 }
 
 .dropdown-arrow {
-  color: #E07856;
+  color: var(--color-accent);
   font-size: 12px;
   margin-left: 5px;
 }
@@ -96,8 +96,8 @@
 }
 
 .role-option.active {
-  background: #FFE8D6;
-  color: #E07856;
+  background: var(--color-accent-light);
+  color: var(--color-accent);
   font-weight: 600;
 }
 
