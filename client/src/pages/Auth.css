@@ -19,13 +19,13 @@
 .auth-card h2 {
   margin: 0 0 8px 0;
   font-size: 28px;
-  color: #1a1a1a;
+  color: #1F2937;
   text-align: center;
 }
 
 .auth-subtitle {
   text-align: center;
-  color: #666;
+  color: #6B7280;
   margin: 0 0 32px 0;
 }
 
@@ -37,48 +37,53 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: #1F2937;
   font-size: 14px;
 }
 
 .form-group input {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  border: 2px solid #F3E8DC;
+  border-radius: 10px;
   font-size: 15px;
-  transition: all 0.2s;
+  transition: all 0.3s;
+  color: #1F2937;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #3D1E0B;
+  border-color: #E07856;
+  box-shadow: 0 0 0 3px rgba(224, 120, 86, 0.1);
 }
 
 .error-message {
-  background: #fee;
-  color: #c00;
+  background: #FEE2E2;
+  color: #DC2626;
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 16px;
   font-size: 14px;
+  border-left: 4px solid #DC2626;
 }
 
 .auth-btn {
   width: 100%;
-  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
+  background: linear-gradient(135deg, #E07856 0%, #C85A3F 100%);
   color: white;
   border: none;
   padding: 14px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(224, 120, 86, 0.2);
 }
 
 .auth-btn:hover:not(:disabled) {
   transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(224, 120, 86, 0.3);
 }
 
 .auth-btn:disabled {
@@ -89,20 +94,22 @@
 .auth-footer {
   text-align: center;
   margin-top: 24px;
-  color: #666;
+  color: #6B7280;
   font-size: 14px;
 }
 
 .link-btn {
   background: none;
   border: none;
-  color: #3D1E0B;
+  color: #E07856;
   font-weight: 600;
   cursor: pointer;
   padding: 0;
   font-size: 14px;
+  transition: all 0.2s;
 }
 
 .link-btn:hover {
+  color: #C85A3F;
   text-decoration: underline;
 }

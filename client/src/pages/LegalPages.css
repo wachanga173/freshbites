@@ -17,7 +17,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #3D1E0B;
+  color: #E07856;
   text-decoration: none;
   font-weight: 600;
   margin-bottom: 2rem;
@@ -31,30 +31,30 @@
 }
 
 .back-link:hover {
-  background: rgba(61,30,11, 0.1);
+  background: rgba(224, 120, 86, 0.1);
   transform: translateX(-5px);
 }
 
 .legal-title {
   font-size: 2.5rem;
-  color: #1a1a1a;
+  color: #1F2937;
   margin: 0 0 0.5rem 0;
   font-weight: 800;
-  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
+  background: linear-gradient(135deg, #E07856 0%, #C85A3F 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .legal-updated {
-  color: #666;
+  color: #6B7280;
   font-size: 0.9rem;
   margin: 0 0 2rem 0;
   font-style: italic;
 }
 
 .legal-content {
-  color: #333;
+  color: #1F2937;
   line-height: 1.8;
 }
 
@@ -64,16 +64,16 @@
 
 .legal-section h2 {
   font-size: 1.5rem;
-  color: #1a1a1a;
+  color: #1F2937;
   margin: 0 0 1rem 0;
   font-weight: 700;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #3D1E0B;
+  border-bottom: 2px solid #E07856;
 }
 
 .legal-section h3 {
   font-size: 1.2rem;
-  color: #333;
+  color: #1F2937;
   margin: 1.5rem 0 0.75rem 0;
   font-weight: 600;
 }

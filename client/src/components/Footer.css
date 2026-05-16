@@ -15,7 +15,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, #3D1E0B, #5C3215, transparent);
+  background: linear-gradient(90deg, transparent, #E07856, #C85A3F, transparent);
 }
 
 .footer-container {
@@ -47,7 +47,7 @@
 .footer-heading {
   font-size: 1.75rem;
   margin: 0 0 0.5rem 0;
-  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 60%, #f093fb 100%);
+  background: linear-gradient(135deg, #E07856 0%, #C85A3F 60%, #3D1E0B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -80,7 +80,7 @@
   left: 0;
   width: 40px;
   height: 3px;
-  background: linear-gradient(90deg, #3D1E0B, #5C3215);
+  background: linear-gradient(90deg, #E07856, #C85A3F);
   border-radius: 2px;
 }
 

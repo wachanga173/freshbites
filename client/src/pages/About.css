@@ -1,6 +1,6 @@
 .about-page {
   min-height: 100vh;
-  background: #f8f9fa;
+  background: #FFFBF7;
   padding: 2rem 0;
 }
 
@@ -14,22 +14,22 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #3D1E0B;
+  color: #E07856;
   text-decoration: none;
   font-weight: 600;
   margin-bottom: 2rem;
   background: white;
-  border: 2px solid #3D1E0B;
+  border: 2px solid #E07856;
   cursor: pointer;
   font-size: 1rem;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(224, 120, 86, 0.1);
 }
 
 .back-link:hover {
-  background: #3D1E0B;
+  background: #E07856;
   color: white;
   transform: translateX(-5px);
 }
@@ -37,20 +37,20 @@
 .about-hero {
   text-align: center;
   padding: 3rem 0;
-  color: #1a1a1a;
+  color: #1F2937;
 }
 
 .about-title {
   font-size: 3rem;
   margin: 0 0 1rem 0;
   font-weight: 800;
-  color: #1a1a1a;
+  color: #1F2937;
 }
 
 .about-tagline {
   font-size: 1.3rem;
   margin: 0;
-  color: #666;
+  color: #6B7280;
 }
 
 .about-content {
@@ -63,13 +63,13 @@
   background: white;
   border-radius: 16px;
   padding: 3rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 2px solid #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 2px solid #F3E8DC;
 }
 
 .about-section.highlight-section {
   background: white;
-  border: 2px solid #3D1E0B;
+  border: 2px solid #E07856;
 }
 
 .section-icon {

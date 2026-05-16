@@ -5,12 +5,12 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
+  background: linear-gradient(135deg, #E07856 0%, #C85A3F 100%);
   color: white;
   border: none;
   font-size: 28px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(224, 120, 86, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   z-index: 1000;
   display: flex;
@@ -20,7 +20,7 @@
 
 .chatbot-toggle:hover {
   transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 20px rgba(224, 120, 86, 0.4);
 }
 
 .chatbot-window {
@@ -52,7 +52,7 @@
 }
 
 .chatbot-header {
-  background: linear-gradient(135deg, #3D1E0B 0%, #5C3215 100%);
+  background: linear-gradient(135deg, #E07856 0%, #C85A3F 100%);
   color: white;
   padding: 15px;
   display: flex;
@@ -78,7 +78,7 @@
 
 .chatbot-tab.active {
   background: white;
-  color: #3D1E0B;
+  color: #E07856;
   font-weight: 600;
 }
 

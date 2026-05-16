@@ -56,19 +56,34 @@
 
 .admin-toolbar select {
   padding: 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  border: 2px solid #F3E8DC;
+  border-radius: 10px;
   font-size: 15px;
+  color: #1F2937;
+  transition: all 0.2s;
+}
+
+.admin-toolbar select:focus {
+  outline: none;
+  border-color: #E07856;
+  box-shadow: 0 0 0 3px rgba(224, 120, 86, 0.1);
 }
 
 .add-btn {
-  background: #3D1E0B;
+  background: linear-gradient(135deg, #E07856 0%, #C85A3F 100%);
   color: white;
   border: none;
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(224, 120, 86, 0.2);
+}
+
+.add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(224, 120, 86, 0.3);
 }
 
 .menu-items-grid {
@@ -107,7 +122,7 @@
 .item-info .price {
   font-size: 18px;
   font-weight: 700;
-  color: #ff6347;
+  color: #E07856;
 }
 
 .item-actions {
@@ -127,13 +142,14 @@
 }
 
 .item-actions button:first-child {
-  background: #3D1E0B;
+  background: linear-gradient(135deg, #E07856 0%, #C85A3F 100%);
   color: white;
 }
 
 .item-actions button:last-child {
-  background: #fee;
-  color: #c00;
+  background: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
 }
 
 .modal-overlay {

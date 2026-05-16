@@ -11,10 +11,11 @@
   background: white;
   border-radius: 20px;
   padding: 3rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
   text-align: center;
   max-width: 500px;
   width: 100%;
+  border: 1px solid #F3E8DC;
 }
 
 .processing, .success, .error, .cancelled {
@@ -27,8 +28,8 @@
 .spinner {
   width: 80px;
   height: 80px;
-  border: 8px solid #f3f3f3;
-  border-top: 8px solid #3D1E0B;
+  border: 8px solid #F3E8DC;
+  border-top: 8px solid #E07856;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -41,7 +42,7 @@
 .success-icon {
   width: 100px;
   height: 100px;
-  background: linear-gradient(135deg, #4CAF50, #45a049);
+  background: linear-gradient(135deg, #10B981, #059669);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -55,7 +56,7 @@
 .error-icon {
   width: 100px;
   height: 100px;
-  background: linear-gradient(135deg, #f44336, #d32f2f);
+  background: linear-gradient(135deg, #DC2626, #B91C1C);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -69,7 +70,7 @@
 .cancel-icon {
   width: 100px;
   height: 100px;
-  background: linear-gradient(135deg, #ff9800, #f57c00);
+  background: linear-gradient(135deg, #F59E0B, #D97706);
   border-radius: 50%;
   display: flex;
   align-items: center;
