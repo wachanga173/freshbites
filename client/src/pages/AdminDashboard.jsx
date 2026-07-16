@@ -1,3 +1,4 @@
+import { MessageSquare, Utensils, User, Truck, AlertTriangle, Lightbulb, FileText, CheckCircle, X, Package, Beef, Popcorn, Coffee, ShoppingBag, Briefcase, Clipboard, Bike, ShoppingCart, Lock, RefreshCw, MapPin, Phone, Star, Calendar } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
@@ -157,14 +158,14 @@ export default function AdminDashboard() {
 
   const getCategoryIcon = (category) => {
     const icons = {
-      general: '💬',
-      food_quality: '🍽️',
-      service: '👨‍🍳',
-      delivery: '🚚',
-      complaint: '⚠️',
-      suggestion: '💡'
+      general: <MessageSquare size={18} className="inline-block mr-1" />,
+      food_quality: <Utensils size={18} className="inline-block mr-1" />,
+      service: '<User size={18} className="inline-block mr-1" />‍<Utensils size={18} className="inline-block mr-1" />',
+      delivery: <Truck size={18} className="inline-block mr-1" />,
+      complaint: '<AlertTriangle size={18} className="inline-block mr-1" />️',
+      suggestion: <Lightbulb size={18} className="inline-block mr-1" />
     }
-    return icons[category] || '📝'
+    return icons[category] || <FileText size={18} className="inline-block mr-1" />
   }
 
   async function loadOrders() {
@@ -253,7 +254,7 @@ export default function AdminDashboard() {
     const colors = {
       pending: '#ffa500',
       confirmed: '#4169e1',
-      preparing: '#9370db',
+      preparing: '#D4A053',
       ready: '#32cd32',
       out_for_delivery: '#ff6347',
       delivered: '#00ff00',
@@ -509,14 +510,14 @@ export default function AdminDashboard() {
     const data = await res.json()
 
     if (res.ok) {
-      setPasswordMessage('✅ Password changed successfully!')
+      setPasswordMessage('<CheckCircle size={18} className="inline-block mr-1" /> Password changed successfully!')
       e.target.reset()
       setTimeout(() => {
         setShowChangePassword(false)
         setPasswordMessage('')
       }, 2000)
     } else {
-      setPasswordMessage(`❌ ${data.error || 'Failed to change password'}`)
+      setPasswordMessage(`<X size={18} className="inline-block mr-1" /> ${data.error || 'Failed to change password'}`)
     }
   }
 
@@ -556,7 +557,7 @@ export default function AdminDashboard() {
             className={activeTab === 'orders' ? 'active' : ''}
             onClick={() => setActiveTab('orders')}
           >
-            📦 Orders
+            <Package size={18} className="inline-block mr-1" /> Orders
           </button>
         )}
         
@@ -566,7 +567,7 @@ export default function AdminDashboard() {
             className={activeTab === 'delivery' ? 'active' : ''}
             onClick={() => setActiveTab('delivery')}
           >
-            🚚 Delivery
+            <Truck size={18} className="inline-block mr-1" /> Delivery
           </button>
         )}
         
@@ -578,7 +579,7 @@ export default function AdminDashboard() {
             className={activeTab === 'feedback' ? 'active' : ''}
             onClick={() => setActiveTab('feedback')}
           >
-            💬 Feedback
+            <MessageSquare size={18} className="inline-block mr-1" /> Feedback
           </button>
         )}
         
@@ -599,13 +600,13 @@ export default function AdminDashboard() {
               value={selectedCategory}
               onChange={e => setSelectedCategory(e.target.value)}
             >
-              <option value="appetizers">🥟 Appetizers</option>
-              <option value="breakfast">🍳 Breakfast</option>
-              <option value="lunch">🍔 Lunch</option>
-              <option value="dinner">🍖 Dinner</option>
-              <option value="desserts">🍰 Desserts</option>
-              <option value="snacks">🍿 Snacks</option>
-              <option value="drinks">☕ Drinks</option>
+              <option value="appetizers"><Utensils size={18} className="inline-block mr-1" /> Appetizers</option>
+              <option value="breakfast"><Utensils size={18} className="inline-block mr-1" /> Breakfast</option>
+              <option value="lunch"><Utensils size={18} className="inline-block mr-1" /> Lunch</option>
+              <option value="dinner"><Beef size={18} className="inline-block mr-1" /> Dinner</option>
+              <option value="desserts"><Utensils size={18} className="inline-block mr-1" /> Desserts</option>
+              <option value="snacks"><Popcorn size={18} className="inline-block mr-1" /> Snacks</option>
+              <option value="drinks"><Coffee size={18} className="inline-block mr-1" /> Drinks</option>
             </select>
             <button className="add-btn" onClick={() => setShowAddForm(true)}>
               + Add Item
@@ -646,18 +647,18 @@ export default function AdminDashboard() {
                     <label style={{fontWeight: 'bold', display: 'block', marginBottom: '8px'}}>Order Type (select all that apply):</label>
                     <label style={{display: 'block', marginBottom: '5px'}}>
                       <input type="checkbox" name="orderCategory" value="dine-in" defaultChecked />
-                      🍽️ Dine-In
+                      <Utensils size={18} className="inline-block mr-1" /> Dine-In
                     </label>
                     <label style={{display: 'block', marginBottom: '5px'}}>
                       <input type="checkbox" name="orderCategory" value="pickup" />
-                      🛍️ Pickup
+                      <ShoppingBag size={18} className="inline-block mr-1" /> Pickup
                     </label>
                     <label style={{display: 'block', marginBottom: '5px'}}>
                       <input type="checkbox" name="orderCategory" value="delivery" onChange={(e) => {
                         const feeSection = document.getElementById('shippingFeeSection')
                         if (feeSection) feeSection.style.display = e.target.checked ? 'block' : 'none'
                       }} />
-                      🚚 Delivery
+                      <Truck size={18} className="inline-block mr-1" /> Delivery
                     </label>
                     <div id="shippingFeeSection" style={{marginLeft: '24px', marginTop: '5px', display: 'none'}}>
                       <input 
@@ -722,7 +723,7 @@ export default function AdminDashboard() {
                         value="dine-in" 
                         defaultChecked={Array.isArray(editingItem.orderCategory) ? editingItem.orderCategory.includes('dine-in') : true}
                       />
-                      🍽️ Dine-In
+                      <Utensils size={18} className="inline-block mr-1" /> Dine-In
                     </label>
                     <label style={{display: 'block', marginBottom: '5px'}}>
                       <input 
@@ -731,7 +732,7 @@ export default function AdminDashboard() {
                         value="pickup"
                         defaultChecked={Array.isArray(editingItem.orderCategory) && editingItem.orderCategory.includes('pickup')}
                       />
-                      🛍️ Pickup
+                      <ShoppingBag size={18} className="inline-block mr-1" /> Pickup
                     </label>
                     <label style={{display: 'block', marginBottom: '5px'}}>
                       <input 
@@ -744,7 +745,7 @@ export default function AdminDashboard() {
                           if (feeSection) feeSection.style.display = e.target.checked ? 'block' : 'none'
                         }}
                       />
-                      🚚 Delivery
+                      <Truck size={18} className="inline-block mr-1" /> Delivery
                     </label>
                     <div id="editShippingFeeSection" style={{marginLeft: '24px', marginTop: '5px', display: editingItem.deliverable ? 'block' : 'none'}}>
                       <input 
@@ -806,19 +807,19 @@ export default function AdminDashboard() {
                 <div className="role-checkboxes">
                   <label className="role-checkbox-label">
                     <input type="checkbox" name="roles" value="admin" />
-                    <span>👨‍💼 Admin - Full menu & order management</span>
+                    <span><Briefcase size={18} className="inline-block mr-1" /> Admin - Full menu & order management</span>
                   </label>
                   <label className="role-checkbox-label">
                     <input type="checkbox" name="roles" value="ordermanager" />
-                    <span>📋 Order Manager - Manage orders only</span>
+                    <span><Clipboard size={18} className="inline-block mr-1" /> Order Manager - Manage orders only</span>
                   </label>
                   <label className="role-checkbox-label">
                     <input type="checkbox" name="roles" value="delivery" />
-                    <span>🚴 Delivery Person - View & deliver orders</span>
+                    <span><Bike size={18} className="inline-block mr-1" /> Delivery Person - View & deliver orders</span>
                   </label>
                   <label className="role-checkbox-label">
                     <input type="checkbox" name="roles" value="customer" />
-                    <span>🛒 Customer - Place orders only</span>
+                    <span><ShoppingCart size={18} className="inline-block mr-1" /> Customer - Place orders only</span>
                   </label>
                 </div>
               </div>
@@ -863,7 +864,7 @@ export default function AdminDashboard() {
                       </td>
                       <td>
                         {isSuperadmin ? (
-                          <span className="protected-badge">🔒 Protected</span>
+                          <span className="protected-badge"><Lock size={18} className="inline-block mr-1" /> Protected</span>
                         ) : u.id !== user.id ? (
                           <button onClick={() => handleDeleteUser(u.id)} className="delete-btn">Delete</button>
                         ) : (
@@ -886,7 +887,7 @@ export default function AdminDashboard() {
         isSuperAdmin) && (
         <div className="admin-content">
           <div className="orders-header">
-            <h2>📦 Order Management</h2>
+            <h2><Package size={18} className="inline-block mr-1" /> Order Management</h2>
             <div className="orders-stats">
               <div className="stat-card">
                 <span className="stat-number">{orders.filter(o => o.status === 'pending').length}</span>
@@ -922,7 +923,7 @@ export default function AdminDashboard() {
               <option value="delivered">Delivered</option>
               <option value="completed">Completed</option>
             </select>
-            <button onClick={loadOrders} className="refresh-btn">🔄 Refresh</button>
+            <button onClick={loadOrders} className="refresh-btn"><RefreshCw size={18} className="inline-block mr-1" /> Refresh</button>
           </div>
 
           {orders.length === 0 ? (
@@ -952,9 +953,9 @@ export default function AdminDashboard() {
 
                   {order.deliveryAddress && (
                     <div className="delivery-info">
-                      <strong>📍 Delivery Address:</strong>
+                      <strong><MapPin size={18} className="inline-block mr-1" /> Delivery Address:</strong>
                       <p>{order.deliveryAddress.street}, {order.deliveryAddress.city}</p>
-                      <p>📞 {order.deliveryAddress.phone}</p>
+                      <p><Phone size={18} className="inline-block mr-1" /> {order.deliveryAddress.phone}</p>
                     </div>
                   )}
 
@@ -993,8 +994,8 @@ export default function AdminDashboard() {
 
                   {order.assignedTo && (
                     <div className="assigned-driver">
-                      <strong>🚴 Driver:</strong> {order.assignedTo.username}
-                      {order.assignedTo.phone && <span> • 📞 {order.assignedTo.phone}</span>}
+                      <strong><Bike size={18} className="inline-block mr-1" /> Driver:</strong> {order.assignedTo.username}
+                      {order.assignedTo.phone && <span> • <Phone size={18} className="inline-block mr-1" /> {order.assignedTo.phone}</span>}
                     </div>
                   )}
                 </div>
@@ -1008,7 +1009,7 @@ export default function AdminDashboard() {
       {activeTab === 'delivery' && (isSuperAdmin || user?.roles?.includes('delivery')) && (
         <div className="admin-content">
           <div className="delivery-header">
-            <h2>🚚 Active Deliveries</h2>
+            <h2><Truck size={18} className="inline-block mr-1" /> Active Deliveries</h2>
             <div className="delivery-stats">
               <div className="stat-card">
                 <span className="stat-number">{activeDeliveries.length}</span>
@@ -1021,7 +1022,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <button onClick={loadActiveDeliveries} className="refresh-btn">🔄 Refresh</button>
+          <button onClick={loadActiveDeliveries} className="refresh-btn"><RefreshCw size={18} className="inline-block mr-1" /> Refresh</button>
 
           {activeDeliveries.length === 0 ? (
             <div className="no-data">
@@ -1046,14 +1047,14 @@ export default function AdminDashboard() {
                     <p><strong>Total:</strong> KSH {delivery.grandTotal}</p>
                     {delivery.deliveryAddress && (
                       <>
-                        <p><strong>📍 Address:</strong></p>
+                        <p><strong><MapPin size={18} className="inline-block mr-1" /> Address:</strong></p>
                         <p>{delivery.deliveryAddress.street}</p>
                         <p>{delivery.deliveryAddress.city}</p>
-                        <p>📞 {delivery.deliveryAddress.phone}</p>
+                        <p><Phone size={18} className="inline-block mr-1" /> {delivery.deliveryAddress.phone}</p>
                       </>
                     )}
                     {delivery.assignedTo && (
-                      <p><strong>🚴 Driver:</strong> {delivery.assignedTo.username}</p>
+                      <p><strong><Bike size={18} className="inline-block mr-1" /> Driver:</strong> {delivery.assignedTo.username}</p>
                     )}
                   </div>
 
@@ -1079,7 +1080,7 @@ export default function AdminDashboard() {
         isSuperAdmin) && (
         <div className="admin-content">
           <div className="feedback-header">
-            <h2>📋 Customer Feedback</h2>
+            <h2><Clipboard size={18} className="inline-block mr-1" /> Customer Feedback</h2>
             <div className="feedback-stats">
               <div className="stat-card">
                 <span className="stat-number">{feedbacks.filter(f => f.status === 'pending').length}</span>
@@ -1124,7 +1125,7 @@ export default function AdminDashboard() {
             </select>
 
             <button onClick={loadFeedbacks} className="refresh-btn">
-              🔄 Refresh
+              <RefreshCw size={18} className="inline-block mr-1" /> Refresh
             </button>
           </div>
 
@@ -1145,7 +1146,7 @@ export default function AdminDashboard() {
                     </div>
                     {feedback.rating && (
                       <div className="feedback-rating">
-                        {'⭐'.repeat(feedback.rating)}
+                        {<Star size={18} className="inline-block mr-1" />.repeat(feedback.rating)}
                       </div>
                     )}
                   </div>
@@ -1154,8 +1155,8 @@ export default function AdminDashboard() {
                   <p className="feedback-message">{feedback.message}</p>
 
                   <div className="feedback-user-info">
-                    <span>👤 {feedback.username}</span>
-                    <span>📅 {new Date(feedback.createdAt).toLocaleDateString()}</span>
+                    <span><User size={18} className="inline-block mr-1" /> {feedback.username}</span>
+                    <span><Calendar size={18} className="inline-block mr-1" /> {new Date(feedback.createdAt).toLocaleDateString()}</span>
                   </div>
 
                   {feedback.response && (
@@ -1174,7 +1175,7 @@ export default function AdminDashboard() {
                         onClick={() => setSelectedFeedback(feedback)}
                         className="btn-respond"
                       >
-                        💬 Respond
+                        <MessageSquare size={18} className="inline-block mr-1" /> Respond
                       </button>
                     )}
                     
@@ -1200,7 +1201,7 @@ export default function AdminDashboard() {
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                   <h2>Respond to Feedback</h2>
-                  <button onClick={() => setSelectedFeedback(null)} className="modal-close">✕</button>
+                  <button onClick={() => setSelectedFeedback(null)} className="modal-close"><X size={18} className="inline-block mr-1" /></button>
                 </div>
                 <div className="modal-body">
                   <div className="feedback-details">
@@ -1295,7 +1296,7 @@ export default function AdminDashboard() {
                   </div>
 
                   {passwordMessage && (
-                    <div className={`password-message ${passwordMessage.includes('✅') ? 'success' : 'error'}`}>
+                    <div className={`password-message ${passwordMessage.includes(<CheckCircle size={18} className="inline-block mr-1" />) ? 'success' : 'error'}`}>
                       {passwordMessage}
                     </div>
                   )}
@@ -1318,34 +1319,34 @@ export default function AdminDashboard() {
 
             {/* Role-based Privileges Section */}
             <div className="settings-section">
-              <h3>🔐 Your Access & Privileges</h3>
+              <h3><Lock size={18} className="inline-block mr-1" /> Your Access & Privileges</h3>
               <p><strong>Roles:</strong> {user?.roles?.join(', ') || user?.role}</p>
               <p>You have access to:</p>
               <ul>
                 {(user?.roles?.includes('admin') || isSuperAdmin) && (
-                  <li>✅ Menu Management - Add, edit, delete menu items</li>
+                  <li><CheckCircle size={18} className="inline-block mr-1" /> Menu Management - Add, edit, delete menu items</li>
                 )}
                 {isSuperAdmin && (
-                  <li>✅ User Management - Create and manage admin accounts</li>
+                  <li><CheckCircle size={18} className="inline-block mr-1" /> User Management - Create and manage admin accounts</li>
                 )}
                 {(user?.roles?.includes('admin') || 
                   user?.roles?.includes('ordermanager') || 
                   isSuperAdmin) && (
-                  <li>✅ Order Management - View and manage all orders</li>
+                  <li><CheckCircle size={18} className="inline-block mr-1" /> Order Management - View and manage all orders</li>
                 )}
                 {(user?.roles?.includes('delivery') || isSuperAdmin) && (
-                  <li>✅ Delivery Management - Track and manage deliveries</li>
+                  <li><CheckCircle size={18} className="inline-block mr-1" /> Delivery Management - Track and manage deliveries</li>
                 )}
                 {(user?.roles?.includes('admin') || 
                   user?.roles?.includes('feedback_manager') || 
                   isSuperAdmin) && (
-                  <li>✅ Feedback Management - View and respond to customer feedback</li>
+                  <li><CheckCircle size={18} className="inline-block mr-1" /> Feedback Management - View and respond to customer feedback</li>
                 )}
-                <li>✅ Settings - Change your credentials</li>
+                <li><CheckCircle size={18} className="inline-block mr-1" /> Settings - Change your credentials</li>
               </ul>
               {isSuperAdmin && (
                 <div className="superadmin-badge">
-                  <strong>⭐ Super Admin</strong> - You have full system access
+                  <strong><Star size={18} className="inline-block mr-1" /> Super Admin</strong> - You have full system access
                 </div>
               )}
             </div>

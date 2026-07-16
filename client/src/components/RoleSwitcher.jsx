@@ -1,3 +1,4 @@
+import { ShoppingCart, Briefcase, Star, Clipboard, Bike, User, Check } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import './RoleSwitcher.css'
@@ -16,13 +17,13 @@ export default function RoleSwitcher() {
 
   const getRoleIcon = (role) => {
     const icons = {
-      customer: '🛒',
-      admin: '👨‍💼',
-      superadmin: '⭐',
-      ordermanager: '📋',
-      delivery: '🚴'
+      customer: <ShoppingCart size={18} className="inline-block mr-1" />,
+      admin: <Briefcase size={18} className="inline-block mr-1" />,
+      superadmin: <Star size={18} className="inline-block mr-1" />,
+      ordermanager: <Clipboard size={18} className="inline-block mr-1" />,
+      delivery: <Bike size={18} className="inline-block mr-1" />
     }
-    return icons[role] || '👤'
+    return icons[role] || <User size={18} className="inline-block mr-1" />
   }
 
   const getRoleLabel = (role) => {
@@ -89,7 +90,7 @@ export default function RoleSwitcher() {
             >
               <span className="role-icon">{getRoleIcon(role)}</span>
               <span>{getRoleLabel(role)}</span>
-              {role === currentRole && <span className="check-mark">✓</span>}
+              {role === currentRole && <span className="check-mark"><Check size={18} className="inline-block mr-1" /></span>}
             </button>
           ))}
         </div>

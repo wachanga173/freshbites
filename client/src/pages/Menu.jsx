@@ -1,3 +1,4 @@
+import { Utensils, Beef, Popcorn, Coffee, User, Package } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import MenuItem from '../components/MenuItem'
@@ -63,14 +64,14 @@ export default function Menu() {
   }, [])
 
   const categories = [
-    { id: 'all', name: 'All Menu', icon: '🍽️' },
-    { id: 'appetizers', name: 'Appetizers', icon: '🥟' },
-    { id: 'breakfast', name: 'Breakfast', icon: '🍳' },
-    { id: 'lunch', name: 'Lunch', icon: '🍔' },
-    { id: 'dinner', name: 'Dinner', icon: '🍖' },
-    { id: 'desserts', name: 'Desserts', icon: '🍰' },
-    { id: 'snacks', name: 'Snacks', icon: '🍿' },
-    { id: 'drinks', name: 'Drinks', icon: '☕' }
+    { id: 'all', name: 'All Menu', icon: <Utensils size={18} className="inline-block mr-1" /> },
+    { id: 'appetizers', name: 'Appetizers', icon: <Utensils size={18} className="inline-block mr-1" /> },
+    { id: 'breakfast', name: 'Breakfast', icon: <Utensils size={18} className="inline-block mr-1" /> },
+    { id: 'lunch', name: 'Lunch', icon: <Utensils size={18} className="inline-block mr-1" /> },
+    { id: 'dinner', name: 'Dinner', icon: <Beef size={18} className="inline-block mr-1" /> },
+    { id: 'desserts', name: 'Desserts', icon: <Utensils size={18} className="inline-block mr-1" /> },
+    { id: 'snacks', name: 'Snacks', icon: <Popcorn size={18} className="inline-block mr-1" /> },
+    { id: 'drinks', name: 'Drinks', icon: <Coffee size={18} className="inline-block mr-1" /> }
   ]
 
   const filteredMenu = activeCategory === 'all' 
@@ -151,7 +152,7 @@ export default function Menu() {
               {user && (
                 <>
                   <button onClick={() => window.location.href = '/my-orders'} className="nav-link">My Orders</button>
-                  <button onClick={() => window.location.href = '/profile'} className="nav-profile-btn">👤 Profile</button>
+                  <button onClick={() => window.location.href = '/profile'} className="nav-profile-btn"><User size={18} className="inline-block mr-1" /> Profile</button>
                 </>
               )}
             </div>
@@ -197,8 +198,8 @@ export default function Menu() {
               <button onClick={() => { window.location.href = '/contact'; setShowMobileNav(false) }} className="nav-link">Contact</button>
               {user ? (
                 <>
-                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="nav-link">📦 My Orders</button>
-                  <button onClick={() => { window.location.href = '/profile'; setShowMobileNav(false) }} className="nav-profile-btn">👤 My Profile</button>
+                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="nav-link"><Package size={18} className="inline-block mr-1" /> My Orders</button>
+                  <button onClick={() => { window.location.href = '/profile'; setShowMobileNav(false) }} className="nav-profile-btn"><User size={18} className="inline-block mr-1" /> My Profile</button>
                   <button onClick={() => { logout(); setShowMobileNav(false) }} className="nav-btn-solid" style={{width: '100%', marginTop: '8px'}}>Logout</button>
                 </>
               ) : (

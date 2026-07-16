@@ -1,3 +1,4 @@
+import { Hourglass, CheckCircle, User, Utensils, Check, Bike, Package, ShoppingBag, CheckCheck, X, Ban, Clipboard, Mail, BarChart, Search, Truck, Store, Calendar, Clock, Map, Phone, ArrowLeft } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
@@ -93,7 +94,7 @@ export default function OrderTracking() {
     const colors = {
       pending: '#ffa500',
       confirmed: '#4169e1',
-      preparing: '#9370db',
+      preparing: '#D4A053',
       ready: '#32cd32',
       out_for_delivery: '#ff6347',
       delivered: '#00ff00',
@@ -108,38 +109,38 @@ export default function OrderTracking() {
 
   const getStatusIcon = (status) => {
     const icons = {
-      pending: '⏳',
-      confirmed: '✅',
-      preparing: '👨‍🍳',
-      ready: '✓',
-      out_for_delivery: '🚴',
-      delivered: '📦',
-      picked_up: '🛍️',
-      dined: '🍽️',
-      completed: '✔✔',
-      failed: '❌',
-      cancelled: '🚫'
+      pending: <Hourglass size={18} className="inline-block mr-1" />,
+      confirmed: <CheckCircle size={18} className="inline-block mr-1" />,
+      preparing: '<User size={18} className="inline-block mr-1" />‍<Utensils size={18} className="inline-block mr-1" />',
+      ready: <Check size={18} className="inline-block mr-1" />,
+      out_for_delivery: <Bike size={18} className="inline-block mr-1" />,
+      delivered: <Package size={18} className="inline-block mr-1" />,
+      picked_up: <ShoppingBag size={18} className="inline-block mr-1" />,
+      dined: <Utensils size={18} className="inline-block mr-1" />,
+      completed: <CheckCheck size={18} className="inline-block mr-1" />,
+      failed: <X size={18} className="inline-block mr-1" />,
+      cancelled: <Ban size={18} className="inline-block mr-1" />
     }
-    return icons[status] || '📋'
+    return icons[status] || <Clipboard size={18} className="inline-block mr-1" />
   }
 
   const getStatusMessage = (order) => {
     switch(order.status) {
     case 'delivered':
       return {
-        title: '📦 Order Delivered',
+        title: '<Package size={18} className="inline-block mr-1" /> Order Delivered',
         message: 'Your order has been delivered to your location.',
         action: 'If you have any issues, please contact customer support.'
       }
     case 'picked_up':
       return {
-        title: '🛍️ Order Picked Up',
+        title: '<ShoppingBag size={18} className="inline-block mr-1" /> Order Picked Up',
         message: 'Your order has been picked up from our restaurant.',
         action: 'If you have any issues, please contact customer support.'
       }
     case 'dined':
       return {
-        title: '🍽️ Dine-In Complete',
+        title: '<Utensils size={18} className="inline-block mr-1" /> Dine-In Complete',
         message: 'You have enjoyed your meal at our restaurant.',
         action: 'Thank you for dining with us! For any feedback, please contact customer support.'
       }
@@ -185,7 +186,7 @@ export default function OrderTracking() {
             ← Back
           </button>
           <div className="header-text">
-            <h1>📦 My Orders</h1>
+            <h1><Package size={18} className="inline-block mr-1" /> My Orders</h1>
             <p className="header-subtitle">Track and manage your orders</p>
           </div>
         </div>
@@ -195,7 +196,7 @@ export default function OrderTracking() {
 
       {!Array.isArray(orders) || orders.length === 0 ? (
         <div className="no-orders">
-          <div className="no-orders-icon">📭</div>
+          <div className="no-orders-icon"><Mail size={18} className="inline-block mr-1" /></div>
           <h2>No Orders Yet</h2>
           <p>You haven&apos;t placed any orders yet.</p>
           <button onClick={() => window.location.href = '/menu'} className="browse-menu-btn">
@@ -207,28 +208,28 @@ export default function OrderTracking() {
           {/* Statistics Cards */}
           <div className="order-stats">
             <div className="stat-card">
-              <div className="stat-icon">📊</div>
+              <div className="stat-icon"><BarChart size={18} className="inline-block mr-1" /></div>
               <div className="stat-content">
                 <div className="stat-value">{orderStats.total}</div>
                 <div className="stat-label">Total Orders</div>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">⏳</div>
+              <div className="stat-icon"><Hourglass size={18} className="inline-block mr-1" /></div>
               <div className="stat-content">
                 <div className="stat-value">{orderStats.active}</div>
                 <div className="stat-label">Active</div>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">✅</div>
+              <div className="stat-icon"><CheckCircle size={18} className="inline-block mr-1" /></div>
               <div className="stat-content">
                 <div className="stat-value">{orderStats.completed}</div>
                 <div className="stat-label">Completed</div>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">🚫</div>
+              <div className="stat-icon"><Ban size={18} className="inline-block mr-1" /></div>
               <div className="stat-content">
                 <div className="stat-value">{orderStats.cancelled}</div>
                 <div className="stat-label">Cancelled</div>
@@ -239,7 +240,7 @@ export default function OrderTracking() {
           {/* Filters and Search */}
           <div className="filters-section">
             <div className="search-box">
-              <span className="search-icon">🔍</span>
+              <span className="search-icon"><Search size={18} className="inline-block mr-1" /></span>
               <input
                 type="text"
                 placeholder="Search by order ID or item name..."
@@ -270,16 +271,16 @@ export default function OrderTracking() {
                 onChange={(e) => setFilterType(e.target.value)}
               >
                 <option value="all">All Types</option>
-                <option value="delivery">🚚 Delivery</option>
-                <option value="pickup">🏪 Pickup</option>
-                <option value="dine-in">🍽️ Dine-In</option>
+                <option value="delivery"><Truck size={18} className="inline-block mr-1" /> Delivery</option>
+                <option value="pickup"><Store size={18} className="inline-block mr-1" /> Pickup</option>
+                <option value="dine-in"><Utensils size={18} className="inline-block mr-1" /> Dine-In</option>
               </select>
             </div>
           </div>
 
           {filteredOrders.length === 0 ? (
             <div className="no-results">
-              <div className="no-results-icon">🔍</div>
+              <div className="no-results-icon"><Search size={18} className="inline-block mr-1" /></div>
               <h3>No orders found</h3>
               <p>Try adjusting your filters or search query</p>
               <button onClick={() => {
@@ -329,14 +330,14 @@ export default function OrderTracking() {
                       <div className="order-info-row">
                         <span className="info-label">Type:</span>
                         <span className="order-type">
-                          {(order.orderType || order.deliveryType) === 'delivery' ? '🚚 Delivery' : 
-                            (order.orderType || order.deliveryType) === 'pickup' ? '🏪 Pickup' : '🍽️ Dine-In'}
+                          {(order.orderType || order.deliveryType) === 'delivery' ? '<Truck size={18} className="inline-block mr-1" /> Delivery' : 
+                            (order.orderType || order.deliveryType) === 'pickup' ? '<Store size={18} className="inline-block mr-1" /> Pickup' : '<Utensils size={18} className="inline-block mr-1" /> Dine-In'}
                         </span>
                       </div>
                     </div>
                     <div className="order-card-footer">
-                      <span className="order-date-badge">📅 {new Date(order.createdAt).toLocaleDateString()}</span>
-                      <span className="order-time-badge">🕐 {new Date(order.createdAt).toLocaleTimeString()}</span>
+                      <span className="order-date-badge"><Calendar size={18} className="inline-block mr-1" /> {new Date(order.createdAt).toLocaleDateString()}</span>
+                      <span className="order-time-badge"><Clock size={18} className="inline-block mr-1" /> {new Date(order.createdAt).toLocaleTimeString()}</span>
                     </div>
                   </div>
                 ))}
@@ -399,7 +400,7 @@ export default function OrderTracking() {
                selectedOrder.status === 'out_for_delivery' && 
                tracking && tracking.currentLocation && (
                     <div className="detail-section">
-                      <h3>🗺️ Live GPS Tracking</h3>
+                      <h3><Map size={18} className="inline-block mr-1" /> Live GPS Tracking</h3>
                       <GPSTracker 
                         deliveryLocation={tracking.currentLocation}
                         destinationLocation={{
@@ -416,7 +417,7 @@ export default function OrderTracking() {
                             href={`tel:${selectedOrder.assignedTo.phone}`}
                             className="call-delivery-btn"
                           >
-                        📞 Call Delivery Person
+                            <Phone size={18} className="inline-block mr-1" /> Call Delivery Person
                           </a>
                         </div>
                       )}
@@ -471,7 +472,7 @@ export default function OrderTracking() {
                       <p>{getStatusMessage(selectedOrder).message}</p>
                       <p className="support-info">{getStatusMessage(selectedOrder).action}</p>
                       <div className="support-contact">
-                        <h4>📞 Customer Support</h4>
+                        <h4><Phone size={18} className="inline-block mr-1" /> Customer Support</h4>
                         <p>Phone: <a href="tel:+254712345678">+254 712 345 678</a></p>
                         <p>Email: <a href="mailto:support@freshbites.com">support@freshbites.com</a></p>
                         <p>Hours: Monday - Sunday, 8:00 AM - 10:00 PM</p>
@@ -492,7 +493,7 @@ export default function OrderTracking() {
                         className="confirm-completion-btn"
                         onClick={() => handleConfirmCompletion(selectedOrder.orderId)}
                       >
-                    ✓ Confirm Order Completion
+                        <Check size={18} className="inline-block mr-1" /> Confirm Order Completion
                       </button>
                       <p className="completion-note">
                         {selectedOrder.deliveryType === 'pickup' 
@@ -504,7 +505,7 @@ export default function OrderTracking() {
 
                   {selectedOrder.status === 'completed' && (
                     <div className="completion-message">
-                  ✅ This order has been completed!
+                      <CheckCircle size={18} className="inline-block mr-1" /> This order has been completed!
                       {selectedOrder.completedAt && (
                         <p>Completed on: {new Date(selectedOrder.completedAt).toLocaleString()}</p>
                       )}
@@ -513,7 +514,7 @@ export default function OrderTracking() {
                 </div>
               ) : (
                 <div className="no-selection">
-                  <div className="no-selection-icon">👈</div>
+                  <div className="no-selection-icon"><ArrowLeft size={18} className="inline-block mr-1" /></div>
                   <h3>Select an order</h3>
                   <p>Click on any order from the list to view its details</p>
                 </div>

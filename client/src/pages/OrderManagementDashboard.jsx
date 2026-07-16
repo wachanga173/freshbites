@@ -1,3 +1,4 @@
+import { AlertTriangle, CheckCircle, Clipboard, Truck, Store, Phone, Banknote, Check, User, Utensils, Bike, Package, X, Lock } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
@@ -119,7 +120,7 @@ export default function OrderManagementDashboard() {
     const confirmMsg = `Confirm that customer has ${action}?\n\n` +
                       `Order: #${orderId}\n` +
                       `Type: ${typeLabel}\n\n` +
-                      '⚠️ This action CANNOT be undone.'
+                      '<AlertTriangle size={18} className="inline-block mr-1" />️ This action CANNOT be undone.'
 
     if (!confirm(confirmMsg)) return
 
@@ -138,7 +139,7 @@ export default function OrderManagementDashboard() {
       const data = await response.json()
       
       if (response.ok && data.success) {
-        alert(`✅ ${typeLabel} confirmed!\n\nOrder is now completed.`)
+        alert(`<CheckCircle size={18} className="inline-block mr-1" /> ${typeLabel} confirmed!\n\nOrder is now completed.`)
         fetchOrders()
         if (selectedOrder?.orderId === orderId) {
           setSelectedOrder(data.order)
@@ -154,7 +155,7 @@ export default function OrderManagementDashboard() {
   const confirmPayment = async (orderId) => {
     const confirmMsg = `Confirm that payment has been received for order #${orderId}?\n\n` +
                       'This will change the order status from pending to confirmed/ready.\n\n' +
-                      '⚠️ Only confirm if you have verified the payment.'
+                      '<AlertTriangle size={18} className="inline-block mr-1" />️ Only confirm if you have verified the payment.'
 
     if (!confirm(confirmMsg)) return
 
@@ -172,7 +173,7 @@ export default function OrderManagementDashboard() {
       const data = await response.json()
       
       if (response.ok && data.success) {
-        alert(`✅ Payment confirmed!\n\nOrder status updated to ${data.order.status}.`)
+        alert(`<CheckCircle size={18} className="inline-block mr-1" /> Payment confirmed!\n\nOrder status updated to ${data.order.status}.`)
         fetchOrders()
         if (selectedOrder?.orderId === orderId) {
           setSelectedOrder(data.order)
@@ -189,7 +190,7 @@ export default function OrderManagementDashboard() {
     const colors = {
       pending: '#ffa500',
       confirmed: '#4169e1',
-      preparing: '#9370db',
+      preparing: '#D4A053',
       ready: '#32cd32',
       out_for_delivery: '#ff6347',
       delivered: '#00ff00',
@@ -203,7 +204,7 @@ export default function OrderManagementDashboard() {
   return (
     <div className="order-mgmt-dashboard">
       <header className="dashboard-header">
-        <h1>📋 Order Management</h1>
+        <h1><Clipboard size={18} className="inline-block mr-1" /> Order Management</h1>
         <p>Welcome, {user?.username}</p>
       </header>
 
@@ -254,7 +255,7 @@ export default function OrderManagementDashboard() {
                 </div>
                 <div className="order-info">
                   <p><strong>{order.username}</strong></p>
-                  <p>{order.deliveryType === 'delivery' ? '🚚 Delivery' : '🏪 Pickup'}</p>
+                  <p>{order.deliveryType === 'delivery' ? '<Truck size={18} className="inline-block mr-1" /> Delivery' : '<Store size={18} className="inline-block mr-1" /> Pickup'}</p>
                   <p><strong>KSH {order.grandTotal}</strong></p>
                   <p className="order-time">{new Date(order.createdAt).toLocaleString()}</p>
                 </div>
@@ -270,7 +271,7 @@ export default function OrderManagementDashboard() {
             <div className="detail-section">
               <h3>Customer</h3>
               <p><strong>{selectedOrder.username}</strong></p>
-              {selectedOrder.userId?.phone && <p>📞 {selectedOrder.userId.phone}</p>}
+              {selectedOrder.userId?.phone && <p><Phone size={18} className="inline-block mr-1" /> {selectedOrder.userId.phone}</p>}
             </div>
 
             {selectedOrder.deliveryType === 'delivery' && selectedOrder.deliveryAddress && (
@@ -278,7 +279,7 @@ export default function OrderManagementDashboard() {
                 <h3>Delivery Address</h3>
                 <p>{selectedOrder.deliveryAddress.street}</p>
                 <p>{selectedOrder.deliveryAddress.city}</p>
-                <p>📞 {selectedOrder.deliveryAddress.phone}</p>
+                <p><Phone size={18} className="inline-block mr-1" /> {selectedOrder.deliveryAddress.phone}</p>
                 {selectedOrder.deliveryAddress.instructions && (
                   <p className="instructions">Note: {selectedOrder.deliveryAddress.instructions}</p>
                 )}
@@ -308,27 +309,27 @@ export default function OrderManagementDashboard() {
                     onClick={() => confirmPayment(selectedOrder.orderId)}
                     style={{ backgroundColor: '#28a745', marginBottom: '10px' }}
                   >
-                    💰 Confirm Payment Received
+                    <Banknote size={18} className="inline-block mr-1" /> Confirm Payment Received
                   </button>
                 )}
                 {selectedOrder.status !== 'completed' && selectedOrder.canReuse !== false && (
                   <>
                     <button onClick={() => updateOrderStatus(selectedOrder.orderId, 'confirmed')}>
-                      ✓ Confirm Order
+                      <Check size={18} className="inline-block mr-1" /> Confirm Order
                     </button>
                     <button onClick={() => updateOrderStatus(selectedOrder.orderId, 'preparing')}>
-                      👨‍🍳 Start Preparing
+                      <User size={18} className="inline-block mr-1" />‍<Utensils size={18} className="inline-block mr-1" /> Start Preparing
                     </button>
                     <button onClick={() => updateOrderStatus(selectedOrder.orderId, 'ready')}>
-                      ✓ Mark Ready
+                      <Check size={18} className="inline-block mr-1" /> Mark Ready
                     </button>
                     {selectedOrder.deliveryType === 'delivery' && (
                       <>
                         <button onClick={() => updateOrderStatus(selectedOrder.orderId, 'out_for_delivery')}>
-                          🚴 Out for Delivery
+                          <Bike size={18} className="inline-block mr-1" /> Out for Delivery
                         </button>
                         <button onClick={() => updateOrderStatus(selectedOrder.orderId, 'delivered')}>
-                          📦 Delivered
+                          <Package size={18} className="inline-block mr-1" /> Delivered
                         </button>
                       </>
                     )}
@@ -337,7 +338,7 @@ export default function OrderManagementDashboard() {
                         className="complete-pickup-btn"
                         onClick={() => markPickupDone(selectedOrder.orderId, 'pickup')}
                       >
-                        ✅ Customer Collected (Mark Picked Up)
+                        <CheckCircle size={18} className="inline-block mr-1" /> Customer Collected (Mark Picked Up)
                       </button>
                     )}
                     {selectedOrder.orderType === 'dine-in' && selectedOrder.status === 'ready' && (
@@ -345,7 +346,7 @@ export default function OrderManagementDashboard() {
                         className="complete-pickup-btn"
                         onClick={() => markPickupDone(selectedOrder.orderId, 'dine-in')}
                       >
-                        ✅ Customer Finished (Mark Dined)
+                        <CheckCircle size={18} className="inline-block mr-1" /> Customer Finished (Mark Dined)
                       </button>
                     )}
                     <button 
@@ -355,14 +356,14 @@ export default function OrderManagementDashboard() {
                         if (reason) updateOrderStatus(selectedOrder.orderId, 'cancelled', reason)
                       }}
                     >
-                      ✕ Cancel Order
+                      <X size={18} className="inline-block mr-1" /> Cancel Order
                     </button>
                   </>
                 )}
 
                 {selectedOrder.status === 'completed' || selectedOrder.canReuse === false ? (
                   <div className="order-locked-message">
-                    <strong>🔒 Order Completed & Locked</strong>
+                    <strong><Lock size={18} className="inline-block mr-1" /> Order Completed & Locked</strong>
                     <p>This order has been completed and cannot be modified or reused.</p>
                     {selectedOrder.completedAt && (
                       <p className="completion-details">
@@ -403,7 +404,7 @@ export default function OrderManagementDashboard() {
               <div className="detail-section">
                 <h3>Assigned To</h3>
                 <p><strong>{selectedOrder.assignedTo.username}</strong></p>
-                <p>📞 {selectedOrder.assignedTo.phone}</p>
+                <p><Phone size={18} className="inline-block mr-1" /> {selectedOrder.assignedTo.phone}</p>
               </div>
             )}
           </div>

@@ -1,3 +1,4 @@
+import { Bike, MapPin, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import './DeliveryMap.css'
 
@@ -86,7 +87,7 @@ export default function DeliveryMap({ deliveryLocation, destinationAddress }) {
             strokeWeight: 2
           },
           label: {
-            text: '🚴',
+            text: <Bike size={18} className="inline-block mr-1" />,
             fontSize: '18px'
           }
         })
@@ -125,7 +126,7 @@ export default function DeliveryMap({ deliveryLocation, destinationAddress }) {
             strokeWeight: 2
           },
           label: {
-            text: '📍',
+            text: <MapPin size={18} className="inline-block mr-1" />,
             fontSize: '18px'
           }
         })
@@ -189,7 +190,7 @@ export default function DeliveryMap({ deliveryLocation, destinationAddress }) {
   if (error) {
     return (
       <div className="map-error">
-        <p>❌ {error}</p>
+        <p><X size={18} className="inline-block mr-1" /> {error}</p>
         <p className="error-hint">
           To enable Google Maps:
           <br />1. Get a Google Maps API key from Google Cloud Console
@@ -219,7 +220,7 @@ export default function DeliveryMap({ deliveryLocation, destinationAddress }) {
       {deliveryLocation && (
         <div className="map-info-overlay">
           <div className="location-info">
-            <span className="location-icon">🚴</span>
+            <span className="location-icon"><Bike size={18} className="inline-block mr-1" /></span>
             <div>
               <strong>Delivery Person</strong>
               <p className="location-coords">

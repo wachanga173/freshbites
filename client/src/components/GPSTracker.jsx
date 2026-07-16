@@ -1,3 +1,4 @@
+import { MapPin, Ruler, Compass, Bike, Home, Map, Zap, Radio } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import './GPSTracker.css'
 
@@ -116,7 +117,7 @@ export default function GPSTracker({
   return (
     <div className="gps-tracker">
       <div className="tracker-header">
-        <h3>📍 Live GPS Tracking</h3>
+        <h3><MapPin size={18} className="inline-block mr-1" /> Live GPS Tracking</h3>
         {lastUpdate && (
           <span className="last-update">
             Updated: {lastUpdate.toLocaleTimeString()}
@@ -126,7 +127,7 @@ export default function GPSTracker({
 
       <div className="tracker-stats">
         <div className="stat-card">
-          <div className="stat-icon">📏</div>
+          <div className="stat-icon"><Ruler size={18} className="inline-block mr-1" /></div>
           <div className="stat-content">
             <div className="stat-label">Distance</div>
             <div className="stat-value">{formatDistance(distance)}</div>
@@ -142,7 +143,7 @@ export default function GPSTracker({
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">🧭</div>
+          <div className="stat-icon"><Compass size={18} className="inline-block mr-1" /></div>
           <div className="stat-content">
             <div className="stat-label">Direction</div>
             <div className="stat-value">{getDirectionName(bearing)}</div>
@@ -152,7 +153,7 @@ export default function GPSTracker({
 
       <div className="location-details">
         <div className="location-section">
-          <h4>🚴 Delivery Person Location</h4>
+          <h4><Bike size={18} className="inline-block mr-1" /> Delivery Person Location</h4>
           {deliveryLocation ? (
             <div className="coordinates">
               <span>Lat: {deliveryLocation.latitude.toFixed(6)}</span>
@@ -167,7 +168,7 @@ export default function GPSTracker({
         </div>
 
         <div className="location-section">
-          <h4>🏠 Destination</h4>
+          <h4><Home size={18} className="inline-block mr-1" /> Destination</h4>
           {destinationLocation ? (
             <div className="coordinates">
               <span>Lat: {destinationLocation.latitude.toFixed(6)}</span>
@@ -186,7 +187,7 @@ export default function GPSTracker({
             onClick={openInMaps}
             disabled={!destinationLocation}
           >
-            🗺️ Open in Maps
+            <Map size={18} className="inline-block mr-1" /> Open in Maps
           </button>
         </div>
       )}
@@ -197,11 +198,11 @@ export default function GPSTracker({
           <span>GPS tracking updates every 5-10 seconds</span>
         </div>
         <div className="info-item">
-          <span className="info-icon">⚡</span>
+          <span className="info-icon"><Zap size={18} className="inline-block mr-1" /></span>
           <span>ETA calculated based on average delivery speed (15-20 km/h)</span>
         </div>
         <div className="info-item">
-          <span className="info-icon">📡</span>
+          <span className="info-icon"><Radio size={18} className="inline-block mr-1" /></span>
           <span>Accuracy depends on GPS signal strength</span>
         </div>
       </div>

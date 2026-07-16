@@ -1,3 +1,4 @@
+import { Utensils, Pill, User } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import './News.css'
 
@@ -220,31 +221,31 @@ function News() {
             className={`filter-btn ${category === 'food' ? 'active' : ''}`}
             onClick={() => setCategory('food')}
           >
-            🍽️ Food
+            <Utensils size={18} className="inline-block mr-1" /> Food
           </button>
           <button 
             className={`filter-btn ${category === 'diet' ? 'active' : ''}`}
             onClick={() => setCategory('diet')}
           >
-            🥗 Diet
+            <Utensils size={18} className="inline-block mr-1" /> Diet
           </button>
           <button 
             className={`filter-btn ${category === 'nutrition' ? 'active' : ''}`}
             onClick={() => setCategory('nutrition')}
           >
-            💊 Nutrition
+            <Pill size={18} className="inline-block mr-1" /> Nutrition
           </button>
           <button 
             className={`filter-btn ${category === 'healthy eating' ? 'active' : ''}`}
             onClick={() => setCategory('healthy eating')}
           >
-            🥑 Healthy Eating
+            <Utensils size={18} className="inline-block mr-1" /> Healthy Eating
           </button>
           <button 
             className={`filter-btn ${category === 'recipes' ? 'active' : ''}`}
             onClick={() => setCategory('recipes')}
           >
-            👨‍🍳 Recipes
+            <User size={18} className="inline-block mr-1" />‍<Utensils size={18} className="inline-block mr-1" /> Recipes
           </button>
         </div>
       </div>

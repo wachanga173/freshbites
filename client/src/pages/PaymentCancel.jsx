@@ -1,3 +1,4 @@
+import { AlertTriangle } from 'lucide-react'
 import './PaymentResult.css'
 
 export default function PaymentCancel() {
@@ -9,7 +10,7 @@ export default function PaymentCancel() {
     <div className="payment-result-container">
       <div className="payment-result-card">
         <div className="cancelled">
-          <div className="cancel-icon">⚠</div>
+          <div className="cancel-icon"><AlertTriangle size={18} className="inline-block mr-1" /></div>
           <h2>Payment Cancelled</h2>
           <p>You have cancelled the payment process</p>
           <button className="home-btn" onClick={goToHome}>

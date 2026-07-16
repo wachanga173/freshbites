@@ -1,3 +1,4 @@
+import { AlertTriangle, CheckCircle, Check, Bike, Package, Phone, MapPin, Map, FileText, Radio } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
@@ -180,7 +181,7 @@ export default function DeliveryDashboard() {
                       `Order: #${selectedDelivery.orderId}\n` +
                       `Customer: ${selectedDelivery.username}\n\n` +
                       'Your location will be verified against the delivery address.\n\n' +
-                      '⚠️ This action CANNOT be undone.'
+                      '<AlertTriangle size={18} className="inline-block mr-1" />️ This action CANNOT be undone.'
 
     if (!confirm(confirmMsg)) return
 
@@ -202,13 +203,13 @@ export default function DeliveryDashboard() {
       const data = await response.json()
       
       if (response.ok && data.success) {
-        let message = '✅ Delivery completed successfully!\n\n'
+        let message = '<CheckCircle size={18} className="inline-block mr-1" /> Delivery completed successfully!\n\n'
         if (data.locationVerified) {
-          message += '✓ Location verified - You were at the delivery address'
+          message += '<Check size={18} className="inline-block mr-1" /> Location verified - You were at the delivery address'
         } else if (data.distance) {
-          message += `⚠️ Location verification: You were ${data.distance}m from the delivery address`
+          message += `<AlertTriangle size={18} className="inline-block mr-1" />️ Location verification: You were ${data.distance}m from the delivery address`
         } else {
-          message += '⚠️ Customer did not provide delivery location coordinates'
+          message += '<AlertTriangle size={18} className="inline-block mr-1" />️ Customer did not provide delivery location coordinates'
         }
         alert(message)
         stopLocationTracking()
@@ -249,7 +250,7 @@ export default function DeliveryDashboard() {
   return (
     <div className="delivery-dashboard">
       <header className="delivery-header">
-        <h1>🚴 My Deliveries</h1>
+        <h1><Bike size={18} className="inline-block mr-1" /> My Deliveries</h1>
         {locationTracking && (
           <div className="tracking-indicator">
             <span className="tracking-pulse"></span>
@@ -263,7 +264,7 @@ export default function DeliveryDashboard() {
       {activeDeliveries.length === 0 ? (
         <div className="no-deliveries">
           <div className="empty-state">
-            <span className="empty-icon">📦</span>
+            <span className="empty-icon"><Package size={18} className="inline-block mr-1" /></span>
             <h2>No Active Deliveries</h2>
             <p>You&apos;ll see your assigned deliveries here</p>
           </div>
@@ -281,18 +282,18 @@ export default function DeliveryDashboard() {
                 <div className="delivery-card-header">
                   <span className="order-number">#{delivery.orderId}</span>
                   <span className={`status-badge ${delivery.status}`}>
-                    {delivery.status === 'ready' ? '📦 Ready' : '🚴 In Transit'}
+                    {delivery.status === 'ready' ? '<Package size={18} className="inline-block mr-1" /> Ready' : '<Bike size={18} className="inline-block mr-1" /> In Transit'}
                   </span>
                 </div>
                 
                 <div className="delivery-card-body">
                   <div className="customer-info">
                     <strong>{delivery.username}</strong>
-                    <p className="customer-phone">📞 {delivery.deliveryAddress?.phone}</p>
+                    <p className="customer-phone"><Phone size={18} className="inline-block mr-1" /> {delivery.deliveryAddress?.phone}</p>
                   </div>
                   
                   <div className="delivery-address">
-                    <span className="location-icon">📍</span>
+                    <span className="location-icon"><MapPin size={18} className="inline-block mr-1" /></span>
                     <div>
                       <p>{delivery.deliveryAddress?.street}</p>
                       <p className="city">{delivery.deliveryAddress?.city}</p>
@@ -345,14 +346,14 @@ export default function DeliveryDashboard() {
                     className="call-btn"
                     onClick={() => callCustomer(selectedDelivery.deliveryAddress?.phone)}
                   >
-                    📞 Call Customer
+                    <Phone size={18} className="inline-block mr-1" /> Call Customer
                   </button>
                 </div>
               </div>
 
               {/* Delivery Address */}
               <div className="details-section">
-                <h3>🗺️ Delivery Address & GPS Tracking</h3>
+                <h3><Map size={18} className="inline-block mr-1" /> Delivery Address & GPS Tracking</h3>
                 {currentLocation && selectedDelivery.deliveryAddress && (
                   <GPSTracker 
                     deliveryLocation={currentLocation}
@@ -366,10 +367,10 @@ export default function DeliveryDashboard() {
                 <div className="address-details">
                   <p className="address-line">{selectedDelivery.deliveryAddress?.street}</p>
                   <p className="address-line">{selectedDelivery.deliveryAddress?.city}</p>
-                  <p className="address-phone">📞 Phone: {selectedDelivery.deliveryAddress?.phone}</p>
+                  <p className="address-phone"><Phone size={18} className="inline-block mr-1" /> Phone: {selectedDelivery.deliveryAddress?.phone}</p>
                   {selectedDelivery.deliveryAddress?.instructions && (
                     <div className="special-instructions">
-                      <strong>📝 Special Instructions:</strong>
+                      <strong><FileText size={18} className="inline-block mr-1" /> Special Instructions:</strong>
                       <p>{selectedDelivery.deliveryAddress.instructions}</p>
                     </div>
                   )}
@@ -378,13 +379,13 @@ export default function DeliveryDashboard() {
                       className="navigate-btn"
                       onClick={() => openNavigation(selectedDelivery.deliveryAddress)}
                     >
-                      🗺️ Open in Google Maps
+                      <Map size={18} className="inline-block mr-1" /> Open in Google Maps
                     </button>
                     <a 
                       href={`tel:${selectedDelivery.deliveryAddress?.phone}`}
                       className="call-customer-btn"
                     >
-                      📞 Call Customer
+                      <Phone size={18} className="inline-block mr-1" /> Call Customer
                     </a>
                   </div>
                 </div>
@@ -407,7 +408,7 @@ export default function DeliveryDashboard() {
                 </div>
                 <div className="order-total-display">
                   <strong>Total to Collect: KSH {selectedDelivery.grandTotal}</strong>
-                  <p className="payment-note">✓ Already paid via {selectedDelivery.paymentMethod}</p>
+                  <p className="payment-note"><Check size={18} className="inline-block mr-1" /> Already paid via {selectedDelivery.paymentMethod}</p>
                 </div>
               </div>
 
@@ -417,7 +418,7 @@ export default function DeliveryDashboard() {
                 <div className="action-buttons">
                   {selectedDelivery.status === 'ready' && (
                     <p className="info-message">
-                      📍 Start your delivery to begin GPS tracking
+                      <MapPin size={18} className="inline-block mr-1" /> Start your delivery to begin GPS tracking
                     </p>
                   )}
                   
@@ -428,7 +429,7 @@ export default function DeliveryDashboard() {
                         onClick={handleMarkArrived}
                         disabled={!locationTracking}
                       >
-                        📍 I&apos;ve Arrived at Customer Location
+                        <MapPin size={18} className="inline-block mr-1" /> I&apos;ve Arrived at Customer Location
                       </button>
                       
                       <button 
@@ -436,7 +437,7 @@ export default function DeliveryDashboard() {
                         onClick={handleMarkDeliveryDone}
                         disabled={!locationTracking}
                       >
-                        ✅ Mark Delivery as DONE (Cannot Reuse)
+                        <CheckCircle size={18} className="inline-block mr-1" /> Mark Delivery as DONE (Cannot Reuse)
                       </button>
                     </>
                   )}
@@ -446,13 +447,13 @@ export default function DeliveryDashboard() {
                       className="complete-delivery-btn"
                       onClick={handleMarkDeliveryDone}
                     >
-                      ✅ Confirm Delivery DONE (Cannot Reuse)
+                      <CheckCircle size={18} className="inline-block mr-1" /> Confirm Delivery DONE (Cannot Reuse)
                     </button>
                   )}
 
                   {selectedDelivery.status === 'completed' && (
                     <div className="completed-message">
-                      ✅ This delivery has been completed and locked
+                      <CheckCircle size={18} className="inline-block mr-1" /> This delivery has been completed and locked
                       {selectedDelivery.completedAt && (
                         <p className="completion-time">
                           Completed: {new Date(selectedDelivery.completedAt).toLocaleString()}
@@ -463,7 +464,7 @@ export default function DeliveryDashboard() {
                   
                   {!locationTracking && selectedDelivery.status === 'out_for_delivery' && (
                     <p className="warning-message">
-                      ⚠️ GPS tracking must be active to complete actions
+                      <AlertTriangle size={18} className="inline-block mr-1" />️ GPS tracking must be active to complete actions
                     </p>
                   )}
                 </div>
@@ -471,7 +472,7 @@ export default function DeliveryDashboard() {
 
               {/* GPS Info */}
               <div className="details-section gps-info">
-                <h4>📡 GPS Tracking Info</h4>
+                <h4><Radio size={18} className="inline-block mr-1" /> GPS Tracking Info</h4>
                 <ul>
                   <li>Your location is being shared with the customer and admin</li>
                   <li>Updates are sent every 10 seconds</li>

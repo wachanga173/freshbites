@@ -1,3 +1,4 @@
+import { Check, X } from 'lucide-react'
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
@@ -86,7 +87,7 @@ export default function PaymentSuccess() {
 
         {status === 'success' && (
           <div className="success">
-            <div className="success-icon">✓</div>
+            <div className="success-icon"><Check size={18} className="inline-block mr-1" /></div>
             <h2>Payment Successful!</h2>
             <p>Your order has been confirmed</p>
             {order && (
@@ -103,7 +104,7 @@ export default function PaymentSuccess() {
 
         {status === 'error' && (
           <div className="error">
-            <div className="error-icon">✕</div>
+            <div className="error-icon"><X size={18} className="inline-block mr-1" /></div>
             <h2>Payment Failed</h2>
             <p>{error}</p>
             <button className="home-btn" onClick={goToHome}>

@@ -1,3 +1,4 @@
+import { ShoppingCart, Briefcase, Star, Clipboard, Bike, MessageSquare, User, Lightbulb, Zap, Package, Utensils, LogOut } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import Footer from '../components/Footer'
 import './Auth.css'
@@ -15,14 +16,14 @@ export default function Profile() {
 
   const getRoleIcon = (role) => {
     const icons = {
-      customer: '🛒',
-      admin: '👨‍💼',
-      superadmin: '⭐',
-      ordermanager: '📋',
-      delivery: '🚴',
-      feedback_manager: '💬'
+      customer: <ShoppingCart size={18} className="inline-block mr-1" />,
+      admin: <Briefcase size={18} className="inline-block mr-1" />,
+      superadmin: <Star size={18} className="inline-block mr-1" />,
+      ordermanager: <Clipboard size={18} className="inline-block mr-1" />,
+      delivery: <Bike size={18} className="inline-block mr-1" />,
+      feedback_manager: <MessageSquare size={18} className="inline-block mr-1" />
     }
-    return icons[role] || '👤'
+    return icons[role] || <User size={18} className="inline-block mr-1" />
   }
 
   const getRoleLabel = (role) => {
@@ -82,7 +83,7 @@ export default function Profile() {
           {/* Profile Header */}
           <div className="px-8 py-12 text-white text-center" style={{background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)', color: 'white'}}>
             <div className="w-24 h-24 mx-auto mb-4 bg-white rounded-full flex items-center justify-center text-5xl">
-              👤
+              <User size={18} className="inline-block mr-1" />
             </div>
             <h1 className="text-3xl font-bold mb-2">{user.username}</h1>
             <p style={{color: '#D4C5B0'}}>{user.email}</p>
@@ -93,7 +94,7 @@ export default function Profile() {
             {/* Account Information */}
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <span>📋</span> Account Information
+                <span><Clipboard size={18} className="inline-block mr-1" /></span> Account Information
               </h2>
               <div className="bg-gray-50 rounded-lg p-6 space-y-4">
                 <div className="flex justify-between items-center border-b border-gray-200 pb-3">
@@ -116,7 +117,7 @@ export default function Profile() {
             {/* Roles Section */}
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <span>⭐</span> Your Roles & Dashboards
+                <span><Star size={18} className="inline-block mr-1" /></span> Your Roles & Dashboards
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {userRoles.map(role => (
@@ -144,7 +145,7 @@ export default function Profile() {
               {userRoles.length > 1 && (
                 <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    💡 <strong>Tip:</strong> You have multiple roles! Use the Role Switcher at the top of any page to quickly switch between your dashboards.
+                    <Lightbulb size={18} className="inline-block mr-1" /> <strong>Tip:</strong> You have multiple roles! Use the Role Switcher at the top of any page to quickly switch between your dashboards.
                   </p>
                 </div>
               )}
@@ -153,14 +154,14 @@ export default function Profile() {
             {/* Quick Actions */}
             <section>
               <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <span>⚡</span> Quick Actions
+                <span><Zap size={18} className="inline-block mr-1" /></span> Quick Actions
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button
                   onClick={() => window.location.href = '/my-orders'}
                   className="flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all text-left group"
                 >
-                  <div className="text-3xl">📦</div>
+                  <div className="text-3xl"><Package size={18} className="inline-block mr-1" /></div>
                   <div>
                     <div className="font-semibold text-gray-800 group-hover:text-white" style={{transition: 'color 0.2s'}}onMouseEnter={(e) => e.target.style.color = 'var(--color-primary)'} onMouseLeave={(e) => e.target.style.color = '#1f2937'}>My Orders</div>
                     <div className="text-sm text-gray-600">View order history</div>
@@ -170,7 +171,7 @@ export default function Profile() {
                   onClick={() => window.location.href = '/menu'}
                   className="flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all text-left group"
                 >
-                  <div className="text-3xl">🍽️</div>
+                  <div className="text-3xl"><Utensils size={18} className="inline-block mr-1" /></div>
                   <div>
                     <div className="font-semibold text-gray-800" style={{transition: 'color 0.2s'}} onMouseEnter={(e) => e.target.style.color = 'var(--color-primary)'} onMouseLeave={(e) => e.target.style.color = '#1f2937'}>Browse Menu</div>
                     <div className="text-sm text-gray-600">Order delicious food</div>
@@ -185,7 +186,7 @@ export default function Profile() {
                 onClick={handleLogout}
                 className="w-full px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all shadow-md hover:shadow-lg"
               >
-                🚪 Logout
+                <LogOut size={18} className="inline-block mr-1" /> Logout
               </button>
             </div>
           </div>

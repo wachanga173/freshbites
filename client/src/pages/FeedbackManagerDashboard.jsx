@@ -1,3 +1,4 @@
+import { Utensils, Briefcase, Truck, MessageSquare, AlertTriangle, Lightbulb, Clipboard, RefreshCw, Star, User, Calendar, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { getApiUrl } from '../config/api'
 import { useAuth } from '../context/AuthContext'
@@ -121,14 +122,14 @@ export default function FeedbackManagerDashboard() {
 
   const getCategoryIcon = (category) => {
     const icons = {
-      food_quality: '🍽️',
-      service: '👨‍💼',
-      delivery: '🚚',
-      general: '💬',
-      complaint: '⚠️',
-      suggestion: '💡'
+      food_quality: <Utensils size={18} className="inline-block mr-1" />,
+      service: <Briefcase size={18} className="inline-block mr-1" />,
+      delivery: <Truck size={18} className="inline-block mr-1" />,
+      general: <MessageSquare size={18} className="inline-block mr-1" />,
+      complaint: '<AlertTriangle size={18} className="inline-block mr-1" />️',
+      suggestion: <Lightbulb size={18} className="inline-block mr-1" />
     }
-    return icons[category] || '💬'
+    return icons[category] || <MessageSquare size={18} className="inline-block mr-1" />
   }
 
   if (!user || (!user.roles?.includes('feedback_manager') && !user.roles?.includes('superadmin'))) {
@@ -143,7 +144,7 @@ export default function FeedbackManagerDashboard() {
   return (
     <div className="feedback-manager-container">
       <div className="feedback-manager-header">
-        <h1>📋 Feedback Management</h1>
+        <h1><Clipboard size={18} className="inline-block mr-1" /> Feedback Management</h1>
         <div className="header-stats">
           <div className="stat-card">
             <span className="stat-number">{feedbacks.filter(f => f.status === 'pending').length}</span>
@@ -188,7 +189,7 @@ export default function FeedbackManagerDashboard() {
         </select>
 
         <button onClick={fetchFeedbacks} className="refresh-btn">
-          🔄 Refresh
+          <RefreshCw size={18} className="inline-block mr-1" /> Refresh
         </button>
       </div>
 
@@ -213,7 +214,7 @@ export default function FeedbackManagerDashboard() {
                 </div>
                 {feedback.rating && (
                   <div className="feedback-rating">
-                    {'⭐'.repeat(feedback.rating)}
+                    {<Star size={18} className="inline-block mr-1" />.repeat(feedback.rating)}
                   </div>
                 )}
               </div>
@@ -222,8 +223,8 @@ export default function FeedbackManagerDashboard() {
               <p className="feedback-message">{feedback.message}</p>
 
               <div className="feedback-user-info">
-                <span>👤 {feedback.username}</span>
-                <span>📅 {new Date(feedback.createdAt).toLocaleDateString()}</span>
+                <span><User size={18} className="inline-block mr-1" /> {feedback.username}</span>
+                <span><Calendar size={18} className="inline-block mr-1" /> {new Date(feedback.createdAt).toLocaleDateString()}</span>
               </div>
 
               {feedback.response && (
@@ -242,7 +243,7 @@ export default function FeedbackManagerDashboard() {
                     onClick={() => setSelectedFeedback(feedback)}
                     className="btn-respond"
                   >
-                    💬 Respond
+                    <MessageSquare size={18} className="inline-block mr-1" /> Respond
                   </button>
                 )}
                 
@@ -268,7 +269,7 @@ export default function FeedbackManagerDashboard() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Respond to Feedback</h2>
-              <button onClick={() => setSelectedFeedback(null)} className="modal-close">✕</button>
+              <button onClick={() => setSelectedFeedback(null)} className="modal-close"><X size={18} className="inline-block mr-1" /></button>
             </div>
             <div className="modal-body">
               <div className="feedback-details">

@@ -1,3 +1,4 @@
+import { Mail, Phone, MapPin } from 'lucide-react'
 import './LegalPages.css'
 
 export default function TermsAndConditions() {
@@ -133,9 +134,9 @@ export default function TermsAndConditions() {
               If you have any questions about these Terms and Conditions, please contact us at:
             </p>
             <ul className="contact-info">
-              <li>📧 Email: legal@freshbitescafe.com</li>
-              <li>📞 Phone: +254 712 345 678</li>
-              <li>📍 Address: 123 Main Street, Nairobi, Kenya</li>
+              <li><Mail size={18} className="inline-block mr-1" /> Email: legal@freshbitescafe.com</li>
+              <li><Phone size={18} className="inline-block mr-1" /> Phone: +254 712 345 678</li>
+              <li><MapPin size={18} className="inline-block mr-1" /> Address: 123 Main Street, Nairobi, Kenya</li>
             </ul>
           </section>
         </div>

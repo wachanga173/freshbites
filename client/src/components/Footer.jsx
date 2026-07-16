@@ -1,3 +1,4 @@
+import { CheckCircle, X, Copyright, Heart } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import './Footer.css'
 
@@ -8,7 +9,7 @@ export default function Footer() {
   useEffect(() => {
     /* eslint-disable no-console */
     const handler = (e) => {
-      console.log('✅ beforeinstallprompt event fired!', e)
+      console.log('<CheckCircle size={18} className="inline-block mr-1" /> beforeinstallprompt event fired!', e)
       e.preventDefault()
       setDeferredPrompt(e)
       window.deferredPrompt = e
@@ -16,7 +17,7 @@ export default function Footer() {
     }
 
     const installedHandler = () => {
-      console.log('✅ App installed successfully!')
+      console.log('<CheckCircle size={18} className="inline-block mr-1" /> App installed successfully!')
       setShowInstallButton(false)
     }
 
@@ -36,9 +37,9 @@ export default function Footer() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistration().then(reg => {
         if (reg) {
-          console.log('✅ Service Worker is registered:', reg)
+          console.log('<CheckCircle size={18} className="inline-block mr-1" /> Service Worker is registered:', reg)
         } else {
-          console.log('❌ Service Worker not registered yet')
+          console.log('<X size={18} className="inline-block mr-1" /> Service Worker not registered yet')
         }
       })
     }
@@ -214,10 +215,10 @@ export default function Footer() {
           <div className="footer-bottom-content">
             <div className="copyright-section">
               <p className="copyright">
-                © {new Date().getFullYear()} Fresh Bites Café. All rights reserved.
+                <Copyright size={18} className="inline-block mr-1" /> {new Date().getFullYear()} Fresh Bites Café. All rights reserved.
               </p>
               <p className="license-info">
-                Open Source | MIT License | Made with <span className="heart">♥</span> for the community
+                Open Source | MIT License | Made with <span className="heart"><Heart size={18} className="inline-block mr-1" /></span> for the community
               </p>
             </div>
             <div className="payment-section">

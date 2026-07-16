@@ -1,3 +1,4 @@
+import { X, MessageSquare, MessageCircle, Utensils, Star, Hourglass, ArrowRight } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { getApiUrl } from '../config/api'
 import { useAuth } from '../context/AuthContext'
@@ -180,7 +181,7 @@ export default function FeedbackChatbot() {
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle chatbot"
       >
-        {isOpen ? '✕' : '💬'}
+        {isOpen ? <X size={18} className="inline-block mr-1" /> : <MessageSquare size={18} className="inline-block mr-1" />}
       </button>
 
       {/* Chatbot Window */}
@@ -195,7 +196,7 @@ export default function FeedbackChatbot() {
                   setMessages([])
                 }}
               >
-                💭 Feedback
+                <MessageCircle size={18} className="inline-block mr-1" /> Feedback
               </button>
               <button 
                 className={`chatbot-tab ${activeTab === 'diet' ? 'active' : ''}`}
@@ -204,7 +205,7 @@ export default function FeedbackChatbot() {
                   setMessages([])
                 }}
               >
-                🥗 Diet AI
+                <Utensils size={18} className="inline-block mr-1" /> Diet AI
               </button>
             </div>
             <button 
@@ -212,7 +213,7 @@ export default function FeedbackChatbot() {
               onClick={() => setIsOpen(false)}
               aria-label="Close chatbot"
             >
-              ✕
+              <X size={18} className="inline-block mr-1" />
             </button>
           </div>
 
@@ -271,7 +272,7 @@ export default function FeedbackChatbot() {
                     className={`star-btn ${feedbackForm.rating >= star ? 'active' : ''}`}
                     onClick={() => setFeedbackForm({...feedbackForm, rating: star})}
                   >
-                    ⭐
+                    <Star size={18} className="inline-block mr-1" />
                   </button>
                 ))}
               </div>
@@ -292,7 +293,7 @@ export default function FeedbackChatbot() {
               disabled={loading || !inputMessage.trim()}
               className="send-btn"
             >
-              {loading ? '⏳' : '➤'}
+              {loading ? <Hourglass size={18} className="inline-block mr-1" /> : <ArrowRight size={18} className="inline-block mr-1" />}
             </button>
           </div>
         </div>

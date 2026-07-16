@@ -1,3 +1,4 @@
+import { Truck, Check, Utensils, ShoppingBag, AlertTriangle, MapPin, Lightbulb, CreditCard, Smartphone, Lock } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import { getApiUrl } from '../config/api'
 import { useAuth } from '../context/AuthContext'
@@ -344,7 +345,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                   <div className="checkout-item-details">
                     <h4>{item.name}</h4>
                     <p>Quantity: {item.quantity}</p>
-                    {item.deliverable && <span className="delivery-badge">🚚 Deliverable</span>}
+                    {item.deliverable && <span className="delivery-badge"><Truck size={18} className="inline-block mr-1" /> Deliverable</span>}
                   </div>
                   <div className="checkout-item-price">
                     KSH {(item.price * item.quantity).toFixed(0)}
@@ -373,9 +374,9 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                 alignItems: 'center',
                 gap: '10px'
               }}>
-                <span style={{fontSize: '1.2em'}}>✓</span>
+                <span style={{fontSize: '1.2em'}}><Check size={18} className="inline-block mr-1" /></span>
                 <span style={{fontWeight: '600', color: '#2e7d32'}}>
-                  Selected: {orderType === 'dine-in' ? '🍽️ Dine In' : orderType === 'pickup' ? '🛍️ Pickup' : '🚚 Delivery'}
+                  Selected: {orderType === 'dine-in' ? '<Utensils size={18} className="inline-block mr-1" /> Dine In' : orderType === 'pickup' ? '<ShoppingBag size={18} className="inline-block mr-1" /> Pickup' : '<Truck size={18} className="inline-block mr-1" /> Delivery'}
                   {orderType === 'dine-in' && ' - Eat at our restaurant'}
                   {orderType === 'pickup' && ' - Pick up your order'}
                   {orderType === 'delivery' && ' - Delivered to your location'}
@@ -391,9 +392,9 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                   style={{position: 'relative'}}
                 >
                   {orderType === 'dine-in' && (
-                    <div style={{position: 'absolute', top: '10px', right: '10px', fontSize: '1.5em', color: '#4caf50'}}>✓</div>
+                    <div style={{position: 'absolute', top: '10px', right: '10px', fontSize: '1.5em', color: '#4caf50'}}><Check size={18} className="inline-block mr-1" /></div>
                   )}
-                  <div className="order-type-icon">🍽️</div>
+                  <div className="order-type-icon"><Utensils size={18} className="inline-block mr-1" /></div>
                   <h3>Dine In</h3>
                   <p>Eat at our restaurant</p>
                 </div>
@@ -406,9 +407,9 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                   style={{position: 'relative'}}
                 >
                   {orderType === 'pickup' && (
-                    <div style={{position: 'absolute', top: '10px', right: '10px', fontSize: '1.5em', color: '#4caf50'}}>✓</div>
+                    <div style={{position: 'absolute', top: '10px', right: '10px', fontSize: '1.5em', color: '#4caf50'}}><Check size={18} className="inline-block mr-1" /></div>
                   )}
-                  <div className="order-type-icon">🛍️</div>
+                  <div className="order-type-icon"><ShoppingBag size={18} className="inline-block mr-1" /></div>
                   <h3>Pickup</h3>
                   <p>Pick up your order</p>
                 </div>
@@ -421,19 +422,19 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                   style={{position: 'relative'}}
                 >
                   {orderType === 'delivery' && (
-                    <div style={{position: 'absolute', top: '10px', right: '10px', fontSize: '1.5em', color: '#4caf50'}}>✓</div>
+                    <div style={{position: 'absolute', top: '10px', right: '10px', fontSize: '1.5em', color: '#4caf50'}}><Check size={18} className="inline-block mr-1" /></div>
                   )}
-                  <div className="order-type-icon">🚚</div>
+                  <div className="order-type-icon"><Truck size={18} className="inline-block mr-1" /></div>
                   <h3>Delivery</h3>
                   <p>Delivered to your location</p>
                 </div>
               )}
             </div>
             {availableOrderTypes.length === 0 && (
-              <p className="error-message">⚠️ No valid order type available for the items in your cart.</p>
+              <p className="error-message"><AlertTriangle size={18} className="inline-block mr-1" />️ No valid order type available for the items in your cart.</p>
             )}
             {!orderType && (
-              <p className="error-message">⚠️ Please select an order type to continue.</p>
+              <p className="error-message"><AlertTriangle size={18} className="inline-block mr-1" />️ Please select an order type to continue.</p>
             )}
           </section>
 
@@ -492,13 +493,13 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                   onClick={getUserLocation}
                   title="Click to allow location access. Your browser will ask for permission to share your location."
                 >
-                  📍 Get My Location
+                  <MapPin size={18} className="inline-block mr-1" /> Get My Location
                 </button>
                 <p className="location-help">
-                  💡 Click the button above and allow location access when prompted by your browser. This helps us deliver to your exact location.
+                  <Lightbulb size={18} className="inline-block mr-1" /> Click the button above and allow location access when prompted by your browser. This helps us deliver to your exact location.
                 </p>
                 {deliveryAddress.latitude && deliveryAddress.longitude && (
-                  <p className="location-confirmed">✓ Location captured successfully!</p>
+                  <p className="location-confirmed"><Check size={18} className="inline-block mr-1" /> Location captured successfully!</p>
                 )}
               </div>
             </section>
@@ -513,7 +514,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                 style={{opacity: 0.6, cursor: 'not-allowed'}}
                 title="Payment option will be integrated soon"
               >
-                <div className="payment-icon">💳</div>
+                <div className="payment-icon"><CreditCard size={18} className="inline-block mr-1" /></div>
                 <h3>PayPal</h3>
                 <p>Payment option will be integrated soon</p>
                 <span className="coming-soon-badge">Coming Soon</span>
@@ -523,7 +524,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
                 className={`payment-card ${paymentMethod === 'mpesa' ? 'selected' : ''}`}
                 onClick={() => setPaymentMethod('mpesa')}
               >
-                <div className="payment-icon">📱</div>
+                <div className="payment-icon"><Smartphone size={18} className="inline-block mr-1" /></div>
                 <h3>M-Pesa</h3>
                 <p>Pay with M-Pesa STK Push</p>
               </div>
@@ -582,7 +583,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
             </button>
 
             <div className="secure-payment">
-              <span className="lock-icon">🔒</span>
+              <span className="lock-icon"><Lock size={18} className="inline-block mr-1" /></span>
               <small>Secure payment processing</small>
             </div>
           </div>

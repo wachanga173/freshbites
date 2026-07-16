@@ -1,3 +1,4 @@
+import { BookOpen, Target, Utensils, Coffee, Truck, Smartphone, Gem, Star, Check, Phone, MapPin, Mail, Users, Heart } from 'lucide-react'
 import './About.css'
 
 export default function About() {
@@ -14,7 +15,7 @@ export default function About() {
         <div className="about-content">
           {/* Our Story */}
           <section className="about-section">
-            <div className="section-icon">📖</div>
+            <div className="section-icon"><BookOpen size={18} className="inline-block mr-1" /></div>
             <h2>Our Story</h2>
             <p>
               Welcome to Fresh Bites Café, where passion meets flavor! Founded in 2024, we started with a simple 
@@ -30,7 +31,7 @@ export default function About() {
 
           {/* Our Mission */}
           <section className="about-section highlight-section">
-            <div className="section-icon">🎯</div>
+            <div className="section-icon"><Target size={18} className="inline-block mr-1" /></div>
             <h2>Our Mission</h2>
             <p>
               To provide our customers with exceptional dining experiences through quality food, outstanding service,
@@ -41,36 +42,36 @@ export default function About() {
 
           {/* What We Offer */}
           <section className="about-section">
-            <div className="section-icon">🍽️</div>
+            <div className="section-icon"><Utensils size={18} className="inline-block mr-1" /></div>
             <h2>What We Offer</h2>
             <div className="features-grid">
               <div className="feature-card">
-                <div className="feature-icon">🍳</div>
+                <div className="feature-icon"><Utensils size={18} className="inline-block mr-1" /></div>
                 <h3>Fresh Breakfast</h3>
                 <p>Start your day right with our hearty breakfast options, from classic favorites to innovative creations.</p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">🍔</div>
+                <div className="feature-icon"><Utensils size={18} className="inline-block mr-1" /></div>
                 <h3>Lunch & Dinner</h3>
                 <p>Satisfy your cravings with our diverse menu featuring local and international cuisines.</p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">🍰</div>
+                <div className="feature-icon"><Utensils size={18} className="inline-block mr-1" /></div>
                 <h3>Desserts & Snacks</h3>
                 <p>Indulge in our delectable desserts and snacks, perfect for any time of the day.</p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">☕</div>
+                <div className="feature-icon"><Coffee size={18} className="inline-block mr-1" /></div>
                 <h3>Beverages</h3>
                 <p>Refresh yourself with our selection of hot and cold beverages, from coffee to fresh juices.</p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">🚚</div>
+                <div className="feature-icon"><Truck size={18} className="inline-block mr-1" /></div>
                 <h3>Fast Delivery</h3>
                 <p>Enjoy your favorite meals delivered fresh to your location with real-time tracking.</p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">📱</div>
+                <div className="feature-icon"><Smartphone size={18} className="inline-block mr-1" /></div>
                 <h3>Mobile App</h3>
                 <p>Order on the go with our easy-to-use mobile app for iOS and Android.</p>
               </div>
@@ -79,7 +80,7 @@ export default function About() {
 
           {/* Our Values */}
           <section className="about-section">
-            <div className="section-icon">💎</div>
+            <div className="section-icon"><Gem size={18} className="inline-block mr-1" /></div>
             <h2>Our Values</h2>
             <div className="values-list">
               <div className="value-item">
@@ -102,23 +103,23 @@ export default function About() {
 
           {/* Why Choose Us */}
           <section className="about-section highlight-section">
-            <div className="section-icon">⭐</div>
+            <div className="section-icon"><Star size={18} className="inline-block mr-1" /></div>
             <h2>Why Choose Us?</h2>
             <ul className="why-choose-list">
-              <li>✓ Fresh ingredients delivered daily from trusted local suppliers</li>
-              <li>✓ Expert chefs with years of culinary experience</li>
-              <li>✓ Flexible ordering options: dine-in, pickup, or delivery</li>
-              <li>✓ Real-time order tracking for delivery orders</li>
-              <li>✓ Secure payment options including M-Pesa</li>
-              <li>✓ User-friendly mobile app for iOS and Android</li>
-              <li>✓ Exceptional customer service and support</li>
-              <li>✓ Competitive pricing without compromising quality</li>
+              <li><Check size={18} className="inline-block mr-1" /> Fresh ingredients delivered daily from trusted local suppliers</li>
+              <li><Check size={18} className="inline-block mr-1" /> Expert chefs with years of culinary experience</li>
+              <li><Check size={18} className="inline-block mr-1" /> Flexible ordering options: dine-in, pickup, or delivery</li>
+              <li><Check size={18} className="inline-block mr-1" /> Real-time order tracking for delivery orders</li>
+              <li><Check size={18} className="inline-block mr-1" /> Secure payment options including M-Pesa</li>
+              <li><Check size={18} className="inline-block mr-1" /> User-friendly mobile app for iOS and Android</li>
+              <li><Check size={18} className="inline-block mr-1" /> Exceptional customer service and support</li>
+              <li><Check size={18} className="inline-block mr-1" /> Competitive pricing without compromising quality</li>
             </ul>
           </section>
 
           {/* Contact Section */}
           <section className="about-section">
-            <div className="section-icon">📞</div>
+            <div className="section-icon"><Phone size={18} className="inline-block mr-1" /></div>
             <h2>Get In Touch</h2>
             <p>
               We&apos;d love to hear from you! Whether you have questions, feedback, or just want to say hello,
@@ -126,19 +127,19 @@ export default function About() {
             </p>
             <div className="contact-grid">
               <div className="contact-card">
-                <div className="contact-icon-large">📍</div>
+                <div className="contact-icon-large"><MapPin size={18} className="inline-block mr-1" /></div>
                 <h4>Visit Us</h4>
                 <p>[Your Address Here]</p>
                 <small className="placeholder-text">Placeholder - Update with actual location</small>
               </div>
               <div className="contact-card">
-                <div className="contact-icon-large">📞</div>
+                <div className="contact-icon-large"><Phone size={18} className="inline-block mr-1" /></div>
                 <h4>Call Us</h4>
                 <p>[Your Phone Number]</p>
                 <small className="placeholder-text">Placeholder - Update with actual phone</small>
               </div>
               <div className="contact-card">
-                <div className="contact-icon-large">✉️</div>
+                <div className="contact-icon-large"><Mail size={18} className="inline-block mr-1" />️</div>
                 <h4>Email Us</h4>
                 <p>[Your Email Address]</p>
                 <small className="placeholder-text">Placeholder - Update with actual email</small>
@@ -148,7 +149,7 @@ export default function About() {
 
           {/* Team Section */}
           <section className="about-section">
-            <div className="section-icon">👥</div>
+            <div className="section-icon"><Users size={18} className="inline-block mr-1" /></div>
             <h2>Our Team</h2>
             <p>
               Behind every great meal is a passionate team dedicated to excellence. From our skilled chefs 
@@ -163,7 +164,7 @@ export default function About() {
 
           {/* Thank You Section */}
           <section className="about-section thank-you-section">
-            <h2>Thank You for Choosing Us! 🙏</h2>
+            <h2>Thank You for Choosing Us! <Heart size={18} className="inline-block mr-1" /></h2>
             <p>
               Your support means the world to us. We&apos;re honored to serve you and be part of your daily life.
               Here&apos;s to many more delicious meals together!

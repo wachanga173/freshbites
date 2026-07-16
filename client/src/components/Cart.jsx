@@ -1,3 +1,4 @@
+import { ShoppingCart } from 'lucide-react'
 import './Cart.css'
 
 export default function Cart({ items, onRemove, onCheckout, onUpdateQuantity }) {
@@ -15,7 +16,7 @@ export default function Cart({ items, onRemove, onCheckout, onUpdateQuantity }) 
       {safeItems.length === 0 ? (
         <div className="empty-cart">
           <p>Your cart is empty</p>
-          <span className="cart-icon">🛒</span>
+          <span className="cart-icon"><ShoppingCart size={18} className="inline-block mr-1" /></span>
         </div>
       ) : (
         <>
