@@ -376,7 +376,7 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
               }}>
                 <span style={{fontSize: '1.2em'}}><Check size={18} className="inline-block mr-1" /></span>
                 <span style={{fontWeight: '600', color: '#2e7d32'}}>
-                  Selected: {orderType === 'dine-in' ? '<Utensils size={18} className="inline-block mr-1" /> Dine In' : orderType === 'pickup' ? '<ShoppingBag size={18} className="inline-block mr-1" /> Pickup' : '<Truck size={18} className="inline-block mr-1" /> Delivery'}
+                  Selected: {orderType === 'dine-in' ? <><Utensils size={18} className="inline-block mr-1" /> Dine In</> : orderType === 'pickup' ? <><ShoppingBag size={18} className="inline-block mr-1" /> Pickup</> : <><Truck size={18} className="inline-block mr-1" /> Delivery</>}
                   {orderType === 'dine-in' && ' - Eat at our restaurant'}
                   {orderType === 'pickup' && ' - Pick up your order'}
                   {orderType === 'delivery' && ' - Delivered to your location'}
@@ -431,10 +431,10 @@ export default function Checkout({ items, total, onBack, onSuccess }) {
               )}
             </div>
             {availableOrderTypes.length === 0 && (
-              <p className="error-message"><AlertTriangle size={18} className="inline-block mr-1" />️ No valid order type available for the items in your cart.</p>
+              <p className="error-message"><AlertTriangle size={18} className="inline-block mr-1" /> No valid order type available for the items in your cart.</p>
             )}
             {!orderType && (
-              <p className="error-message"><AlertTriangle size={18} className="inline-block mr-1" />️ Please select an order type to continue.</p>
+              <p className="error-message"><AlertTriangle size={18} className="inline-block mr-1" /> Please select an order type to continue.</p>
             )}
           </section>
 

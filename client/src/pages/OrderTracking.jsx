@@ -111,7 +111,7 @@ export default function OrderTracking() {
     const icons = {
       pending: <Hourglass size={18} className="inline-block mr-1" />,
       confirmed: <CheckCircle size={18} className="inline-block mr-1" />,
-      preparing: '<User size={18} className="inline-block mr-1" />‍<Utensils size={18} className="inline-block mr-1" />',
+      preparing: <span><User size={18} className="inline-block mr-1" />‍<Utensils size={18} className="inline-block mr-1" /></span>,
       ready: <Check size={18} className="inline-block mr-1" />,
       out_for_delivery: <Bike size={18} className="inline-block mr-1" />,
       delivered: <Package size={18} className="inline-block mr-1" />,
@@ -128,19 +128,19 @@ export default function OrderTracking() {
     switch(order.status) {
     case 'delivered':
       return {
-        title: '<Package size={18} className="inline-block mr-1" /> Order Delivered',
+        title: <><Package size={18} className="inline-block mr-1" /> Order Delivered</>,
         message: 'Your order has been delivered to your location.',
         action: 'If you have any issues, please contact customer support.'
       }
     case 'picked_up':
       return {
-        title: '<ShoppingBag size={18} className="inline-block mr-1" /> Order Picked Up',
+        title: <><ShoppingBag size={18} className="inline-block mr-1" /> Order Picked Up</>,
         message: 'Your order has been picked up from our restaurant.',
         action: 'If you have any issues, please contact customer support.'
       }
     case 'dined':
       return {
-        title: '<Utensils size={18} className="inline-block mr-1" /> Dine-In Complete',
+        title: <><Utensils size={18} className="inline-block mr-1" /> Dine-In Complete</>,
         message: 'You have enjoyed your meal at our restaurant.',
         action: 'Thank you for dining with us! For any feedback, please contact customer support.'
       }
@@ -330,8 +330,8 @@ export default function OrderTracking() {
                       <div className="order-info-row">
                         <span className="info-label">Type:</span>
                         <span className="order-type">
-                          {(order.orderType || order.deliveryType) === 'delivery' ? '<Truck size={18} className="inline-block mr-1" /> Delivery' : 
-                            (order.orderType || order.deliveryType) === 'pickup' ? '<Store size={18} className="inline-block mr-1" /> Pickup' : '<Utensils size={18} className="inline-block mr-1" /> Dine-In'}
+                          {(order.orderType || order.deliveryType) === 'delivery' ? <><Truck size={18} className="inline-block mr-1" /> Delivery</> : 
+                            (order.orderType || order.deliveryType) === 'pickup' ? <><Store size={18} className="inline-block mr-1" /> Pickup</> : <><Utensils size={18} className="inline-block mr-1" /> Dine-In</>}
                         </span>
                       </div>
                     </div>

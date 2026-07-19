@@ -181,7 +181,7 @@ export default function DeliveryDashboard() {
                       `Order: #${selectedDelivery.orderId}\n` +
                       `Customer: ${selectedDelivery.username}\n\n` +
                       'Your location will be verified against the delivery address.\n\n' +
-                      '<AlertTriangle size={18} className="inline-block mr-1" />️ This action CANNOT be undone.'
+                      'WARNING: This action CANNOT be undone.'
 
     if (!confirm(confirmMsg)) return
 
@@ -203,13 +203,13 @@ export default function DeliveryDashboard() {
       const data = await response.json()
       
       if (response.ok && data.success) {
-        let message = '<CheckCircle size={18} className="inline-block mr-1" /> Delivery completed successfully!\n\n'
+        let message = 'Success: Delivery completed successfully!\n\n'
         if (data.locationVerified) {
-          message += '<Check size={18} className="inline-block mr-1" /> Location verified - You were at the delivery address'
+          message += 'Location verified - You were at the delivery address'
         } else if (data.distance) {
-          message += `<AlertTriangle size={18} className="inline-block mr-1" />️ Location verification: You were ${data.distance}m from the delivery address`
+          message += `Warning: Location verification: You were ${data.distance}m from the delivery address`
         } else {
-          message += '<AlertTriangle size={18} className="inline-block mr-1" />️ Customer did not provide delivery location coordinates'
+          message += 'Warning: Customer did not provide delivery location coordinates'
         }
         alert(message)
         stopLocationTracking()
@@ -282,7 +282,7 @@ export default function DeliveryDashboard() {
                 <div className="delivery-card-header">
                   <span className="order-number">#{delivery.orderId}</span>
                   <span className={`status-badge ${delivery.status}`}>
-                    {delivery.status === 'ready' ? '<Package size={18} className="inline-block mr-1" /> Ready' : '<Bike size={18} className="inline-block mr-1" /> In Transit'}
+                    {delivery.status === 'ready' ? <><Package size={18} className="inline-block mr-1" /> Ready</> : <><Bike size={18} className="inline-block mr-1" /> In Transit</>}
                   </span>
                 </div>
                 

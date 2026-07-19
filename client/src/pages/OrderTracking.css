@@ -100,7 +100,7 @@
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #1F2937;
+  color: var(--color-accent-dark);
   line-height: 1;
   margin-bottom: 0.25rem;
 }
@@ -213,7 +213,7 @@
 
 /* Error Message */
 .error-message {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   color: white;
   padding: 1.25rem;
   border-radius: 12px;

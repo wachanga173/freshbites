@@ -1,4 +1,4 @@
-import { CheckCircle, X, Copyright, Heart } from 'lucide-react'
+import { Copyright, Heart } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import './Footer.css'
 
@@ -9,7 +9,7 @@ export default function Footer() {
   useEffect(() => {
     /* eslint-disable no-console */
     const handler = (e) => {
-      console.log('<CheckCircle size={18} className="inline-block mr-1" /> beforeinstallprompt event fired!', e)
+      console.log('Success: beforeinstallprompt event fired!', e)
       e.preventDefault()
       setDeferredPrompt(e)
       window.deferredPrompt = e
@@ -17,7 +17,7 @@ export default function Footer() {
     }
 
     const installedHandler = () => {
-      console.log('<CheckCircle size={18} className="inline-block mr-1" /> App installed successfully!')
+      console.log('Success: App installed successfully!')
       setShowInstallButton(false)
     }
 
@@ -37,9 +37,9 @@ export default function Footer() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistration().then(reg => {
         if (reg) {
-          console.log('<CheckCircle size={18} className="inline-block mr-1" /> Service Worker is registered:', reg)
+          console.log('Success: Service Worker is registered:', reg)
         } else {
-          console.log('<X size={18} className="inline-block mr-1" /> Service Worker not registered yet')
+          console.log('Error: Service Worker not registered yet')
         }
       })
     }

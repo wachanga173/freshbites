@@ -126,7 +126,7 @@ export default function FeedbackManagerDashboard() {
       service: <Briefcase size={18} className="inline-block mr-1" />,
       delivery: <Truck size={18} className="inline-block mr-1" />,
       general: <MessageSquare size={18} className="inline-block mr-1" />,
-      complaint: '<AlertTriangle size={18} className="inline-block mr-1" />️',
+      complaint: <AlertTriangle size={18} className="inline-block mr-1" />,
       suggestion: <Lightbulb size={18} className="inline-block mr-1" />
     }
     return icons[category] || <MessageSquare size={18} className="inline-block mr-1" />

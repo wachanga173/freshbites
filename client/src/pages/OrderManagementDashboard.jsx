@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle, Clipboard, Truck, Store, Phone, Banknote, Check, User, Utensils, Bike, Package, X, Lock } from 'lucide-react'
+import { CheckCircle, Clipboard, Truck, Store, Phone, Banknote, Check, User, Utensils, Bike, Package, X, Lock } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
@@ -120,7 +120,7 @@ export default function OrderManagementDashboard() {
     const confirmMsg = `Confirm that customer has ${action}?\n\n` +
                       `Order: #${orderId}\n` +
                       `Type: ${typeLabel}\n\n` +
-                      '<AlertTriangle size={18} className="inline-block mr-1" />️ This action CANNOT be undone.'
+                      'WARNING: This action CANNOT be undone.'
 
     if (!confirm(confirmMsg)) return
 
@@ -139,7 +139,7 @@ export default function OrderManagementDashboard() {
       const data = await response.json()
       
       if (response.ok && data.success) {
-        alert(`<CheckCircle size={18} className="inline-block mr-1" /> ${typeLabel} confirmed!\n\nOrder is now completed.`)
+        alert(`Success: ${typeLabel} confirmed!\n\nOrder is now completed.`)
         fetchOrders()
         if (selectedOrder?.orderId === orderId) {
           setSelectedOrder(data.order)
@@ -155,7 +155,7 @@ export default function OrderManagementDashboard() {
   const confirmPayment = async (orderId) => {
     const confirmMsg = `Confirm that payment has been received for order #${orderId}?\n\n` +
                       'This will change the order status from pending to confirmed/ready.\n\n' +
-                      '<AlertTriangle size={18} className="inline-block mr-1" />️ Only confirm if you have verified the payment.'
+                      'WARNING: Only confirm if you have verified the payment.'
 
     if (!confirm(confirmMsg)) return
 
@@ -173,7 +173,7 @@ export default function OrderManagementDashboard() {
       const data = await response.json()
       
       if (response.ok && data.success) {
-        alert(`<CheckCircle size={18} className="inline-block mr-1" /> Payment confirmed!\n\nOrder status updated to ${data.order.status}.`)
+        alert(`Success: Payment confirmed!\n\nOrder status updated to ${data.order.status}.`)
         fetchOrders()
         if (selectedOrder?.orderId === orderId) {
           setSelectedOrder(data.order)
@@ -255,7 +255,7 @@ export default function OrderManagementDashboard() {
                 </div>
                 <div className="order-info">
                   <p><strong>{order.username}</strong></p>
-                  <p>{order.deliveryType === 'delivery' ? '<Truck size={18} className="inline-block mr-1" /> Delivery' : '<Store size={18} className="inline-block mr-1" /> Pickup'}</p>
+                  <p>{order.deliveryType === 'delivery' ? <><Truck size={18} className="inline-block mr-1" /> Delivery</> : <><Store size={18} className="inline-block mr-1" /> Pickup</>}</p>
                   <p><strong>KSH {order.grandTotal}</strong></p>
                   <p className="order-time">{new Date(order.createdAt).toLocaleString()}</p>
                 </div>

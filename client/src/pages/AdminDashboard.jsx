@@ -160,9 +160,9 @@ export default function AdminDashboard() {
     const icons = {
       general: <MessageSquare size={18} className="inline-block mr-1" />,
       food_quality: <Utensils size={18} className="inline-block mr-1" />,
-      service: '<User size={18} className="inline-block mr-1" />‍<Utensils size={18} className="inline-block mr-1" />',
+      service: <span><User size={18} className="inline-block mr-1" /><Utensils size={18} className="inline-block mr-1" /></span>,
       delivery: <Truck size={18} className="inline-block mr-1" />,
-      complaint: '<AlertTriangle size={18} className="inline-block mr-1" />️',
+      complaint: <AlertTriangle size={18} className="inline-block mr-1" />,
       suggestion: <Lightbulb size={18} className="inline-block mr-1" />
     }
     return icons[category] || <FileText size={18} className="inline-block mr-1" />
