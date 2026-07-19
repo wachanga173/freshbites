@@ -1,4 +1,4 @@
-import { User, Package, Utensils, Truck, Star, CreditCard, Beef, Coffee } from 'lucide-react'
+import { User, Package, Utensils, Truck, Star, CreditCard, Hamburger, CakeSlice } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 import Footer from '../components/Footer'
@@ -159,9 +159,9 @@ export default function Home() {
           <p className="text-base sm:text-lg mb-10 sm:mb-14" style={{color: 'var(--color-text-secondary)', fontFamily: 'var(--font-body)'}}>Try our most-loved dishes</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-10 sm:mb-14">
             {[
-              { icon: <Beef size={48} className="text-accent" />, name: 'Classic Burger', desc: 'Juicy beef patty with fresh toppings' },
+              { icon: <Hamburger size={48} className="text-accent" />, name: 'Classic Burger', desc: 'Juicy beef patty with fresh toppings' },
               { icon: <Utensils size={48} className="text-accent" />, name: 'Pasta Carbonara', desc: 'Creamy Italian classic' },
-              { icon: <Coffee size={48} className="text-accent" />, name: 'Chocolate Cake', desc: 'Rich and decadent dessert' }
+              { icon: <CakeSlice size={48} className="text-accent" />, name: 'Chocolate Cake', desc: 'Rich and decadent dessert' }
             ].map((item, i) => (
               <div key={i} className="p-8 sm:p-10 rounded-2xl transition-all duration-300 hover:-translate-y-2 cursor-default" style={{background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-card)'}}>
                 <div className="text-6xl sm:text-7xl mb-5">{item.icon}</div>
