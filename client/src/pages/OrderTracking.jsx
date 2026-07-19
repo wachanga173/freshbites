@@ -380,7 +380,8 @@ export default function OrderTracking() {
                         <span className="order-time-badge"><Clock size={18} className="inline-block mr-1" /> {new Date(order.createdAt).toLocaleTimeString()}</span>
                       </div>
                     </div>
-                  )})}
+                  )
+                })}
               </div>
 
               {/* Order Details */}

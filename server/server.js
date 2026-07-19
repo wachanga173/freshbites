@@ -929,10 +929,10 @@ app.post('/api/payment/mpesa/query', authenticateToken, async (req, res) => {
       if (error.response.data.errorCode === '500.001.1001') {
         return res.json({ success: false, message: 'Transaction is being processed. Please wait.' })
       }
-      return res.json({ success: false, message: error.response.data.errorMessage || 'M-Pesa query failed' })
+      return res.json({ success: false, message: error.response.data.errorMessage || JSON.stringify(error.response.data) || 'M-Pesa query failed' })
     }
     console.error('STK Query Error:', error)
-    return res.status(500).json({ error: 'Failed to query M-Pesa status' })
+    return res.status(500).json({ error: 'Failed to query M-Pesa status', details: error.message })
   }
 })
 
