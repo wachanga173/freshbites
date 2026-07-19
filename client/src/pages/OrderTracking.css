@@ -883,7 +883,26 @@
   }
 
   .order-stats {
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .order-stats::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .order-stats::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 4px;
+  }
+
+  .stat-card {
+    min-width: 180px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
   }
 
   .filters-section {
@@ -922,9 +941,7 @@
     padding: 1.25rem;
   }
 
-  .order-stats {
-    grid-template-columns: 1fr;
-  }
+  /* Removed .order-stats grid-template-columns override since it's now flex */
 
   .stat-card {
     padding: 1rem;
