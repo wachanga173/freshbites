@@ -955,8 +955,25 @@
     font-size: 0.85rem;
   }
 
+  .order-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
   .order-card-footer {
     flex-direction: column;
     gap: 0.5rem;
+  }
+  
+  .current-status {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.5rem;
+  }
+  
+  .status-icon {
+    font-size: 2rem;
   }
 }
