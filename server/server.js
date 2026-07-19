@@ -507,7 +507,7 @@ app.post('/api/payment/paypal/create', authenticateToken, (req, res) => {
 
 // PayPal: Execute payment (callback after user approves)
 app.post('/api/payment/paypal/execute', authenticateToken, async (req, res) => {
-  const { paymentId, PayerID, items, total, shippingFee, deliveryType, deliveryAddress, orderType } = req.body
+  const { paymentId, PayerID, items, total, shippingFee, deliveryType, deliveryAddress, orderType, existingOrderId } = req.body
 
   if (!paymentId || !PayerID) {
     return res.status(400).json({ error: 'Payment ID and Payer ID are required' })
@@ -536,28 +536,50 @@ app.post('/api/payment/paypal/execute', authenticateToken, async (req, res) => {
           initialStatus = 'confirmed'
         }
 
-        // Save completed order
-        const newOrder = await Order.create({
-          orderId: `ord_${Date.now()}`,
-          userId: req.user.id,
-          username: req.user.username || req.user.email,
-          items: items || [],
-          total: total || 0,
-          shippingFee: shippingFee || 0,
-          grandTotal: (total || 0) + (shippingFee || 0),
-          paymentMethod: 'paypal',
-          paymentId: payment.id,
-          orderType: actualOrderType,
-          deliveryType: deliveryType || 'pickup',
-          deliveryAddress: deliveryAddress || null,
-          status: initialStatus,
-          statusHistory: [{
+        let newOrder;
+        if (existingOrderId) {
+          newOrder = await Order.findOneAndUpdate(
+            { orderId: existingOrderId },
+            {
+              paymentMethod: 'paypal',
+              paymentId: payment.id,
+              status: initialStatus,
+              $push: {
+                statusHistory: {
+                  status: initialStatus,
+                  timestamp: new Date(),
+                  note: `Payment completed via PayPal - ${actualOrderType} order`
+                }
+              }
+            },
+            { new: true }
+          );
+        }
+
+        if (!newOrder) {
+          // Save completed order
+          newOrder = await Order.create({
+            orderId: existingOrderId || `ord_${Date.now()}`,
+            userId: req.user.id,
+            username: req.user.username || req.user.email,
+            items: items || [],
+            total: total || 0,
+            shippingFee: shippingFee || 0,
+            grandTotal: (total || 0) + (shippingFee || 0),
+            paymentMethod: 'paypal',
+            paymentId: payment.id,
+            orderType: actualOrderType,
+            deliveryType: deliveryType || 'pickup',
+            deliveryAddress: deliveryAddress || null,
             status: initialStatus,
-            timestamp: new Date(),
-            note: `Payment completed via PayPal - ${actualOrderType} order`
-          }],
-          completedAt: null
-        })
+            statusHistory: [{
+              status: initialStatus,
+              timestamp: new Date(),
+              note: `Payment completed via PayPal - ${actualOrderType} order`
+            }],
+            completedAt: null
+          })
+        }
 
         res.json({
           success: true,
@@ -582,7 +604,7 @@ app.post('/api/payment/paypal/execute', authenticateToken, async (req, res) => {
 
 // M-Pesa: Initiate STK Push
 app.post('/api/payment/mpesa/stkpush', authenticateToken, async (req, res) => {
-  const { phoneNumber, amount, items, shippingFee, deliveryType, deliveryAddress, orderType } = req.body
+  const { phoneNumber, amount, items, shippingFee, deliveryType, deliveryAddress, orderType, existingOrderId } = req.body
 
   if (!phoneNumber || !amount) {
     return res.status(400).json({ error: 'Phone number and amount are required' })
@@ -695,29 +717,53 @@ app.post('/api/payment/mpesa/stkpush', authenticateToken, async (req, res) => {
     )
 
     if (response.data.ResponseCode === '0') {
-      // Create pending order in database
-      const orderId = `ord_${Date.now()}`
-      const newOrder = await Order.create({
-        orderId: orderId,
-        userId: req.user.id,
-        username: req.user.username,
-        items: normalizedItems,
-        total: Math.round(calculatedSubtotal),
-        shippingFee: calculatedShippingFee,
-        grandTotal: totalAmount,
-        paymentMethod: 'mpesa',
-        checkoutRequestID: response.data.CheckoutRequestID,
-        merchantRequestID: response.data.MerchantRequestID,
-        orderType: orderType || 'dine-in',
-        deliveryType: deliveryType || 'pickup',
-        deliveryAddress: deliveryAddress || null,
-        status: 'pending',
-        statusHistory: [{
+      let newOrder;
+      
+      if (existingOrderId) {
+        // Update existing order with new checkout Request ID
+        newOrder = await Order.findOneAndUpdate(
+          { orderId: existingOrderId },
+          {
+            paymentMethod: 'mpesa',
+            checkoutRequestID: response.data.CheckoutRequestID,
+            merchantRequestID: response.data.MerchantRequestID,
+            $push: {
+              statusHistory: {
+                status: 'pending',
+                timestamp: new Date(),
+                note: 'Awaiting M-Pesa payment confirmation (Retried)'
+              }
+            }
+          },
+          { new: true }
+        );
+      }
+      
+      if (!newOrder) {
+        // Create pending order in database
+        const orderId = existingOrderId || `ord_${Date.now()}`
+        newOrder = await Order.create({
+          orderId: orderId,
+          userId: req.user.id,
+          username: req.user.username,
+          items: normalizedItems,
+          total: Math.round(calculatedSubtotal),
+          shippingFee: calculatedShippingFee,
+          grandTotal: totalAmount,
+          paymentMethod: 'mpesa',
+          checkoutRequestID: response.data.CheckoutRequestID,
+          merchantRequestID: response.data.MerchantRequestID,
+          orderType: orderType || 'dine-in',
+          deliveryType: deliveryType || 'pickup',
+          deliveryAddress: deliveryAddress || null,
           status: 'pending',
-          timestamp: new Date(),
-          note: 'Awaiting M-Pesa payment confirmation'
-        }]
-      })
+          statusHistory: [{
+            status: 'pending',
+            timestamp: new Date(),
+            note: 'Awaiting M-Pesa payment confirmation'
+          }]
+        })
+      }
 
       res.json({
         success: true,

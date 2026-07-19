@@ -238,14 +238,16 @@ export default function OrderManagementDashboard() {
           ) : !Array.isArray(orders) || orders.length === 0 ? (
             <p>No orders found</p>
           ) : (
-            (Array.isArray(orders) ? orders : []).map(order => (
+            (Array.isArray(orders) ? orders : []).map((order, idx) => {
+              const orderNumber = orders.length - orders.findIndex(o => o.orderId === order.orderId);
+              return (
               <div
                 key={order.orderId}
                 className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
                 onClick={() => setSelectedOrder(order)}
               >
                 <div className="order-header">
-                  <strong>#{order.orderId}</strong>
+                  <strong>Order #{orderNumber}</strong>
                   <span 
                     className="status-badge" 
                     style={{ backgroundColor: getStatusColor(order.status) }}
@@ -260,13 +262,14 @@ export default function OrderManagementDashboard() {
                   <p className="order-time">{new Date(order.createdAt).toLocaleString()}</p>
                 </div>
               </div>
-            ))
+              )
+            })
           )}
         </div>
 
         {selectedOrder && (
           <div className="order-details-panel">
-            <h2>Order #{selectedOrder.orderId}</h2>
+            <h2>Order #{orders.length - orders.findIndex(o => o.orderId === selectedOrder.orderId)}</h2>
             
             <div className="detail-section">
               <h3>Customer</h3>

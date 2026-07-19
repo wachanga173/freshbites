@@ -1,4 +1,4 @@
-import { Hourglass, CheckCircle, User, Utensils, Check, Bike, Package, ShoppingBag, CheckCheck, X, Ban, Clipboard, Mail, BarChart, Search, Truck, Store, Calendar, Clock, Map, Phone, ArrowLeft } from 'lucide-react'
+import { Hourglass, CheckCircle, User, Utensils, Check, Bike, Package, ShoppingBag, CheckCheck, X, Ban, Clipboard, Mail, BarChart, Search, Truck, Store, Calendar, Clock, Map, Phone, ArrowLeft, CreditCard } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
@@ -87,6 +87,43 @@ export default function OrderTracking() {
       }
     } catch (err) {
       alert('Failed to confirm completion')
+    }
+  }
+
+  const handlePayNow = async (order) => {
+    const phone = window.prompt("Enter your M-Pesa phone number (e.g., 07XXXXXXXX or 254XXXXXXXXX):")
+    if (!phone) return
+
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch(getApiUrl('/api/payment/mpesa/stkpush'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          phoneNumber: phone,
+          amount: order.grandTotal,
+          items: order.items,
+          shippingFee: order.shippingFee || 0,
+          orderType: order.orderType,
+          deliveryType: order.deliveryType,
+          deliveryAddress: order.deliveryAddress,
+          existingOrderId: order.orderId
+        })
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        alert('Payment request sent! Please check your phone to complete the M-Pesa payment.')
+        fetchMyOrders()
+      } else {
+        setError(data.error || 'Failed to initiate M-Pesa payment')
+      }
+    } catch (err) {
+      setError('Payment initialization failed. Please try again.')
     }
   }
 
@@ -298,7 +335,9 @@ export default function OrderTracking() {
                 <div className="orders-list-header">
                   <h3>Orders ({filteredOrders.length})</h3>
                 </div>
-                {filteredOrders.map((order) => (
+                {filteredOrders.map((order, idx) => {
+                  const orderNumber = orders.length - orders.findIndex(o => o.orderId === order.orderId);
+                  return (
                   <div
                     key={order.orderId}
                     className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
@@ -310,7 +349,7 @@ export default function OrderTracking() {
                     }}
                   >
                     <div className="order-card-header">
-                      <span className="order-id">#{order.orderId}</span>
+                      <span className="order-id">Order #{orderNumber}</span>
                       <span 
                         className="order-status-badge" 
                         style={{ backgroundColor: getStatusColor(order.status) }}
@@ -340,7 +379,7 @@ export default function OrderTracking() {
                       <span className="order-time-badge"><Clock size={18} className="inline-block mr-1" /> {new Date(order.createdAt).toLocaleTimeString()}</span>
                     </div>
                   </div>
-                ))}
+                )})}
               </div>
 
               {/* Order Details */}
@@ -350,7 +389,7 @@ export default function OrderTracking() {
               
                   {/* Order Info */}
                   <div className="detail-section">
-                    <h3>Order #{selectedOrder.orderId}</h3>
+                    <h3>Order #{orders.length - orders.findIndex(o => o.orderId === selectedOrder.orderId)}</h3>
                     <p className="order-date">{new Date(selectedOrder.createdAt).toLocaleString()}</p>
                     <div className="current-status" style={{ borderLeftColor: getStatusColor(selectedOrder.status) }}>
                       <span className="status-icon">{getStatusIcon(selectedOrder.status)}</span>
@@ -486,6 +525,21 @@ export default function OrderTracking() {
                   )}
 
                   {/* Actions */}
+                  {selectedOrder.status === 'pending' && (
+                    <div className="detail-section">
+                      <button 
+                        className="confirm-completion-btn"
+                        style={{ backgroundColor: '#4caf50', marginBottom: '10px' }}
+                        onClick={() => handlePayNow(selectedOrder)}
+                      >
+                        <Phone size={18} className="inline-block mr-1" /> Pay with M-Pesa
+                      </button>
+                      <p className="completion-note">
+                        Complete your payment via M-Pesa STK Push to confirm this order.
+                      </p>
+                    </div>
+                  )}
+
                   {(selectedOrder.status === 'delivered' || 
                 (selectedOrder.deliveryType === 'pickup' && selectedOrder.status === 'ready')) && (
                     <div className="detail-section">
