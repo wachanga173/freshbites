@@ -189,8 +189,16 @@ async function getMenuByCategory() {
   }
 }
 
+// M-Pesa token cache
+let mpesaTokenCache = null
+let mpesaTokenExpiry = null
+
 // M-Pesa: Get access token
 async function getMpesaAccessToken() {
+  if (mpesaTokenCache && mpesaTokenExpiry && Date.now() < mpesaTokenExpiry) {
+    return mpesaTokenCache
+  }
+
   const auth = Buffer.from(`${MPESA_CONFIG.consumerKey}:${MPESA_CONFIG.consumerSecret}`).toString('base64')
   try {
     const response = await axios.get(
@@ -201,7 +209,10 @@ async function getMpesaAccessToken() {
         }
       }
     )
-    return response.data.access_token
+    mpesaTokenCache = response.data.access_token
+    // expires_in is usually 3599 (1 hour), buffer by 60 seconds
+    mpesaTokenExpiry = Date.now() + (parseInt(response.data.expires_in) - 60) * 1000
+    return mpesaTokenCache
   } catch (error) {
     console.error('M-Pesa token error:', error.response?.data || error.message)
     throw new Error('Failed to get M-Pesa access token')
