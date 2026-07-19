@@ -253,7 +253,8 @@ export default function AdminDashboard() {
   const getStatusColor = (status) => {
     const colors = {
       pending: '#ffa500',
-      confirmed: '#4169e1',
+      checking: '#17a2b8',
+      confirmed: '#4caf50',
       preparing: '#D4A053',
       ready: '#32cd32',
       out_for_delivery: '#ff6347',

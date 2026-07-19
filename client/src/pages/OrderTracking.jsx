@@ -1,4 +1,4 @@
-import { Hourglass, CheckCircle, User, Utensils, Check, Bike, Package, ShoppingBag, CheckCheck, X, Ban, Clipboard, Mail, BarChart, Search, Truck, Store, Calendar, Clock, Map, Phone, ArrowLeft, CreditCard } from 'lucide-react'
+import { Hourglass, CheckCircle, User, Utensils, Check, Bike, Package, ShoppingBag, CheckCheck, X, Ban, Clipboard, Mail, BarChart, Search, Truck, Store, Calendar, Clock, Map, Phone, ArrowLeft, Loader } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
@@ -10,6 +10,7 @@ export default function OrderTracking() {
   const [orders, setOrders] = useState([])
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [tracking, setTracking] = useState(null)
+  const [checkingPaymentId, setCheckingPaymentId] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
@@ -91,7 +92,7 @@ export default function OrderTracking() {
   }
 
   const handlePayNow = async (order) => {
-    const phone = window.prompt("Enter your M-Pesa phone number (e.g., 07XXXXXXXX or 254XXXXXXXXX):")
+    const phone = window.prompt('Enter your M-Pesa phone number (e.g., 07XXXXXXXX or 254XXXXXXXXX):')
     if (!phone) return
 
     try {
@@ -130,7 +131,7 @@ export default function OrderTracking() {
   const getStatusColor = (status) => {
     const colors = {
       pending: '#ffa500',
-      confirmed: '#4169e1',
+      confirmed: '#4caf50',
       preparing: '#D4A053',
       ready: '#32cd32',
       out_for_delivery: '#ff6347',
@@ -335,51 +336,51 @@ export default function OrderTracking() {
                 <div className="orders-list-header">
                   <h3>Orders ({filteredOrders.length})</h3>
                 </div>
-                {filteredOrders.map((order, idx) => {
-                  const orderNumber = orders.length - orders.findIndex(o => o.orderId === order.orderId);
+                {filteredOrders.map((order) => {
+                  const orderNumber = orders.length - orders.findIndex(o => o.orderId === order.orderId)
                   return (
-                  <div
-                    key={order.orderId}
-                    className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
-                    onClick={() => {
-                      setSelectedOrder(order)
-                      if ((order.orderType || order.deliveryType) === 'delivery') {
-                        fetchTrackingInfo(order.orderId)
-                      }
-                    }}
-                  >
-                    <div className="order-card-header">
-                      <span className="order-id">Order #{orderNumber}</span>
-                      <span 
-                        className="order-status-badge" 
-                        style={{ backgroundColor: getStatusColor(order.status) }}
-                      >
-                        {getStatusIcon(order.status)} {order.status.replace(/_/g, ' ')}
-                      </span>
-                    </div>
-                    <div className="order-card-body">
-                      <div className="order-info-row">
-                        <span className="info-label">Items:</span>
-                        <span className="info-value">{order.items.length}</span>
-                      </div>
-                      <div className="order-info-row">
-                        <span className="info-label">Total:</span>
-                        <span className="info-value price">KSH {order.grandTotal}</span>
-                      </div>
-                      <div className="order-info-row">
-                        <span className="info-label">Type:</span>
-                        <span className="order-type">
-                          {(order.orderType || order.deliveryType) === 'delivery' ? <><Truck size={18} className="inline-block mr-1" /> Delivery</> : 
-                            (order.orderType || order.deliveryType) === 'pickup' ? <><Store size={18} className="inline-block mr-1" /> Pickup</> : <><Utensils size={18} className="inline-block mr-1" /> Dine-In</>}
+                    <div
+                      key={order.orderId}
+                      className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
+                      onClick={() => {
+                        setSelectedOrder(order)
+                        if ((order.orderType || order.deliveryType) === 'delivery') {
+                          fetchTrackingInfo(order.orderId)
+                        }
+                      }}
+                    >
+                      <div className="order-card-header">
+                        <span className="order-id">Order #{orderNumber}</span>
+                        <span 
+                          className="order-status-badge" 
+                          style={{ backgroundColor: getStatusColor(order.status) }}
+                        >
+                          {getStatusIcon(order.status)} {order.status.replace(/_/g, ' ')}
                         </span>
                       </div>
+                      <div className="order-card-body">
+                        <div className="order-info-row">
+                          <span className="info-label">Items:</span>
+                          <span className="info-value">{order.items.length}</span>
+                        </div>
+                        <div className="order-info-row">
+                          <span className="info-label">Total:</span>
+                          <span className="info-value price">KSH {order.grandTotal}</span>
+                        </div>
+                        <div className="order-info-row">
+                          <span className="info-label">Type:</span>
+                          <span className="order-type">
+                            {(order.orderType || order.deliveryType) === 'delivery' ? <><Truck size={18} className="inline-block mr-1" /> Delivery</> : 
+                              (order.orderType || order.deliveryType) === 'pickup' ? <><Store size={18} className="inline-block mr-1" /> Pickup</> : <><Utensils size={18} className="inline-block mr-1" /> Dine-In</>}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="order-card-footer">
+                        <span className="order-date-badge"><Calendar size={18} className="inline-block mr-1" /> {new Date(order.createdAt).toLocaleDateString()}</span>
+                        <span className="order-time-badge"><Clock size={18} className="inline-block mr-1" /> {new Date(order.createdAt).toLocaleTimeString()}</span>
+                      </div>
                     </div>
-                    <div className="order-card-footer">
-                      <span className="order-date-badge"><Calendar size={18} className="inline-block mr-1" /> {new Date(order.createdAt).toLocaleDateString()}</span>
-                      <span className="order-time-badge"><Clock size={18} className="inline-block mr-1" /> {new Date(order.createdAt).toLocaleTimeString()}</span>
-                    </div>
-                  </div>
-                )})}
+                  )})}
               </div>
 
               {/* Order Details */}
@@ -527,13 +528,52 @@ export default function OrderTracking() {
                   {/* Actions */}
                   {selectedOrder.status === 'pending' && (
                     <div className="detail-section">
-                      <button 
-                        className="confirm-completion-btn"
-                        style={{ backgroundColor: '#4caf50', marginBottom: '10px' }}
-                        onClick={() => handlePayNow(selectedOrder)}
-                      >
-                        <Phone size={18} className="inline-block mr-1" /> Pay with M-Pesa
-                      </button>
+                      <div className="flex flex-col gap-3">
+                        <button 
+                          className="pay-btn mpesa-btn"
+                          onClick={() => handlePayNow(selectedOrder)}
+                        >
+                          <Phone size={18} className="inline-block mr-1" />
+                          Pay with M-Pesa
+                        </button>
+                        
+                        <button 
+                          className="pay-btn check-payment-btn"
+                          onClick={async () => {
+                            try {
+                              setCheckingPaymentId(selectedOrder.orderId)
+                              const token = localStorage.getItem('token')
+                              const response = await fetch(getApiUrl('/api/payment/mpesa/query'), {
+                                method: 'POST',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'Authorization': `Bearer ${token}`
+                                },
+                                body: JSON.stringify({ orderId: selectedOrder.orderId })
+                              })
+                              const data = await response.json()
+                              if (data.success) {
+                                alert(data.message)
+                                fetchMyOrders() // Refresh orders
+                              } else {
+                                alert(`Payment check: ${data.message}`)
+                              }
+                            } catch (err) {
+                              alert('Failed to check payment status')
+                            } finally {
+                              setCheckingPaymentId(null)
+                            }
+                          }}
+                          disabled={checkingPaymentId === selectedOrder.orderId}
+                          style={{ background: '#17a2b8', marginTop: '0.5rem' }}
+                        >
+                          {checkingPaymentId === selectedOrder.orderId ? (
+                            <><Loader size={18} className="inline-block mr-1 animate-spin" /> Checking...</>
+                          ) : (
+                            <><Clock size={18} className="inline-block mr-1" /> Check Payment Status</>
+                          )}
+                        </button>
+                      </div>
                       <p className="completion-note">
                         Complete your payment via M-Pesa STK Push to confirm this order.
                       </p>

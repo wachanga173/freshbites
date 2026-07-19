@@ -1,4 +1,4 @@
-import { CheckCircle, Clipboard, Truck, Store, Phone, Banknote, Check, User, Utensils, Bike, Package, X, Lock } from 'lucide-react'
+import { Store, Truck, CheckCircle, Check, User, Bike, Utensils, Clipboard, X, Package, Phone, Lock } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
@@ -9,6 +9,7 @@ export default function OrderManagementDashboard() {
   const [orders, setOrders] = useState([])
   const [orderError, setOrderError] = useState(null)
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const [checkingPaymentId, setCheckingPaymentId] = useState(null)
   const [deliveryPersonnel, setDeliveryPersonnel] = useState([])
   const [filter, setFilter] = useState('all')
   const [loading, setLoading] = useState(true)
@@ -189,7 +190,7 @@ export default function OrderManagementDashboard() {
   const getStatusColor = (status) => {
     const colors = {
       pending: '#ffa500',
-      confirmed: '#4169e1',
+      confirmed: '#4caf50',
       preparing: '#D4A053',
       ready: '#32cd32',
       out_for_delivery: '#ff6347',
@@ -238,30 +239,30 @@ export default function OrderManagementDashboard() {
           ) : !Array.isArray(orders) || orders.length === 0 ? (
             <p>No orders found</p>
           ) : (
-            (Array.isArray(orders) ? orders : []).map((order, idx) => {
-              const orderNumber = orders.length - orders.findIndex(o => o.orderId === order.orderId);
+            (Array.isArray(orders) ? orders : []).map((order) => {
+              const orderNumber = orders.length - orders.findIndex(o => o.orderId === order.orderId)
               return (
-              <div
-                key={order.orderId}
-                className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
-                onClick={() => setSelectedOrder(order)}
-              >
-                <div className="order-header">
-                  <strong>Order #{orderNumber}</strong>
-                  <span 
-                    className="status-badge" 
-                    style={{ backgroundColor: getStatusColor(order.status) }}
-                  >
-                    {order.status.replace(/_/g, ' ')}
-                  </span>
+                <div
+                  key={order.orderId}
+                  className={`order-card ${selectedOrder?.orderId === order.orderId ? 'selected' : ''}`}
+                  onClick={() => setSelectedOrder(order)}
+                >
+                  <div className="order-header">
+                    <strong>Order #{orderNumber}</strong>
+                    <span 
+                      className="status-badge" 
+                      style={{ backgroundColor: getStatusColor(order.status) }}
+                    >
+                      {order.status.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                  <div className="order-info">
+                    <p><strong>{order.username}</strong></p>
+                    <p>{order.deliveryType === 'delivery' ? <><Truck size={18} className="inline-block mr-1" /> Delivery</> : <><Store size={18} className="inline-block mr-1" /> Pickup</>}</p>
+                    <p><strong>KSH {order.grandTotal}</strong></p>
+                    <p className="order-time">{new Date(order.createdAt).toLocaleString()}</p>
+                  </div>
                 </div>
-                <div className="order-info">
-                  <p><strong>{order.username}</strong></p>
-                  <p>{order.deliveryType === 'delivery' ? <><Truck size={18} className="inline-block mr-1" /> Delivery</> : <><Store size={18} className="inline-block mr-1" /> Pickup</>}</p>
-                  <p><strong>KSH {order.grandTotal}</strong></p>
-                  <p className="order-time">{new Date(order.createdAt).toLocaleString()}</p>
-                </div>
-              </div>
               )
             })
           )}
@@ -307,13 +308,42 @@ export default function OrderManagementDashboard() {
               <h3>Update Status</h3>
               <div className="status-actions">
                 {selectedOrder.status === 'pending' && (
-                  <button 
-                    className="confirm-payment-btn"
-                    onClick={() => confirmPayment(selectedOrder.orderId)}
-                    style={{ backgroundColor: '#28a745', marginBottom: '10px' }}
-                  >
-                    <Banknote size={18} className="inline-block mr-1" /> Confirm Payment Received
-                  </button>
+                  <>
+                    <button 
+                      onClick={async () => {
+                        try {
+                          setCheckingPaymentId(selectedOrder.orderId)
+                          const token = localStorage.getItem('token')
+                          const response = await fetch(getApiUrl('/api/payment/mpesa/query'), {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ orderId: selectedOrder.orderId })
+                          })
+                          const data = await response.json()
+                          if (data.success) {
+                            alert(data.message)
+                            fetchOrders()
+                          } else {
+                            alert(`Payment check: ${data.message}`)
+                          }
+                        } catch (err) {
+                          alert('Failed to check payment status')
+                        } finally {
+                          setCheckingPaymentId(null)
+                        }
+                      }}
+                      disabled={checkingPaymentId === selectedOrder.orderId}
+                      style={{ backgroundColor: '#17a2b8', color: 'white', marginRight: '10px', padding: '8px 16px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
+                    >
+                      {checkingPaymentId === selectedOrder.orderId ? 'Checking...' : 'Check STK Payment'}
+                    </button>
+                    <button onClick={() => confirmPayment(selectedOrder.orderId)}>
+                      Confirm Payment (Manual)
+                    </button>
+                  </>
                 )}
                 {selectedOrder.status !== 'completed' && selectedOrder.canReuse !== false && (
                   <>

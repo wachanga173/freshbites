@@ -536,7 +536,7 @@ app.post('/api/payment/paypal/execute', authenticateToken, async (req, res) => {
           initialStatus = 'confirmed'
         }
 
-        let newOrder;
+        let newOrder
         if (existingOrderId) {
           newOrder = await Order.findOneAndUpdate(
             { orderId: existingOrderId },
@@ -553,7 +553,7 @@ app.post('/api/payment/paypal/execute', authenticateToken, async (req, res) => {
               }
             },
             { new: true }
-          );
+          )
         }
 
         if (!newOrder) {
@@ -717,8 +717,7 @@ app.post('/api/payment/mpesa/stkpush', authenticateToken, async (req, res) => {
     )
 
     if (response.data.ResponseCode === '0') {
-      let newOrder;
-      
+      let newOrder
       if (existingOrderId) {
         // Update existing order with new checkout Request ID
         newOrder = await Order.findOneAndUpdate(
@@ -736,9 +735,8 @@ app.post('/api/payment/mpesa/stkpush', authenticateToken, async (req, res) => {
             }
           },
           { new: true }
-        );
+        )
       }
-      
       if (!newOrder) {
         // Create pending order in database
         const orderId = existingOrderId || `ord_${Date.now()}`
@@ -878,6 +876,63 @@ app.get('/api/payment/mpesa/status/:checkoutRequestID', authenticateToken, async
   } catch (err) {
     console.error('Status check error:', err)
     res.status(500).json({ error: 'Failed to check status' })
+  }
+})
+
+// M-Pesa: STK Push Query (Manual check)
+app.post('/api/payment/mpesa/query', authenticateToken, async (req, res) => {
+  try {
+    const { orderId } = req.body
+    const order = await Order.findOne({ orderId })
+
+    if (!order) return res.status(404).json({ error: 'Order not found' })
+    if (!order.checkoutRequestID) return res.status(400).json({ error: 'No M-Pesa Checkout Request ID found for this order' })
+
+    const accessToken = await getMpesaAccessToken()
+    const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14)
+    const password = Buffer.from(`${MPESA_CONFIG.shortCode}${MPESA_CONFIG.passkey}${timestamp}`).toString('base64')
+
+    const response = await axios.post(
+      'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query',
+      {
+        BusinessShortCode: MPESA_CONFIG.shortCode,
+        Password: password,
+        Timestamp: timestamp,
+        CheckoutRequestID: order.checkoutRequestID
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    if (response.data.ResultCode === '0') {
+      // Payment successful
+      const orderTypeValue = order.orderType || order.deliveryType || 'dine-in'
+      const newStatus = orderTypeValue === 'pickup' ? 'ready' : 'confirmed'
+      order.status = newStatus
+      order.statusHistory.push({
+        status: newStatus,
+        timestamp: new Date(),
+        updatedBy: req.user.id,
+        note: 'Payment confirmed via manual M-Pesa query'
+      })
+      await order.save()
+      return res.json({ success: true, message: 'Payment confirmed successfully!', status: newStatus })
+    } else {
+      return res.json({ success: false, message: response.data.ResultDesc })
+    }
+  } catch (error) {
+    if (error.response && error.response.data) {
+      if (error.response.data.errorCode === '500.001.1001') {
+        return res.json({ success: false, message: 'Transaction is being processed. Please wait.' })
+      }
+      return res.json({ success: false, message: error.response.data.errorMessage || 'M-Pesa query failed' })
+    }
+    console.error('STK Query Error:', error)
+    return res.status(500).json({ error: 'Failed to query M-Pesa status' })
   }
 })
 
