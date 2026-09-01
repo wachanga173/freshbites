@@ -2045,6 +2045,7 @@ app.patch('/api/feedback/:feedbackId/status', authenticateToken, requireRole('fe
 // AI-powered diet assistant endpoint
 // Helper to clean markdown from AI responses for chat display
 function formatAIResponse(text) {
+  if (!text) return ''
   return text
     .replace(/\*\*\*(.+?)\*\*\*/g, '$1')       // Remove bold+italic ***text***
     .replace(/\*\*(.+?)\*\*/g, '$1')           // Remove bold **text**
@@ -2055,6 +2056,58 @@ function formatAIResponse(text) {
     .replace(/\n{3,}/g, '\n\n')                // Collapse excess blank lines
     .replace(/^\n+/, '')                        // Remove leading blank lines
     .trim()
+}
+
+// In-memory cache for live menu context fed to the AI
+let cachedMenuContext = null
+let cachedMenuTime = 0
+
+async function getMenuContextForAI() {
+  const now = Date.now()
+  if (cachedMenuContext && (now - cachedMenuTime < 60000)) {
+    return cachedMenuContext
+  }
+
+  try {
+    let items = await MenuItem.find({ available: true })
+      .select('name category description price deliverable')
+      .lean()
+
+    if (!items || items.length === 0) {
+      const menuPath = path.join(__dirname, 'menu.json')
+      if (fs.existsSync(menuPath)) {
+        const menuData = JSON.parse(fs.readFileSync(menuPath, 'utf8'))
+        items = []
+        for (const [cat, catItems] of Object.entries(menuData)) {
+          if (Array.isArray(catItems)) {
+            catItems.forEach(i => items.push({ ...i, category: cat, deliverable: true }))
+          }
+        }
+      }
+    }
+
+    if (!items || items.length === 0) return ''
+
+    const categorized = {}
+    items.forEach(item => {
+      const cat = item.category || 'other'
+      if (!categorized[cat]) categorized[cat] = []
+      const deliveryTag = item.deliverable ? ' (Delivery available)' : ''
+      categorized[cat].push(`- ${item.name} - KSH ${item.price}: ${item.description}${deliveryTag}`)
+    })
+
+    let menuText = 'OUR LIVE CAFÉ MENU AND DISHES:\n'
+    for (const [cat, catItems] of Object.entries(categorized)) {
+      menuText += `\n[${cat.toUpperCase()}]\n` + catItems.join('\n') + '\n'
+    }
+
+    cachedMenuContext = menuText
+    cachedMenuTime = now
+    return menuText
+  } catch (err) {
+    console.error('getMenuContextForAI error:', err)
+    return cachedMenuContext || ''
+  }
 }
 
 app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
@@ -2074,9 +2127,17 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
     // If AI is configured, use it (check if key exists and is longer than 10 chars)
     if (AI_API_KEY && AI_API_KEY.length > 10 && !AI_API_KEY.includes('your-')) {
       try {
-        const systemPrompt = `You are a helpful nutrition and diet assistant for Fresh Bites Café.
-You provide accurate, helpful advice about nutrition, dietary restrictions, allergies, and meal planning.
-Be concise, friendly, and practical in your responses.
+        const menuContext = await getMenuContextForAI()
+
+        const systemPrompt = `You are a helpful nutrition, diet, and menu assistant for Fresh Bites Café.
+You have access to our real-time café menu and dishes below. Your goal is to guide customers, answer questions about meals, recommend specific dishes based on their dietary goals or restrictions (e.g. low-carb, high-protein, vegetarian, vegan, calorie management, allergies), and provide accurate details on prices and descriptions.
+
+${menuContext ? menuContext + '\n' : ''}
+Guidelines:
+- Recommend specific dishes from our actual menu above with their exact names and prices in KSH whenever applicable.
+- If a customer asks about a meal or item not on our menu, let them know politely and recommend the closest alternative from our menu.
+- Help customers understand nutritional characteristics (protein, veggies, lightness, allergens) of our dishes based on their descriptions.
+- Be concise, friendly, and practical.
 
 Formatting rules:
 - Do NOT use markdown formatting (no asterisks, no hashtags, no bold/italic).
@@ -2144,7 +2205,7 @@ Formatting rules:
             }
           })
 
-          response = claudeResponse.data.content[0].text
+          response = formatAIResponse(claudeResponse.data.content[0].text)
         } else {
           // OpenAI API (default)
           const openaiResponse = await axios.post('https://api.openai.com/v1/chat/completions', {
@@ -2168,7 +2229,7 @@ Formatting rules:
             }
           })
 
-          response = openaiResponse.data.choices[0].message.content
+          response = formatAIResponse(openaiResponse.data.choices[0].message.content)
         }
 
       } catch (aiError) {
