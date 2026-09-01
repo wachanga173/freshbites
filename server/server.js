@@ -2088,29 +2088,41 @@ Formatting rules:
 - Always remind users to consult healthcare professionals for specific medical advice.`
 
         if (AI_PROVIDER === 'gemini') {
-          // Google Gemini API
-          const geminiResponse = await axios.post(
-            `https://generativelanguage.googleapis.com/v1/models/${AI_MODEL}:generateContent?key=${AI_API_KEY}`,
-            {
-              systemInstruction: {
-                parts: [{ text: systemPrompt }]
-              },
-              contents: [
-                {
-                  role: 'user',
-                  parts: [{ text: question }]
+          // Google Gemini API with retry for rate limiting
+          const callGemini = async () => {
+            const res = await axios.post(
+              `https://generativelanguage.googleapis.com/v1/models/${AI_MODEL}:generateContent?key=${AI_API_KEY}`,
+              {
+                systemInstruction: {
+                  parts: [{ text: systemPrompt }]
+                },
+                contents: [
+                  {
+                    role: 'user',
+                    parts: [{ text: question }]
+                  }
+                ],
+                generationConfig: {
+                  maxOutputTokens: 1024,
+                  temperature: 0.7
                 }
-              ],
-              generationConfig: {
-                maxOutputTokens: 1024,
-                temperature: 0.7
+              },
+              {
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 25000
               }
-            },
-            {
-              headers: { 'Content-Type': 'application/json' },
-              timeout: 25000
-            }
-          )
+            )
+            return res
+          }
+
+          let geminiResponse
+          try {
+            geminiResponse = await callGemini()
+          } catch (retryError) {
+            // Wait 2s and retry once (handles rate limiting on back-to-back questions)
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            geminiResponse = await callGemini()
+          }
 
           response = formatAIResponse(geminiResponse.data.candidates[0].content.parts.map(p => p.text).join(''))
         } else if (AI_PROVIDER === 'anthropic') {
@@ -2160,8 +2172,8 @@ Formatting rules:
         }
 
       } catch (aiError) {
-        // Fall back to keyword matching if AI fails
-        response = getFallbackResponse(question)
+        // AI failed even after retry — give a helpful message instead of generic keywords
+        response = 'I\'m sorry, I\'m experiencing high demand right now. Please wait a moment and try your question again.'
       }
     } else {
       // No AI configured, use keyword matching
