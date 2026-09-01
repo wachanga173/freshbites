@@ -2043,6 +2043,19 @@ app.patch('/api/feedback/:feedbackId/status', authenticateToken, requireRole('fe
 // ========== AI DIET ASSISTANT ==========
 
 // AI-powered diet assistant endpoint
+// Helper to clean markdown from AI responses for chat display
+function formatAIResponse(text) {
+  return text
+    .replace(/\*\*\*(.+?)\*\*\*/g, '$1')     // Remove bold+italic ***text***
+    .replace(/\*\*(.+?)\*\*/g, '$1')         // Remove bold **text**
+    .replace(/\*(.+?)\*/g, '$1')             // Remove italic *text*
+    .replace(/^#{1,6}\s+/gm, '')             // Remove markdown headers
+    .replace(/^[-*]\s+/gm, '• ')           // Convert * or - bullets to •
+    .replace(/^\d+\.\s+/gm, (match) => match) // Keep numbered lists as-is
+    .replace(/\n{3,}/g, '\n\n')              // Collapse excess blank lines
+    .trim()
+}
+
 app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
   try {
     const { question, userPreferences: _userPreferences } = req.body
@@ -2060,10 +2073,17 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
     // If AI is configured, use it (check if key exists and is longer than 10 chars)
     if (AI_API_KEY && AI_API_KEY.length > 10 && !AI_API_KEY.includes('your-')) {
       try {
-        const systemPrompt = `You are a helpful nutrition and diet assistant for Fresh Bites Café. 
-        You provide accurate, helpful advice about nutrition, dietary restrictions, allergies, and meal planning.
-        Be concise, friendly, and practical in your responses. Always remind users to consult healthcare professionals for specific medical advice.
-        Base your answers on general nutritional knowledge and common dietary guidelines.`
+        const systemPrompt = `You are a helpful nutrition and diet assistant for Fresh Bites Café.
+You provide accurate, helpful advice about nutrition, dietary restrictions, allergies, and meal planning.
+Be concise, friendly, and practical in your responses.
+
+Formatting rules:
+- Do NOT use markdown formatting (no asterisks, no hashtags, no bold/italic).
+- Use plain text only.
+- Use line breaks to separate sections.
+- Use short paragraphs (2-3 sentences max).
+- Use dashes (-) for bullet lists when listing items.
+- Always remind users to consult healthcare professionals for specific medical advice.`
 
         if (AI_PROVIDER === 'gemini') {
           // Google Gemini API
@@ -2090,7 +2110,7 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
             }
           )
 
-          response = geminiResponse.data.candidates[0].content.parts.map(p => p.text).join('')
+          response = formatAIResponse(geminiResponse.data.candidates[0].content.parts.map(p => p.text).join(''))
         } else if (AI_PROVIDER === 'anthropic') {
           // Anthropic Claude API
           const claudeResponse = await axios.post('https://api.anthropic.com/v1/messages', {
