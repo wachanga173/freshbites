@@ -2053,7 +2053,7 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
 
     const AI_API_KEY = process.env.AI_API_KEY
     const AI_PROVIDER = process.env.AI_PROVIDER || 'openai'
-    const AI_MODEL = process.env.AI_MODEL || 'gpt-3.5-turbo'
+    const AI_MODEL = process.env.AI_MODEL || (AI_PROVIDER === 'gemini' ? 'gemini-2.0-flash' : 'gpt-3.5-turbo')
 
     let response = ''
 
@@ -2134,6 +2134,8 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
         }
 
       } catch (aiError) {
+        // Log the actual AI error for debugging
+        console.error('AI API Error:', aiError.response?.status, aiError.response?.data || aiError.message)
         // Fall back to keyword matching if AI fails
         response = getFallbackResponse(question)
       }
