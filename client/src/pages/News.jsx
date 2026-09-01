@@ -132,21 +132,23 @@ function News() {
                 className="news-card clickable-card"
                 onClick={() => setSelectedArticle(article)}
               >
-                <div className="news-card-image">
-                  <img 
-                    src={article.image || 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800'} 
-                    alt={article.title}
-                    onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800'
-                    }}
-                  />
-                  <div className="news-card-overlay">
-                    <span className="news-source">{article.source?.name || 'Fresh Bites Health'}</span>
+                {article.image && (
+                  <div className="news-card-image">
+                    <img 
+                      src={article.image} 
+                      alt={article.title}
+                      onError={(e) => {
+                        e.target.closest('.news-card-image').style.display = 'none'
+                      }}
+                    />
+                    <div className="news-card-overlay">
+                      <span className="news-source">{article.source?.name || 'Fresh Bites Health'}</span>
+                    </div>
+                    <div className="news-card-ai-badge">
+                      <Sparkles size={12} className="inline-block mr-1" /> Full AI Guide
+                    </div>
                   </div>
-                  <div className="news-card-ai-badge">
-                    <Sparkles size={12} className="inline-block mr-1" /> Full AI Guide
-                  </div>
-                </div>
+                )}
                 <div className="news-card-content">
                   <div className="news-meta">
                     <span className="news-date">{formatDate(article.publishedAt)}</span>

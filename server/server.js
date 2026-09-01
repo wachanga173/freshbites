@@ -2415,7 +2415,7 @@ app.get('/api/news', async (req, res) => {
           title: item.title,
           description: item.description || item.content || 'Explore this nutrition guide and its health insights.',
           url: item.url,
-          image: item.image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800',
+          image: item.image || null,
           publishedAt: item.publishedAt || new Date().toISOString(),
           source: item.source || { name: 'Health & Nutrition News' },
           category: category
@@ -2465,8 +2465,10 @@ app.post('/api/news/generate-article', async (req, res) => {
 
     const menuContext = await getMenuContextForAI()
 
-    // Fetch and extract the actual article text from the source URL
+    // Fetch and extract the actual article text and og:image from the source URL
     let realArticleText = description || ''
+    let realArticleImage = image || null
+
     if (url && typeof url === 'string' && url.startsWith('http')) {
       try {
         const pageRes = await axios.get(url, {
@@ -2478,6 +2480,16 @@ app.post('/api/news/generate-article', async (req, res) => {
         })
 
         if (pageRes.data && typeof pageRes.data === 'string') {
+          // Extract real og:image from the actual webpage if not already provided
+          if (!realArticleImage) {
+            const ogMatch = pageRes.data.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
+                            pageRes.data.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i) ||
+                            pageRes.data.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i)
+            if (ogMatch && ogMatch[1] && ogMatch[1].startsWith('http')) {
+              realArticleImage = ogMatch[1]
+            }
+          }
+
           // Clean HTML tags and isolate readable body text
           const extractedText = pageRes.data
             .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
@@ -2614,7 +2626,7 @@ Formatting rules:
         description,
         content: generatedText,
         url: url || null,
-        image: image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800',
+        image: realArticleImage || null,
         category: category || 'Diet & Health',
         source: source || { name: 'Fresh Bites Diet & Nutrition AI' },
         publishedAt: publishedAt || new Date().toISOString(),

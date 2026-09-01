@@ -1,5 +1,5 @@
-import { ArrowLeft, Clock, Calendar, Sparkles, Utensils, ShieldAlert, Share2, Check, ExternalLink, Globe } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { ArrowLeft, Clock, Calendar, Sparkles, Utensils, ShieldAlert, Share2, Check, ExternalLink, Globe, RotateCw } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
 import { getApiUrl } from '../config/api'
 import './ArticleDetail.css'
 
@@ -8,55 +8,50 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
   const [loading, setLoading] = useState(!initialArticle?.content)
   const [error, setError] = useState(null)
   const [copied, setCopied] = useState(false)
+  const [imageFailed, setImageFailed] = useState(false)
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
-  useEffect(() => {
-    // If article already has full AI content, don't refetch
-    if (article?.content) {
-      setLoading(false)
-      return
-    }
-
-    const generateFullArticle = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const response = await fetch(getApiUrl('/api/news/generate-article'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: initialArticle.id,
-            title: initialArticle.title,
-            description: initialArticle.description,
-            category: initialArticle.category,
-            image: initialArticle.image,
-            source: initialArticle.source,
-            publishedAt: initialArticle.publishedAt,
-            url: initialArticle.url
-          })
+  const generateFullArticle = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await fetch(getApiUrl('/api/news/generate-article'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: initialArticle.id,
+          title: initialArticle.title,
+          description: initialArticle.description,
+          category: initialArticle.category,
+          image: initialArticle.image,
+          source: initialArticle.source,
+          publishedAt: initialArticle.publishedAt,
+          url: initialArticle.url
         })
+      })
 
-        const data = await response.json()
-        if (data.success && data.article) {
-          setArticle(data.article)
-        } else {
-          setError(data.error || 'Failed to generate full article.')
-        }
-      } catch (err) {
-        console.error('Error fetching generated article:', err)
-        setError('Connection error while generating article.')
-      } finally {
-        setLoading(false)
+      const data = await response.json()
+      if (data.success && data.article) {
+        setArticle(data.article)
+      } else {
+        setError(data.error || 'Failed to generate full article.')
       }
+    } catch (err) {
+      console.error('Error fetching generated article:', err)
+      setError('Connection error while generating article.')
+    } finally {
+      setLoading(false)
     }
+  }, [initialArticle])
 
-    if (initialArticle?.title) {
+  useEffect(() => {
+    if (!article?.content && initialArticle?.title) {
       generateFullArticle()
     }
-  }, [initialArticle, article?.content])
+  }, [article?.content, generateFullArticle, initialArticle?.title])
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Recent'
@@ -131,6 +126,7 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
   }
 
   const sourceUrl = article.url || initialArticle.url
+  const hasValidImage = (article.image || initialArticle.image) && !imageFailed
 
   return (
     <div className="article-detail-page">
@@ -201,17 +197,17 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
           )}
         </div>
 
-        {/* Hero Image */}
-        <div className="article-hero-wrap">
-          <img
-            src={article.image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=1200'}
-            alt={article.title}
-            className="article-hero-img"
-            onError={(e) => {
-              e.target.src = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=1200'
-            }}
-          />
-        </div>
+        {/* Hero Image - only if provided by source article */}
+        {hasValidImage && (
+          <div className="article-hero-wrap">
+            <img
+              src={article.image || initialArticle.image}
+              alt={article.title}
+              className="article-hero-img"
+              onError={() => setImageFailed(true)}
+            />
+          </div>
+        )}
 
         {/* Body Content */}
         <div className="article-body">
@@ -258,8 +254,10 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
                 <button 
                   type="button"
                   className="btn-retry-generation" 
-                  onClick={() => window.location.reload()}
+                  onClick={generateFullArticle}
+                  disabled={loading}
                 >
+                  <RotateCw size={15} className={`inline-block mr-1 ${loading ? 'animate-spin' : ''}`} />
                   Retry AI Analysis
                 </button>
               </div>
