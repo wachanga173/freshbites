@@ -1,14 +1,47 @@
-import { ShoppingCart, Briefcase, Star, Clipboard, Bike, MessageSquare, User, Lightbulb, Zap, Package, Utensils, LogOut } from 'lucide-react'
+import { ShoppingCart, Briefcase, Star, Clipboard, Bike, MessageSquare, User, Lightbulb, Zap, Package, Utensils, LogOut, ShieldCheck, Lock, CheckCircle2 } from 'lucide-react'
+import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { getApiUrl } from '../config/api'
 import Footer from '../components/Footer'
 import './Auth.css'
 
 export default function Profile() {
-  const { user, logout } = useAuth()
+  const { user, token, logout } = useAuth()
+  const [twoFactor, setTwoFactor] = useState(user?.twoFactorEnabled || false)
+  const [toggling2FA, setToggling2FA] = useState(false)
+  const [twoFactorMessage, setTwoFactorMessage] = useState('')
+  const [twoFactorError, setTwoFactorError] = useState('')
 
   if (!user) {
     window.location.href = '/login'
     return null
+  }
+
+  const handleToggle2FA = async () => {
+    setToggling2FA(true)
+    setTwoFactorMessage('')
+    setTwoFactorError('')
+    try {
+      const res = await fetch(getApiUrl('/api/auth/2fa/toggle'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ enable: !twoFactor })
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setTwoFactor(data.twoFactorEnabled)
+        setTwoFactorMessage(data.message)
+      } else {
+        setTwoFactorError(data.error || 'Failed to update 2FA status.')
+      }
+    } catch (err) {
+      setTwoFactorError('Connection error while updating 2FA.')
+    } finally {
+      setToggling2FA(false)
+    }
   }
 
   // Get user roles
@@ -149,6 +182,55 @@ export default function Profile() {
                   </p>
                 </div>
               )}
+            </section>
+
+            {/* Two-Factor Authentication (2FA) Security */}
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span><ShieldCheck size={22} className="inline-block mr-1 text-amber-600" /></span> Account Security & 2FA
+              </h2>
+              
+              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-gray-800">Two-Factor Authentication (2FA)</h3>
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${twoFactor ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-gray-200 text-gray-700'}`}>
+                        {twoFactor ? 'Enabled' : 'Disabled'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 max-w-xl">
+                      Add an extra layer of protection. When enabled, a 6-digit verification code will be sent to your email (<strong>{user.email}</strong>) each time you sign in.
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={handleToggle2FA}
+                    disabled={toggling2FA}
+                    className={`px-5 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-sm flex items-center justify-center gap-2 whitespace-nowrap ${
+                      twoFactor 
+                        ? 'bg-white border-2 border-red-500 text-red-600 hover:bg-red-50' 
+                        : 'bg-amber-600 hover:bg-amber-700 text-white'
+                    }`}
+                  >
+                    <Lock size={16} />
+                    {toggling2FA ? 'Updating...' : (twoFactor ? 'Disable 2FA' : 'Enable 2FA')}
+                  </button>
+                </div>
+
+                {twoFactorMessage && (
+                  <div className="mt-4 p-3 bg-green-50 border border-green-200 text-green-800 rounded-lg text-sm flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-green-600 flex-shrink-0" />
+                    <span>{twoFactorMessage}</span>
+                  </div>
+                )}
+
+                {twoFactorError && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm">
+                    {twoFactorError}
+                  </div>
+                )}
+              </div>
             </section>
 
             {/* Quick Actions */}

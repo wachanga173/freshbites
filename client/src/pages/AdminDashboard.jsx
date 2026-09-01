@@ -1,4 +1,4 @@
-import { MessageSquare, Utensils, User, Truck, AlertTriangle, Lightbulb, FileText, CheckCircle, X, Package, Beef, Popcorn, Coffee, ShoppingBag, Briefcase, Clipboard, Bike, ShoppingCart, Lock, RefreshCw, MapPin, Phone, Star, Calendar } from 'lucide-react'
+import { MessageSquare, Utensils, User, Truck, AlertTriangle, Lightbulb, FileText, CheckCircle, X, Package, Beef, Popcorn, Coffee, ShoppingBag, Briefcase, Clipboard, Bike, ShoppingCart, Lock, RefreshCw, MapPin, Phone, Star, Calendar, Send, Mail } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
@@ -44,9 +44,22 @@ export default function AdminDashboard() {
   // Delivery state
   const [activeDeliveries, setActiveDeliveries] = useState([])
 
+  // Marketing & Broadcast state
+  const [broadcastAudience, setBroadcastAudience] = useState('all') // 'all', 'selected', 'custom'
+  const [selectedUserIds, setSelectedUserIds] = useState([])
+  const [customEmailList, setCustomEmailList] = useState('')
+  const [broadcastSubject, setBroadcastSubject] = useState('')
+  const [broadcastTitle, setBroadcastTitle] = useState('')
+  const [broadcastMessage, setBroadcastMessage] = useState('')
+  const [broadcastCtaLabel, setBroadcastCtaLabel] = useState('')
+  const [broadcastCtaUrl, setBroadcastCtaUrl] = useState('')
+  const [sendingBroadcast, setSendingBroadcast] = useState(false)
+  const [broadcastFeedback, setBroadcastFeedback] = useState(null)
+  const [userSearchTerm, setUserSearchTerm] = useState('')
+
   useEffect(() => {
     loadMenu()
-    if (isSuperAdmin) {
+    if (isSuperAdmin || user?.roles?.includes('admin')) {
       loadUsers()
     }
     if (activeTab === 'feedback') {
@@ -58,6 +71,9 @@ export default function AdminDashboard() {
     }
     if (activeTab === 'delivery') {
       loadActiveDeliveries()
+    }
+    if (activeTab === 'marketing') {
+      loadUsers()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, statusFilter, categoryFilter, orderFilter])
@@ -522,6 +538,69 @@ export default function AdminDashboard() {
     }
   }
 
+  async function handleSendBroadcast(e) {
+    e.preventDefault()
+    if (!broadcastSubject.trim() || !broadcastMessage.trim()) {
+      alert('Please provide both a subject line and a message body.')
+      return
+    }
+
+    if (broadcastAudience === 'selected' && selectedUserIds.length === 0) {
+      alert('Please select at least one recipient user.')
+      return
+    }
+
+    if (broadcastAudience === 'custom' && !customEmailList.trim()) {
+      alert('Please enter at least one custom email address.')
+      return
+    }
+
+    if (!confirm('Are you sure you want to send this email broadcast to the selected audience?')) {
+      return
+    }
+
+    setSendingBroadcast(true)
+    setBroadcastFeedback(null)
+
+    try {
+      const res = await fetch(getApiUrl('/api/admin/broadcast-email'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          audienceType: broadcastAudience,
+          userIds: selectedUserIds,
+          customEmails: customEmailList,
+          subject: broadcastSubject,
+          title: broadcastTitle,
+          message: broadcastMessage,
+          ctaLabel: broadcastCtaLabel,
+          ctaUrl: broadcastCtaUrl
+        })
+      })
+
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setBroadcastFeedback({ type: 'success', message: data.message })
+        setBroadcastSubject('')
+        setBroadcastTitle('')
+        setBroadcastMessage('')
+        setBroadcastCtaLabel('')
+        setBroadcastCtaUrl('')
+        setSelectedUserIds([])
+        setCustomEmailList('')
+      } else {
+        setBroadcastFeedback({ type: 'error', message: data.error || 'Failed to send broadcast email.' })
+      }
+    } catch (err) {
+      setBroadcastFeedback({ type: 'error', message: 'Connection error while sending broadcast.' })
+    } finally {
+      setSendingBroadcast(false)
+    }
+  }
+
   return (
     <div className="admin-dashboard">
       <header className="admin-header">
@@ -537,6 +616,16 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab('menu')}
           >
             Menu Management
+          </button>
+        )}
+
+        {/* Marketing & Broadcast - Admin and SuperAdmin */}
+        {(user?.roles?.includes('admin') || isSuperAdmin) && (
+          <button
+            className={activeTab === 'marketing' ? 'active' : ''}
+            onClick={() => setActiveTab('marketing')}
+          >
+            <Send size={18} className="inline-block mr-1" /> Marketing & Broadcast
           </button>
         )}
         
@@ -1234,6 +1323,271 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Marketing & Broadcast Management */}
+      {activeTab === 'marketing' && (user?.roles?.includes('admin') || isSuperAdmin) && (
+        <div className="admin-content">
+          <div className="marketing-header-row">
+            <div>
+              <h2><Send size={22} className="inline-block mr-2 text-accent" /> Customer Marketing & Broadcast Center</h2>
+              <p className="section-subtitle">
+                Compose and deliver branded marketing announcements, seasonal menu discounts, or updates directly to customers via Gmail SMTP.
+              </p>
+            </div>
+          </div>
+
+          {broadcastFeedback && (
+            <div className={`broadcast-alert ${broadcastFeedback.type === 'success' ? 'success' : 'error'}`}>
+              {broadcastFeedback.type === 'success' ? <CheckCircle size={18} className="inline-block mr-2" /> : <AlertTriangle size={18} className="inline-block mr-2" />}
+              <span>{broadcastFeedback.message}</span>
+            </div>
+          )}
+
+          <div className="marketing-grid">
+            {/* Compose Card */}
+            <div className="marketing-compose-card">
+              <h3><Mail size={18} className="inline-block mr-2" /> 1. Select Audience & Compose Email</h3>
+              
+              <form onSubmit={handleSendBroadcast}>
+                <div className="form-group">
+                  <label className="font-semibold">Target Audience</label>
+                  <div className="audience-options">
+                    <label className={`audience-radio-card ${broadcastAudience === 'all' ? 'active' : ''}`}>
+                      <input 
+                        type="radio" 
+                        name="audience" 
+                        value="all" 
+                        checked={broadcastAudience === 'all'} 
+                        onChange={() => setBroadcastAudience('all')} 
+                      />
+                      <div>
+                        <strong>All Registered Customers</strong>
+                        <p>Deliver to all customer emails ({users.filter(u => u.email).length} registered)</p>
+                      </div>
+                    </label>
+
+                    <label className={`audience-radio-card ${broadcastAudience === 'selected' ? 'active' : ''}`}>
+                      <input 
+                        type="radio" 
+                        name="audience" 
+                        value="selected" 
+                        checked={broadcastAudience === 'selected'} 
+                        onChange={() => setBroadcastAudience('selected')} 
+                      />
+                      <div>
+                        <strong>Select Specific Users</strong>
+                        <p>Pick specific recipients from your customer list ({selectedUserIds.length} selected)</p>
+                      </div>
+                    </label>
+
+                    <label className={`audience-radio-card ${broadcastAudience === 'custom' ? 'active' : ''}`}>
+                      <input 
+                        type="radio" 
+                        name="audience" 
+                        value="custom" 
+                        checked={broadcastAudience === 'custom'} 
+                        onChange={() => setBroadcastAudience('custom')} 
+                      />
+                      <div>
+                        <strong>Custom Email Addresses</strong>
+                        <p>Enter specific comma-separated email addresses</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Selected Users Pick-List */}
+                {broadcastAudience === 'selected' && (
+                  <div className="selected-users-picker">
+                    <div className="picker-header">
+                      <input 
+                        type="text" 
+                        placeholder="Search users by name or email..." 
+                        value={userSearchTerm}
+                        onChange={e => setUserSearchTerm(e.target.value)}
+                        className="user-search-input"
+                      />
+                      <button 
+                        type="button" 
+                        className="btn-select-all"
+                        onClick={() => {
+                          if (selectedUserIds.length === users.length) {
+                            setSelectedUserIds([])
+                          } else {
+                            setSelectedUserIds(users.map(u => u.id || u._id))
+                          }
+                        }}
+                      >
+                        {selectedUserIds.length === users.length ? 'Deselect All' : 'Select All'}
+                      </button>
+                    </div>
+
+                    <div className="user-checkbox-list">
+                      {users
+                        .filter(u => u.email && (
+                          u.username?.toLowerCase().includes(userSearchTerm.toLowerCase()) || 
+                          u.email?.toLowerCase().includes(userSearchTerm.toLowerCase())
+                        ))
+                        .map(u => {
+                          const uid = u.id || u._id
+                          const isChecked = selectedUserIds.includes(uid)
+                          return (
+                            <label key={uid} className={`user-check-item ${isChecked ? 'checked' : ''}`}>
+                              <input 
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => {
+                                  if (isChecked) {
+                                    setSelectedUserIds(selectedUserIds.filter(id => id !== uid))
+                                  } else {
+                                    setSelectedUserIds([...selectedUserIds, uid])
+                                  }
+                                }}
+                              />
+                              <div className="user-info-text">
+                                <span className="user-name">{u.username}</span>
+                                <span className="user-email">{u.email}</span>
+                              </div>
+                            </label>
+                          )
+                        })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Custom Email List Textarea */}
+                {broadcastAudience === 'custom' && (
+                  <div className="form-group">
+                    <label>Custom Email List (comma or newline separated)</label>
+                    <textarea
+                      rows={3}
+                      placeholder="customer1@example.com, customer2@example.com"
+                      value={customEmailList}
+                      onChange={e => setCustomEmailList(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                {/* Email Subject */}
+                <div className="form-group">
+                  <label>Email Subject Line *</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. 20% Off Weekend Specials at Fresh Bites Café!" 
+                    value={broadcastSubject}
+                    onChange={e => setBroadcastSubject(e.target.value)}
+                    required
+                  />
+                </div>
+
+                {/* Email Heading / Title */}
+                <div className="form-group">
+                  <label>Headline / Announcement Title (Optional)</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Discover Our New Seasonal Healthy Bowls" 
+                    value={broadcastTitle}
+                    onChange={e => setBroadcastTitle(e.target.value)}
+                  />
+                </div>
+
+                {/* Message Body */}
+                <div className="form-group">
+                  <label>Message Content *</label>
+                  <textarea
+                    rows={6}
+                    placeholder="Write your email announcement or promotional details here..."
+                    value={broadcastMessage}
+                    onChange={e => setBroadcastMessage(e.target.value)}
+                    required
+                  />
+                </div>
+
+                {/* CTA Button Settings */}
+                <div className="cta-fields-row">
+                  <div className="form-group">
+                    <label>Call-to-Action Button Text (Optional)</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. View Menu & Order Now" 
+                      value={broadcastCtaLabel}
+                      onChange={e => setBroadcastCtaLabel(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Button Link URL (Optional)</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. https://your-site.com/menu" 
+                      value={broadcastCtaUrl}
+                      onChange={e => setBroadcastCtaUrl(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="broadcast-submit-row">
+                  <button 
+                    type="submit" 
+                    className="btn-send-broadcast" 
+                    disabled={sendingBroadcast}
+                  >
+                    <Send size={18} className={`inline-block mr-2 ${sendingBroadcast ? 'animate-spin' : ''}`} />
+                    {sendingBroadcast ? 'Sending Broadcast Emails...' : 'Send Broadcast Email'}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Live Preview Card */}
+            <div className="marketing-preview-card">
+              <h3><FileText size={18} className="inline-block mr-2" /> 2. Live Email Preview</h3>
+              <p className="preview-subtitle">This is how your email will appear in customer inboxes:</p>
+
+              <div className="email-preview-box">
+                <div className="preview-top-bar">
+                  <div className="preview-meta-row">
+                    <span className="preview-meta-label">From:</span>
+                    <span>Fresh Bites Café &lt;freshbites@gmail.com&gt;</span>
+                  </div>
+                  <div className="preview-meta-row">
+                    <span className="preview-meta-label">Subject:</span>
+                    <strong>{broadcastSubject || 'Your Email Subject Line'}</strong>
+                  </div>
+                </div>
+
+                <div className="preview-email-body">
+                  <div className="preview-brand-header">
+                    <h2>Fresh Bites Café</h2>
+                    <p>Café Announcement & Specials</p>
+                  </div>
+
+                  {broadcastTitle && (
+                    <h3 className="preview-headline">{broadcastTitle}</h3>
+                  )}
+
+                  <div className="preview-message-content">
+                    {broadcastMessage || 'Your message content will appear here with clean formatting, paragraphs, and styling.'}
+                  </div>
+
+                  {broadcastCtaLabel && (
+                    <div className="preview-cta-wrap">
+                      <a href="#preview" className="preview-cta-btn" onClick={e => e.preventDefault()}>
+                        {broadcastCtaLabel} →
+                      </a>
+                    </div>
+                  )}
+
+                  <div className="preview-email-footer">
+                    <p>You received this email because you are a registered customer at Fresh Bites Café.</p>
+                    <p>Fresh Bites Café • Delicious & Nutritious Dining</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

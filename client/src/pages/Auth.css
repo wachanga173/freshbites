@@ -71,13 +71,25 @@
 
 .form-group { margin-bottom: 22px; }
 
-.form-group label {
-  display: block;
+.password-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 8px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  font-size: 14px;
-  font-family: var(--font-body);
+}
+
+.password-label-row label {
+  margin-bottom: 0;
+}
+
+.forgot-link {
+  font-size: 13px !important;
+  color: var(--color-accent, #d4a053) !important;
+  font-weight: 500 !important;
+}
+
+.forgot-link:hover {
+  text-decoration: underline !important;
 }
 
 .form-group input {

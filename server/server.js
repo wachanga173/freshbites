@@ -8,6 +8,8 @@ const paypal = require('paypal-rest-sdk')
 const axios = require('axios')
 const compression = require('compression')
 const morgan = require('morgan')
+const nodemailer = require('nodemailer')
+const crypto = require('crypto')
 
 // Database and Models
 const connectDB = require('./config/database')
@@ -300,6 +302,54 @@ app.post('/api/auth/login', authLimiter, validateLogin, catchAsync(async (req, r
     throw new AuthenticationError('Invalid credentials')
   }
 
+  // If user has 2FA enabled, challenge with 6-digit email OTP
+  if (user.twoFactorEnabled) {
+    const otp = crypto.randomInt(100000, 999999).toString()
+    user.twoFactorOTP = otp
+    user.twoFactorExpires = new Date(Date.now() + 10 * 60 * 1000) // 10 mins
+    await user.save()
+
+    const transporter = getMailTransporter()
+    if (transporter) {
+      const fromEmail = process.env.GMAIL_USER || process.env.SMTP_USER
+      const mailOptions = {
+        from: `"Fresh Bites Café" <${fromEmail}>`,
+        to: user.email,
+        subject: 'Fresh Bites Café - Two-Factor Authentication Code',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <h2 style="color: #0f172a; margin: 0 0 6px 0;">Fresh Bites Café</h2>
+              <p style="color: #64748b; margin: 0; font-size: 14px;">Two-Factor Authentication Sign-In</p>
+            </div>
+            <p style="color: #334155; font-size: 15px; line-height: 1.6;">Hello <strong>${user.username}</strong>,</p>
+            <p style="color: #334155; font-size: 15px; line-height: 1.6;">You have Two-Factor Authentication enabled. Use this 6-digit code to complete your login:</p>
+            <div style="background: #f8fafc; border: 2px dashed #d4a053; border-radius: 10px; padding: 18px; text-align: center; margin: 24px 0;">
+              <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #0f172a;">${otp}</span>
+            </div>
+            <p style="color: #64748b; font-size: 13px; line-height: 1.5;">This code will expire in <strong>10 minutes</strong>. If you did not attempt to sign in, please secure your account immediately.</p>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+            <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">Fresh Bites Café • Delicious & Wholesome Dining</p>
+          </div>
+        `
+      }
+      await transporter.sendMail(mailOptions)
+    }
+
+    securityLogger('login_2fa_challenge_sent', {
+      userId: user._id,
+      email: user.email,
+      ip: req.ip
+    })
+
+    return res.json({
+      success: true,
+      twoFactorRequired: true,
+      userId: user._id,
+      email: user.email
+    })
+  }
+
   const token = jwt.sign(
     { id: user._id, username: user.username, roles: user.roles, role: user.role },
     process.env.JWT_SECRET,
@@ -322,7 +372,8 @@ app.post('/api/auth/login', authLimiter, validateLogin, catchAsync(async (req, r
       username: user.username,
       email: user.email,
       roles: user.roles,
-      phone: user.phone
+      phone: user.phone,
+      twoFactorEnabled: user.twoFactorEnabled || false
     }
   })
 }))
@@ -339,7 +390,8 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
       username: user.username,
       email: user.email,
       roles: user.roles,
-      phone: user.phone
+      phone: user.phone,
+      twoFactorEnabled: user.twoFactorEnabled || false
     })
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch user' })
@@ -380,6 +432,386 @@ app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('Change password error:', err)
     res.status(500).json({ error: 'Failed to change password' })
+  }
+})
+
+// Helper to configure Gmail / Custom SMTP Transporter
+function getMailTransporter() {
+  const user = process.env.GMAIL_USER || process.env.SMTP_USER
+  const pass = process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS || process.env.GMAIL_PASS
+
+  if (!user || !pass) {
+    return null
+  }
+
+  const host = process.env.SMTP_HOST || 'smtp.gmail.com'
+  const port = parseInt(process.env.SMTP_PORT || '465', 10)
+  const secure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : (port === 465)
+
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: {
+      user: user.trim(),
+      pass: pass.replace(/\s+/g, '') // Remove any accidental spaces in Google App Password
+    }
+  })
+}
+
+// Request Password Reset OTP (Customers only, Superadmin excluded)
+app.post('/api/auth/forgot-password', authLimiter, async (req, res) => {
+  try {
+    const { email } = req.body
+
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ error: 'Please provide a valid email address' })
+    }
+
+    const cleanEmail = email.trim().toLowerCase()
+    const user = await User.findOne({ email: cleanEmail })
+
+    if (!user) {
+      // Don't reveal user existence, but inform customer
+      return res.status(404).json({ error: 'No account found with this email address' })
+    }
+
+    // STRICT CHECK: Superadmin accounts are explicitly excluded from email reset
+    const userRoles = Array.isArray(user.roles) ? user.roles : [user.role]
+    if (userRoles.includes('superadmin')) {
+      securityLogger('password_reset_blocked', {
+        userId: user._id,
+        email: user.email,
+        reason: 'superadmin_email_reset_disabled',
+        ip: req.ip
+      })
+      return res.status(403).json({
+        error: 'For security reasons, administrative superadmin accounts cannot be reset via email. Please contact management.'
+      })
+    }
+
+    // Generate secure 6-digit numeric OTP
+    const otp = crypto.randomInt(100000, 999999).toString()
+    user.resetPasswordOTP = otp
+    user.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000) // 15 mins expiry
+    await user.save()
+
+    const transporter = getMailTransporter()
+    if (transporter) {
+      const fromEmail = process.env.GMAIL_USER || process.env.SMTP_USER
+      const mailOptions = {
+        from: `"Fresh Bites Café" <${fromEmail}>`,
+        to: user.email,
+        subject: 'Fresh Bites Café - Password Reset Code',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <h2 style="color: #0f172a; margin: 0 0 6px 0;">Fresh Bites Café</h2>
+              <p style="color: #64748b; margin: 0; font-size: 14px;">Customer Password Reset</p>
+            </div>
+            <p style="color: #334155; font-size: 15px; line-height: 1.6;">Hello <strong>${user.username}</strong>,</p>
+            <p style="color: #334155; font-size: 15px; line-height: 1.6;">We received a request to reset your password. Use the following 6-digit verification code to complete your password reset:</p>
+            <div style="background: #f8fafc; border: 2px dashed #d4a053; border-radius: 10px; padding: 18px; text-align: center; margin: 24px 0;">
+              <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #0f172a;">${otp}</span>
+            </div>
+            <p style="color: #64748b; font-size: 13px; line-height: 1.5;">This code is valid for <strong>15 minutes</strong>. If you did not request a password reset, you can safely ignore this email.</p>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+            <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">Fresh Bites Café • Delicious & Healthy Dining</p>
+          </div>
+        `
+      }
+
+      await transporter.sendMail(mailOptions)
+      logger.info(`Password reset OTP sent to ${user.email}`)
+    } else {
+      console.warn('Gmail SMTP transporter is not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD in environment.')
+    }
+
+    securityLogger('password_reset_otp_generated', {
+      userId: user._id,
+      email: user.email,
+      ip: req.ip
+    })
+
+    res.json({
+      success: true,
+      message: 'A 6-digit verification code has been sent to your email.'
+    })
+  } catch (err) {
+    console.error('Forgot password error:', err)
+    res.status(500).json({ error: 'Failed to process password reset request' })
+  }
+})
+
+// Verify OTP & Set New Password (Customers only)
+app.post('/api/auth/reset-password', authLimiter, async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ error: 'Email, verification code, and new password are required' })
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' })
+    }
+
+    const cleanEmail = email.trim().toLowerCase()
+    const cleanOtp = otp.toString().trim()
+
+    const user = await User.findOne({ email: cleanEmail })
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    // STRICT CHECK: Superadmin accounts cannot be reset via this flow
+    const userRoles = Array.isArray(user.roles) ? user.roles : [user.role]
+    if (userRoles.includes('superadmin')) {
+      return res.status(403).json({ error: 'Superadmin accounts cannot be reset via email' })
+    }
+
+    // Verify OTP and expiration
+    if (!user.resetPasswordOTP || user.resetPasswordOTP !== cleanOtp) {
+      securityLogger('password_reset_failed', {
+        userId: user._id,
+        reason: 'invalid_otp',
+        ip: req.ip
+      })
+      return res.status(400).json({ error: 'Invalid verification code. Please check and try again.' })
+    }
+
+    if (!user.resetPasswordExpires || user.resetPasswordExpires < new Date()) {
+      securityLogger('password_reset_failed', {
+        userId: user._id,
+        reason: 'expired_otp',
+        ip: req.ip
+      })
+      return res.status(400).json({ error: 'Verification code has expired. Please request a new code.' })
+    }
+
+    // Hash and save new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+    user.password = hashedPassword
+    user.resetPasswordOTP = undefined
+    user.resetPasswordExpires = undefined
+    await user.save()
+
+    securityLogger('password_reset_success', {
+      userId: user._id,
+      email: user.email,
+      ip: req.ip
+    })
+
+    logger.info(`Password successfully reset for user ${user.username} (${user.email})`)
+
+    res.json({
+      success: true,
+      message: 'Password reset successful. You can now log in with your new password.'
+    })
+  } catch (err) {
+    console.error('Reset password error:', err)
+    res.status(500).json({ error: 'Failed to reset password' })
+  }
+})
+
+// Verify 2FA OTP & Complete Login
+app.post('/api/auth/verify-2fa', authLimiter, async (req, res) => {
+  try {
+    const { userId, otp } = req.body
+
+    if (!userId || !otp) {
+      return res.status(400).json({ error: 'User ID and verification code are required' })
+    }
+
+    const cleanOtp = otp.toString().trim()
+    const user = await User.findById(userId)
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    if (!user.twoFactorOTP || user.twoFactorOTP !== cleanOtp) {
+      securityLogger('2fa_verification_failed', {
+        userId: user._id,
+        reason: 'invalid_otp',
+        ip: req.ip
+      })
+      return res.status(400).json({ error: 'Invalid 2FA verification code. Please check and try again.' })
+    }
+
+    if (!user.twoFactorExpires || user.twoFactorExpires < new Date()) {
+      securityLogger('2fa_verification_failed', {
+        userId: user._id,
+        reason: 'expired_otp',
+        ip: req.ip
+      })
+      return res.status(400).json({ error: '2FA verification code has expired. Please sign in again.' })
+    }
+
+    // Clear OTP
+    user.twoFactorOTP = undefined
+    user.twoFactorExpires = undefined
+    await user.save()
+
+    const token = jwt.sign(
+      { id: user._id, username: user.username, roles: user.roles, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    )
+
+    securityLogger('login_2fa_success', {
+      userId: user._id,
+      username: user.username,
+      ip: req.ip
+    })
+
+    logger.info(`User logged in via 2FA: ${user.username} (${user._id})`)
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        roles: user.roles,
+        phone: user.phone,
+        twoFactorEnabled: true
+      }
+    })
+  } catch (err) {
+    console.error('2FA verification error:', err)
+    res.status(500).json({ error: 'Failed to complete 2FA verification' })
+  }
+})
+
+// Toggle 2FA in user profile (Authenticated)
+app.post('/api/auth/2fa/toggle', authenticateToken, async (req, res) => {
+  try {
+    const { enable } = req.body
+    const user = await User.findById(req.user.id)
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    user.twoFactorEnabled = Boolean(enable)
+    user.twoFactorOTP = undefined
+    user.twoFactorExpires = undefined
+    await user.save()
+
+    securityLogger('2fa_toggled', {
+      userId: user._id,
+      enabled: user.twoFactorEnabled,
+      ip: req.ip
+    })
+
+    res.json({
+      success: true,
+      twoFactorEnabled: user.twoFactorEnabled,
+      message: user.twoFactorEnabled
+        ? 'Two-Factor Authentication has been successfully enabled for your account.'
+        : 'Two-Factor Authentication has been disabled.'
+    })
+  } catch (err) {
+    console.error('2FA toggle error:', err)
+    res.status(500).json({ error: 'Failed to update 2FA status' })
+  }
+})
+
+// Send Marketing Broadcast Email (Admin / SuperAdmin Only)
+app.post('/api/admin/broadcast-email', authenticateToken, requireRole('admin', 'superadmin'), async (req, res) => {
+  try {
+    const { audienceType, userIds, customEmails, subject, title, message, ctaLabel, ctaUrl } = req.body
+
+    if (!subject || !message) {
+      return res.status(400).json({ error: 'Subject and message are required' })
+    }
+
+    const transporter = getMailTransporter()
+    if (!transporter) {
+      return res.status(500).json({
+        error: 'Gmail SMTP is not configured. Please set GMAIL_USER and GMAIL_APP_PASSWORD in environment.'
+      })
+    }
+
+    let recipients = []
+
+    if (audienceType === 'all') {
+      const users = await User.find({ email: { $exists: true, $ne: '' } }).select('email username')
+      recipients = users.map(u => ({ email: u.email, username: u.username }))
+    } else if (audienceType === 'selected' && Array.isArray(userIds) && userIds.length > 0) {
+      const users = await User.find({ _id: { $in: userIds } }).select('email username')
+      recipients = users.map(u => ({ email: u.email, username: u.username }))
+    } else if (audienceType === 'custom' && customEmails) {
+      const emailList = (typeof customEmails === 'string' ? customEmails.split(/[,\n]/) : customEmails)
+        .map(e => e.trim().toLowerCase())
+        .filter(e => e.includes('@'))
+      recipients = emailList.map(email => ({ email, username: email.split('@')[0] }))
+    }
+
+    if (recipients.length === 0) {
+      return res.status(400).json({ error: 'No valid recipient email addresses found.' })
+    }
+
+    const fromEmail = process.env.GMAIL_USER || process.env.SMTP_USER
+    const ctaHtml = (ctaLabel && ctaUrl) ? `
+      <div style="text-align: center; margin: 30px 0 10px;">
+        <a href="${ctaUrl}" style="background: #d4a053; color: #ffffff; padding: 14px 28px; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(212,160,83,0.35);">
+          ${ctaLabel} →
+        </a>
+      </div>
+    ` : ''
+
+    // Send emails in chunks / batches
+    let successCount = 0
+    for (const r of recipients) {
+      try {
+        await transporter.sendMail({
+          from: `"Fresh Bites Café" <${fromEmail}>`,
+          to: r.email,
+          subject: subject,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 28px; border: 1px solid #e2e8f0; border-radius: 14px; background: #ffffff;">
+              <div style="text-align: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 24px;">
+                <h2 style="color: #0f172a; margin: 0 0 6px 0; font-size: 24px;">Fresh Bites Café</h2>
+                <p style="color: #64748b; margin: 0; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">Café Announcement & Specials</p>
+              </div>
+
+              ${title ? `<h3 style="color: #0f172a; font-size: 20px; margin: 0 0 16px 0;">${title}</h3>` : ''}
+
+              <div style="color: #334155; font-size: 15px; line-height: 1.7; white-space: pre-line;">
+                ${message}
+              </div>
+
+              ${ctaHtml}
+
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0 20px;" />
+              <div style="text-align: center; color: #94a3b8; font-size: 12px; line-height: 1.5;">
+                <p style="margin: 0 0 4px;">You received this email because you are a registered customer at Fresh Bites Café.</p>
+                <p style="margin: 0;">Fresh Bites Café • Delicious & Nutritious Dining</p>
+              </div>
+            </div>
+          `
+        })
+        successCount++
+      } catch (sendErr) {
+        console.warn(`Failed to send broadcast email to ${r.email}:`, sendErr.message)
+      }
+    }
+
+    logger.info(`Admin broadcast email "${subject}" sent to ${successCount}/${recipients.length} recipients by ${req.user.username}`)
+
+    res.json({
+      success: true,
+      recipientCount: successCount,
+      totalRequested: recipients.length,
+      message: `Broadcast successfully sent to ${successCount} recipient(s).`
+    })
+  } catch (err) {
+    console.error('Broadcast email error:', err)
+    res.status(500).json({ error: 'Failed to send broadcast email' })
   }
 })
 
@@ -1121,8 +1553,8 @@ app.delete('/api/admin/menu/:category/:id', authenticateToken, requireRole('admi
 
 // ========== SUPER ADMIN USER MANAGEMENT ==========
 
-// Get all users (superadmin only)
-app.get('/api/superadmin/users', authenticateToken, requireRole('superadmin'), async (req, res) => {
+// Get all users (admin and superadmin)
+app.get('/api/superadmin/users', authenticateToken, requireRole('superadmin', 'admin'), async (req, res) => {
   try {
     const users = await User.find().select('-password')
     // Transform _id to id for frontend compatibility

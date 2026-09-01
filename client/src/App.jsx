@@ -18,6 +18,7 @@ import TermsAndConditions from './pages/TermsAndConditions'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import About from './pages/About'
 import Contact from './pages/Contact'
+import ForgotPassword from './pages/ForgotPassword'
 import RoleSwitcher from './components/RoleSwitcher'
 import FeedbackChatbot from './components/FeedbackChatbot'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
@@ -58,6 +59,8 @@ function MainApp() {
       setCurrentRoute('payment-cancel')
     } else if (path === '/login') {
       setCurrentRoute('login')
+    } else if (path === '/forgot-password') {
+      setCurrentRoute('forgot-password')
     } else if (path === '/register') {
       setCurrentRoute('register')
     } else if (path === '/profile') {
@@ -131,11 +134,20 @@ function MainApp() {
 
   // Auth routes
   if (currentRoute === 'login') {
-    return <Login onSwitch={() => window.location.href = '/register'} />
+    return (
+      <Login 
+        onSwitch={() => setCurrentRoute('register')} 
+        onForgotPassword={() => setCurrentRoute('forgot-password')} 
+      />
+    )
   }
 
   if (currentRoute === 'register') {
-    return <Register onSwitch={() => window.location.href = '/login'} />
+    return <Register onSwitch={() => setCurrentRoute('login')} />
+  }
+
+  if (currentRoute === 'forgot-password') {
+    return <ForgotPassword onBackToLogin={() => setCurrentRoute('login')} />
   }
 
   // Profile

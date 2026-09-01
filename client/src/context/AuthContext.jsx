@@ -43,10 +43,37 @@ export function AuthProvider({ children }) {
     })
     const data = await res.json()
     if (data.success) {
+      if (data.twoFactorRequired) {
+        return {
+          success: true,
+          twoFactorRequired: true,
+          userId: data.userId,
+          email: data.email
+        }
+      }
       localStorage.setItem('token', data.token)
       setToken(data.token)
       setUser(data.user)
       // Redirect to home page after successful login
+      setTimeout(() => {
+        window.location.href = '/'
+      }, 100)
+      return { success: true }
+    }
+    return { success: false, error: data.error }
+  }
+
+  async function verify2FA(userId, otp) {
+    const res = await fetch(getApiUrl('/api/auth/verify-2fa'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, otp })
+    })
+    const data = await res.json()
+    if (data.success) {
+      localStorage.setItem('token', data.token)
+      setToken(data.token)
+      setUser(data.user)
       setTimeout(() => {
         window.location.href = '/'
       }, 100)
@@ -100,6 +127,7 @@ export function AuthProvider({ children }) {
     token,
     loading,
     login,
+    verify2FA,
     register,
     logout,
     hasRole,
