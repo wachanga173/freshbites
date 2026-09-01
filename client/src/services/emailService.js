@@ -10,7 +10,14 @@ export async function sendEmailViaVercel(payload) {
     body: JSON.stringify(payload)
   })
 
-  const data = await res.json()
+  let data
+  const text = await res.text()
+  try {
+    data = JSON.parse(text)
+  } catch (_e) {
+    throw new Error(text || `Vercel serverless error (${res.status})`)
+  }
+
   if (!res.ok || !data.success) {
     throw new Error(data.error || 'Failed to send email via Vercel service')
   }

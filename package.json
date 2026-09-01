@@ -2,6 +2,7 @@
   "dependencies": {
     "dotenv": "^17.2.3",
     "mongodb": "^7.1.1",
-    "mongoose": "^8.19.3"
+    "mongoose": "^8.19.3",
+    "nodemailer": "^6.9.16"
   }
 }

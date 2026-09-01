@@ -1,7 +1,6 @@
-/* global process */
-import nodemailer from 'nodemailer'
+const nodemailer = require('nodemailer')
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   // CORS setup
   res.setHeader('Access-Control-Allow-Credentials', 'true')
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -24,7 +23,7 @@ export default async function handler(req, res) {
 
   if (!user || !pass) {
     return res.status(500).json({
-      error: 'Vercel email environment variables (GMAIL_USER, GMAIL_APP_PASSWORD) are not configured in Vercel project settings.'
+      error: 'Vercel environment variables (GMAIL_USER, GMAIL_APP_PASSWORD) are not configured in your Vercel project settings.'
     })
   }
 
@@ -40,7 +39,7 @@ export default async function handler(req, res) {
   })
 
   try {
-    const { type, to, recipients, subject, title, message, ctaLabel, ctaUrl, otp, username } = req.body
+    const { type, to, recipients, subject, title, message, ctaLabel, ctaUrl, otp, username } = req.body || {}
 
     // 1. Password Reset OTP Email
     if (type === 'password-reset') {
