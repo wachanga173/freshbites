@@ -1,4 +1,4 @@
-import { Utensils, Pill, User, Sparkles, BookOpen, ArrowRight, ExternalLink } from 'lucide-react'
+import { Utensils, Pill, User, Sparkles, BookOpen, ArrowRight, ExternalLink, ArrowLeft } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { getApiUrl } from '../config/api'
 import ArticleDetail from './ArticleDetail'
@@ -61,6 +61,36 @@ function News() {
 
   return (
     <div className="news-page">
+      {/* Top Navigation Bar */}
+      <nav className="news-top-nav">
+        <div className="news-nav-inner">
+          <button 
+            type="button"
+            className="news-brand-link" 
+            onClick={() => { window.location.href = '/' }}
+          >
+            Fresh Bites Café
+          </button>
+          
+          <div className="news-nav-links">
+            <button 
+              type="button"
+              className="news-nav-btn back-btn" 
+              onClick={() => { window.location.href = '/' }}
+            >
+              <ArrowLeft size={16} className="inline-block mr-1" /> Back to Home
+            </button>
+            <button 
+              type="button"
+              className="news-nav-btn menu-btn" 
+              onClick={() => { window.location.href = '/menu' }}
+            >
+              <Utensils size={15} className="inline-block mr-1" /> Browse Menu
+            </button>
+          </div>
+        </div>
+      </nav>
+
       {/* Header */}
       <div className="news-header">
         <div className="news-header-content">
