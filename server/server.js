@@ -2068,21 +2068,25 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
         if (AI_PROVIDER === 'gemini') {
           // Google Gemini API
           const geminiResponse = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/${AI_MODEL}:generateContent?key=${AI_API_KEY}`,
+            `https://generativelanguage.googleapis.com/v1/models/${AI_MODEL}:generateContent?key=${AI_API_KEY}`,
             {
+              systemInstruction: {
+                parts: [{ text: systemPrompt }]
+              },
               contents: [
                 {
                   role: 'user',
-                  parts: [{ text: `${systemPrompt}\n\nUser question: ${question}` }]
+                  parts: [{ text: question }]
                 }
               ],
               generationConfig: {
-                maxOutputTokens: 500,
+                maxOutputTokens: 300,
                 temperature: 0.7
               }
             },
             {
-              headers: { 'Content-Type': 'application/json' }
+              headers: { 'Content-Type': 'application/json' },
+              timeout: 10000
             }
           )
 
@@ -2134,8 +2138,6 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
         }
 
       } catch (aiError) {
-        // Log the actual AI error for debugging
-        console.error('AI API Error:', aiError.response?.status, aiError.response?.data || aiError.message)
         // Fall back to keyword matching if AI fails
         response = getFallbackResponse(question)
       }
