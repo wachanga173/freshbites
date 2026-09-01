@@ -37,6 +37,19 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  twoFactorMethod: {
+    type: String,
+    enum: ['authenticator', 'email', null],
+    default: null
+  },
+  twoFactorSecret: {
+    type: String,
+    default: null
+  },
+  twoFactorTempSecret: {
+    type: String,
+    default: null
+  },
   twoFactorOTP: {
     type: String
   },

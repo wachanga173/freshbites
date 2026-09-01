@@ -47,6 +47,7 @@ export function AuthProvider({ children }) {
         return {
           success: true,
           twoFactorRequired: true,
+          twoFactorMethod: data.twoFactorMethod || 'authenticator',
           userId: data.userId,
           email: data.email
         }
@@ -80,6 +81,76 @@ export function AuthProvider({ children }) {
       return { success: true }
     }
     return { success: false, error: data.error }
+  }
+
+  async function setupAuthenticator2FA() {
+    const res = await fetch(getApiUrl('/api/auth/2fa/setup/authenticator'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    return res.json()
+  }
+
+  async function verifySetupAuthenticator2FA(tokenCode) {
+    const res = await fetch(getApiUrl('/api/auth/2fa/verify-setup/authenticator'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ token: tokenCode })
+    })
+    const data = await res.json()
+    if (res.ok && data.success) {
+      setUser(prev => ({ ...prev, twoFactorEnabled: true, twoFactorMethod: 'authenticator' }))
+    }
+    return data
+  }
+
+  async function setupEmail2FA() {
+    const res = await fetch(getApiUrl('/api/auth/2fa/setup/email'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    return res.json()
+  }
+
+  async function verifySetupEmail2FA(tokenCode) {
+    const res = await fetch(getApiUrl('/api/auth/2fa/verify-setup/email'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ token: tokenCode })
+    })
+    const data = await res.json()
+    if (res.ok && data.success) {
+      setUser(prev => ({ ...prev, twoFactorEnabled: true, twoFactorMethod: 'email' }))
+    }
+    return data
+  }
+
+  async function disable2FA(password) {
+    const res = await fetch(getApiUrl('/api/auth/2fa/disable'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ password })
+    })
+    const data = await res.json()
+    if (res.ok && data.success) {
+      setUser(prev => ({ ...prev, twoFactorEnabled: false, twoFactorMethod: null }))
+    }
+    return data
   }
 
   async function register(username, email, password) {
@@ -128,6 +199,11 @@ export function AuthProvider({ children }) {
     loading,
     login,
     verify2FA,
+    setupAuthenticator2FA,
+    verifySetupAuthenticator2FA,
+    setupEmail2FA,
+    verifySetupEmail2FA,
+    disable2FA,
     register,
     logout,
     hasRole,

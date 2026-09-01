@@ -14,6 +14,8 @@ const compression = require('compression')
 const morgan = require('morgan')
 const nodemailer = require('nodemailer')
 const crypto = require('crypto')
+const { authenticator } = require('otplib')
+const qrcode = require('qrcode')
 
 // Database and Models
 const connectDB = require('./config/database')
@@ -306,52 +308,72 @@ app.post('/api/auth/login', authLimiter, validateLogin, catchAsync(async (req, r
     throw new AuthenticationError('Invalid credentials')
   }
 
-  // If user has 2FA enabled, challenge with 6-digit email OTP
+  // If user has 2FA enabled, challenge with their chosen method (authenticator or email)
   if (user.twoFactorEnabled) {
-    const otp = crypto.randomInt(100000, 999999).toString()
-    user.twoFactorOTP = otp
-    user.twoFactorExpires = new Date(Date.now() + 10 * 60 * 1000) // 10 mins
-    await user.save()
+    const method = user.twoFactorMethod || 'authenticator'
 
-    const transporter = getMailTransporter()
-    if (transporter) {
-      const fromEmail = process.env.GMAIL_USER || process.env.SMTP_USER
-      const mailOptions = {
-        from: `"Fresh Bites Café" <${fromEmail}>`,
-        to: user.email,
-        subject: 'Fresh Bites Café - Two-Factor Authentication Code',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
-            <div style="text-align: center; margin-bottom: 20px;">
-              <h2 style="color: #0f172a; margin: 0 0 6px 0;">Fresh Bites Café</h2>
-              <p style="color: #64748b; margin: 0; font-size: 14px;">Two-Factor Authentication Sign-In</p>
+    if (method === 'email') {
+      const otp = crypto.randomInt(100000, 999999).toString()
+      user.twoFactorOTP = otp
+      user.twoFactorExpires = new Date(Date.now() + 10 * 60 * 1000) // 10 mins
+      await user.save()
+
+      const transporter = getMailTransporter()
+      if (transporter) {
+        const fromEmail = process.env.GMAIL_USER || process.env.SMTP_USER
+        const mailOptions = {
+          from: `"Fresh Bites Café" <${fromEmail}>`,
+          to: user.email,
+          subject: 'Fresh Bites Café - Two-Factor Authentication Code',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+              <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: #0f172a; margin: 0 0 6px 0;">Fresh Bites Café</h2>
+                <p style="color: #64748b; margin: 0; font-size: 14px;">Two-Factor Authentication Sign-In</p>
+              </div>
+              <p style="color: #334155; font-size: 15px; line-height: 1.6;">Hello <strong>${user.username}</strong>,</p>
+              <p style="color: #334155; font-size: 15px; line-height: 1.6;">You have Two-Factor Authentication enabled. Use this 6-digit code to complete your login:</p>
+              <div style="background: #f8fafc; border: 2px dashed #d4a053; border-radius: 10px; padding: 18px; text-align: center; margin: 24px 0;">
+                <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #0f172a;">${otp}</span>
+              </div>
+              <p style="color: #64748b; font-size: 13px; line-height: 1.5;">This code will expire in <strong>10 minutes</strong>. If you did not attempt to sign in, please secure your account immediately.</p>
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+              <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">Fresh Bites Café • Delicious & Wholesome Dining</p>
             </div>
-            <p style="color: #334155; font-size: 15px; line-height: 1.6;">Hello <strong>${user.username}</strong>,</p>
-            <p style="color: #334155; font-size: 15px; line-height: 1.6;">You have Two-Factor Authentication enabled. Use this 6-digit code to complete your login:</p>
-            <div style="background: #f8fafc; border: 2px dashed #d4a053; border-radius: 10px; padding: 18px; text-align: center; margin: 24px 0;">
-              <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #0f172a;">${otp}</span>
-            </div>
-            <p style="color: #64748b; font-size: 13px; line-height: 1.5;">This code will expire in <strong>10 minutes</strong>. If you did not attempt to sign in, please secure your account immediately.</p>
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
-            <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">Fresh Bites Café • Delicious & Wholesome Dining</p>
-          </div>
-        `
+          `
+        }
+        await transporter.sendMail(mailOptions).catch(err => console.warn('2FA email send warning:', err.message))
       }
-      await transporter.sendMail(mailOptions)
+
+      securityLogger('login_2fa_challenge_sent', {
+        userId: user._id,
+        method: 'email',
+        email: user.email,
+        ip: req.ip
+      })
+
+      return res.json({
+        success: true,
+        twoFactorRequired: true,
+        twoFactorMethod: 'email',
+        userId: user._id,
+        email: user.email
+      })
+    } else {
+      // Authenticator App TOTP method
+      securityLogger('login_2fa_challenge_sent', {
+        userId: user._id,
+        method: 'authenticator',
+        ip: req.ip
+      })
+
+      return res.json({
+        success: true,
+        twoFactorRequired: true,
+        twoFactorMethod: 'authenticator',
+        userId: user._id
+      })
     }
-
-    securityLogger('login_2fa_challenge_sent', {
-      userId: user._id,
-      email: user.email,
-      ip: req.ip
-    })
-
-    return res.json({
-      success: true,
-      twoFactorRequired: true,
-      userId: user._id,
-      email: user.email
-    })
   }
 
   const token = jwt.sign(
@@ -377,7 +399,8 @@ app.post('/api/auth/login', authLimiter, validateLogin, catchAsync(async (req, r
       email: user.email,
       roles: user.roles,
       phone: user.phone,
-      twoFactorEnabled: user.twoFactorEnabled || false
+      twoFactorEnabled: user.twoFactorEnabled || false,
+      twoFactorMethod: user.twoFactorMethod || null
     }
   })
 }))
@@ -395,7 +418,8 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
       email: user.email,
       roles: user.roles,
       phone: user.phone,
-      twoFactorEnabled: user.twoFactorEnabled || false
+      twoFactorEnabled: user.twoFactorEnabled || false,
+      twoFactorMethod: user.twoFactorMethod || null
     })
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch user' })
@@ -635,13 +659,13 @@ app.post('/api/auth/reset-password', authLimiter, async (req, res) => {
   }
 })
 
-// Verify 2FA OTP & Complete Login
+// Verify 2FA OTP / Authenticator & Complete Login
 app.post('/api/auth/verify-2fa', authLimiter, async (req, res) => {
   try {
     const { userId, otp } = req.body
 
     if (!userId || !otp) {
-      return res.status(400).json({ error: 'User ID and verification code are required' })
+      return res.status(400).json({ error: 'User ID and 6-digit verification code are required' })
     }
 
     const cleanOtp = otp.toString().trim()
@@ -651,28 +675,49 @@ app.post('/api/auth/verify-2fa', authLimiter, async (req, res) => {
       return res.status(404).json({ error: 'User not found' })
     }
 
-    if (!user.twoFactorOTP || user.twoFactorOTP !== cleanOtp) {
-      securityLogger('2fa_verification_failed', {
-        userId: user._id,
-        reason: 'invalid_otp',
-        ip: req.ip
-      })
-      return res.status(400).json({ error: 'Invalid 2FA verification code. Please check and try again.' })
-    }
+    const method = user.twoFactorMethod || 'authenticator'
 
-    if (!user.twoFactorExpires || user.twoFactorExpires < new Date()) {
-      securityLogger('2fa_verification_failed', {
-        userId: user._id,
-        reason: 'expired_otp',
-        ip: req.ip
-      })
-      return res.status(400).json({ error: '2FA verification code has expired. Please sign in again.' })
-    }
+    if (method === 'authenticator') {
+      if (!user.twoFactorSecret) {
+        return res.status(400).json({ error: 'Authenticator 2FA secret is not configured' })
+      }
 
-    // Clear OTP
-    user.twoFactorOTP = undefined
-    user.twoFactorExpires = undefined
-    await user.save()
+      const isValid = authenticator.check(cleanOtp, user.twoFactorSecret)
+      if (!isValid) {
+        securityLogger('2fa_verification_failed', {
+          userId: user._id,
+          method: 'authenticator',
+          ip: req.ip
+        })
+        return res.status(400).json({ error: 'Invalid 6-digit code from authenticator app. Please ensure your time is synchronized and try again.' })
+      }
+    } else {
+      // Email OTP verification
+      if (!user.twoFactorOTP || user.twoFactorOTP !== cleanOtp) {
+        securityLogger('2fa_verification_failed', {
+          userId: user._id,
+          method: 'email',
+          reason: 'invalid_otp',
+          ip: req.ip
+        })
+        return res.status(400).json({ error: 'Invalid verification code. Please check your email and try again.' })
+      }
+
+      if (!user.twoFactorExpires || user.twoFactorExpires < new Date()) {
+        securityLogger('2fa_verification_failed', {
+          userId: user._id,
+          method: 'email',
+          reason: 'expired_otp',
+          ip: req.ip
+        })
+        return res.status(400).json({ error: '2FA verification code has expired. Please sign in again.' })
+      }
+
+      // Clear email OTP
+      user.twoFactorOTP = undefined
+      user.twoFactorExpires = undefined
+      await user.save()
+    }
 
     const token = jwt.sign(
       { id: user._id, username: user.username, roles: user.roles, role: user.role },
@@ -682,11 +727,12 @@ app.post('/api/auth/verify-2fa', authLimiter, async (req, res) => {
 
     securityLogger('login_2fa_success', {
       userId: user._id,
+      method,
       username: user.username,
       ip: req.ip
     })
 
-    logger.info(`User logged in via 2FA: ${user.username} (${user._id})`)
+    logger.info(`User logged in via 2FA (${method}): ${user.username} (${user._id})`)
 
     res.json({
       success: true,
@@ -697,7 +743,8 @@ app.post('/api/auth/verify-2fa', authLimiter, async (req, res) => {
         email: user.email,
         roles: user.roles,
         phone: user.phone,
-        twoFactorEnabled: true
+        twoFactorEnabled: true,
+        twoFactorMethod: user.twoFactorMethod
       }
     })
   } catch (err) {
@@ -706,37 +753,203 @@ app.post('/api/auth/verify-2fa', authLimiter, async (req, res) => {
   }
 })
 
-// Toggle 2FA in user profile (Authenticated)
-app.post('/api/auth/2fa/toggle', authenticateToken, async (req, res) => {
+// 1. Setup Authenticator 2FA: Generate QR Code & Secret (Authenticated)
+app.post('/api/auth/2fa/setup/authenticator', authenticateToken, async (req, res) => {
   try {
-    const { enable } = req.body
     const user = await User.findById(req.user.id)
-
     if (!user) {
       return res.status(404).json({ error: 'User not found' })
     }
 
-    user.twoFactorEnabled = Boolean(enable)
-    user.twoFactorOTP = undefined
-    user.twoFactorExpires = undefined
+    const secret = authenticator.generateSecret()
+    const otpauthUrl = authenticator.keyuri(user.username, 'Fresh Bites Café', secret)
+    const qrCodeDataUrl = await qrcode.toDataURL(otpauthUrl)
+
+    user.twoFactorTempSecret = secret
     await user.save()
 
-    securityLogger('2fa_toggled', {
+    res.json({
+      success: true,
+      secret,
+      qrCodeDataUrl,
+      otpauthUrl
+    })
+  } catch (err) {
+    console.error('Authenticator 2FA setup error:', err)
+    res.status(500).json({ error: 'Failed to initiate Authenticator 2FA setup' })
+  }
+})
+
+// 2. Verify and Activate Authenticator 2FA (Authenticated)
+app.post('/api/auth/2fa/verify-setup/authenticator', authenticateToken, async (req, res) => {
+  try {
+    const { token } = req.body
+    if (!token) {
+      return res.status(400).json({ error: '6-digit verification code is required' })
+    }
+
+    const user = await User.findById(req.user.id)
+    if (!user || !user.twoFactorTempSecret) {
+      return res.status(400).json({ error: 'No Authenticator 2FA setup in progress' })
+    }
+
+    const isValid = authenticator.check(token.toString().trim(), user.twoFactorTempSecret)
+    if (!isValid) {
+      return res.status(400).json({ error: 'Invalid 6-digit code. Please check your Authenticator app and try again.' })
+    }
+
+    user.twoFactorEnabled = true
+    user.twoFactorMethod = 'authenticator'
+    user.twoFactorSecret = user.twoFactorTempSecret
+    user.twoFactorTempSecret = undefined
+    await user.save()
+
+    securityLogger('2fa_enabled_authenticator', {
       userId: user._id,
-      enabled: user.twoFactorEnabled,
+      username: user.username,
       ip: req.ip
     })
 
     res.json({
       success: true,
-      twoFactorEnabled: user.twoFactorEnabled,
-      message: user.twoFactorEnabled
-        ? 'Two-Factor Authentication has been successfully enabled for your account.'
-        : 'Two-Factor Authentication has been disabled.'
+      message: 'Authenticator App 2FA enabled successfully!',
+      twoFactorEnabled: true,
+      twoFactorMethod: 'authenticator'
     })
   } catch (err) {
-    console.error('2FA toggle error:', err)
-    res.status(500).json({ error: 'Failed to update 2FA status' })
+    console.error('Verify Authenticator 2FA error:', err)
+    res.status(500).json({ error: 'Failed to enable Authenticator 2FA' })
+  }
+})
+
+// 3. Setup Email 2FA (Customers only)
+app.post('/api/auth/2fa/setup/email', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    const otp = crypto.randomInt(100000, 999999).toString()
+    user.twoFactorOTP = otp
+    user.twoFactorExpires = new Date(Date.now() + 10 * 60 * 1000) // 10 mins
+    await user.save()
+
+    const transporter = getMailTransporter()
+    if (transporter) {
+      const fromEmail = process.env.GMAIL_USER || process.env.SMTP_USER
+      await transporter.sendMail({
+        from: `"Fresh Bites Café" <${fromEmail}>`,
+        to: user.email,
+        subject: 'Fresh Bites Café - Confirm Email 2FA Setup',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+            <h2 style="color: #0f172a; text-align: center; margin-bottom: 6px;">Fresh Bites Café</h2>
+            <p style="color: #64748b; text-align: center; margin: 0 0 20px 0; font-size: 14px;">Email Two-Factor Authentication Setup</p>
+            <p style="color: #334155; font-size: 15px;">Hello <strong>${user.username}</strong>,</p>
+            <p style="color: #334155; font-size: 15px; line-height: 1.6;">Use the 6-digit verification code below to confirm and activate Email 2FA for your account:</p>
+            <div style="background: #f8fafc; border: 2px dashed #d4a053; border-radius: 10px; padding: 18px; text-align: center; margin: 24px 0;">
+              <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #0f172a;">${otp}</span>
+            </div>
+            <p style="color: #64748b; font-size: 13px;">This code is valid for 10 minutes.</p>
+          </div>
+        `
+      }).catch(err => console.warn('Email 2FA setup mail warning:', err.message))
+    }
+
+    res.json({
+      success: true,
+      message: 'A 6-digit confirmation code has been sent to your email.'
+    })
+  } catch (err) {
+    console.error('Email 2FA setup error:', err)
+    res.status(500).json({ error: 'Failed to initiate Email 2FA setup' })
+  }
+})
+
+// 4. Verify and Activate Email 2FA (Customers only)
+app.post('/api/auth/2fa/verify-setup/email', authenticateToken, async (req, res) => {
+  try {
+    const { token } = req.body
+    if (!token) {
+      return res.status(400).json({ error: '6-digit verification code is required' })
+    }
+
+    const cleanToken = token.toString().trim()
+    const user = await User.findById(req.user.id)
+    if (!user || !user.twoFactorOTP || user.twoFactorOTP !== cleanToken) {
+      return res.status(400).json({ error: 'Invalid verification code. Please check and try again.' })
+    }
+
+    if (!user.twoFactorExpires || user.twoFactorExpires < new Date()) {
+      return res.status(400).json({ error: 'Verification code has expired. Please request a new code.' })
+    }
+
+    user.twoFactorEnabled = true
+    user.twoFactorMethod = 'email'
+    user.twoFactorOTP = undefined
+    user.twoFactorExpires = undefined
+    await user.save()
+
+    securityLogger('2fa_enabled_email', {
+      userId: user._id,
+      username: user.username,
+      ip: req.ip
+    })
+
+    res.json({
+      success: true,
+      message: 'Email 2FA enabled successfully!',
+      twoFactorEnabled: true,
+      twoFactorMethod: 'email'
+    })
+  } catch (err) {
+    console.error('Verify Email 2FA error:', err)
+    res.status(500).json({ error: 'Failed to enable Email 2FA' })
+  }
+})
+
+// 5. Disable 2FA with Password Confirmation (Authenticated)
+app.post('/api/auth/2fa/disable', authenticateToken, async (req, res) => {
+  try {
+    const { password } = req.body
+    if (!password) {
+      return res.status(400).json({ error: 'Your current account password is required to disable 2FA' })
+    }
+
+    const user = await User.findById(req.user.id)
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password)
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Incorrect password. 2FA was not disabled.' })
+    }
+
+    user.twoFactorEnabled = false
+    user.twoFactorMethod = null
+    user.twoFactorSecret = null
+    user.twoFactorTempSecret = null
+    user.twoFactorOTP = null
+    user.twoFactorExpires = null
+    await user.save()
+
+    securityLogger('2fa_disabled', {
+      userId: user._id,
+      username: user.username,
+      ip: req.ip
+    })
+
+    res.json({
+      success: true,
+      message: 'Two-Factor Authentication has been disabled.',
+      twoFactorEnabled: false,
+      twoFactorMethod: null
+    })
+  } catch (err) {
+    console.error('Disable 2FA error:', err)
+    res.status(500).json({ error: 'Failed to disable 2FA' })
   }
 })
 

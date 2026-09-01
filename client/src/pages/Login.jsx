@@ -11,6 +11,7 @@ export default function Login({ onSwitch, onForgotPassword }) {
   
   // 2FA state
   const [show2FA, setShow2FA] = useState(false)
+  const [twoFactorMethod, setTwoFactorMethod] = useState('authenticator')
   const [userId, setUserId] = useState('')
   const [userEmail, setUserEmail] = useState('')
   const [otp, setOtp] = useState('')
@@ -23,16 +24,13 @@ export default function Login({ onSwitch, onForgotPassword }) {
     setLoading(true)
 
     const result = await login(username, password)
-    if (result.twoFactorRequired) {
-      setUserId(result.userId)
-      setUserEmail(result.email)
-      setShow2FA(true)
-      setLoading(false)
-      return
-    }
-
     if (!result.success) {
-      setError(result.error || 'Login failed')
+      setError(result.error || 'Failed to login')
+    } else if (result.twoFactorRequired) {
+      setShow2FA(true)
+      setTwoFactorMethod(result.twoFactorMethod || 'authenticator')
+      setUserId(result.userId)
+      setUserEmail(result.email || '')
     }
     setLoading(false)
   }
@@ -60,7 +58,9 @@ export default function Login({ onSwitch, onForgotPassword }) {
               </div>
               <h2>2-Step Verification</h2>
               <p className="auth-subtitle">
-                Enter the 6-digit code sent to <strong>{userEmail}</strong>.
+                {twoFactorMethod === 'authenticator' 
+                  ? 'Enter the 6-digit code from your Authenticator app (Google Authenticator / Authy).' 
+                  : `Enter the 6-digit code sent to ${userEmail || 'your email'}.`}
               </p>
             </div>
 
