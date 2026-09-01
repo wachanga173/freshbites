@@ -2086,7 +2086,7 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
             },
             {
               headers: { 'Content-Type': 'application/json' },
-              timeout: 10000
+              timeout: 25000
             }
           )
 
