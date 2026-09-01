@@ -330,26 +330,90 @@
   100% { background-position: -200% 0; }
 }
 
-/* Error Box */
-.article-error-box {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
-  padding: 24px;
+/* Fallback to Source Box */
+.article-fallback-source-box {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--color-accent, #d4a053);
+  padding: 28px;
   border-radius: 12px;
-  text-align: center;
-  margin: 20px 0;
+  margin: 24px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
-.btn-retry {
-  margin-top: 12px;
-  padding: 8px 20px;
-  background: #dc2626;
+.fallback-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.fallback-header h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+.fallback-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.fallback-description {
+  background: #f8fafc;
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+  margin-bottom: 24px;
+  color: #334155;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.fallback-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-open-source-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--color-accent, #d4a053) 0%, var(--color-accent-dark, #b88636) 100%);
   color: white;
-  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(212, 160, 83, 0.3);
+}
+
+.btn-open-source-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(212, 160, 83, 0.4);
+}
+
+.btn-retry-generation {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 12px 20px;
   border-radius: 8px;
   font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-retry-generation:hover {
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 /* Live Menu CTA Card */

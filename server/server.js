@@ -2532,28 +2532,41 @@ Formatting rules:
     if (AI_API_KEY && AI_API_KEY.length > 10 && !AI_API_KEY.includes('your-')) {
       try {
         if (AI_PROVIDER === 'gemini') {
-          const geminiRes = await axios.post(
-            `https://generativelanguage.googleapis.com/v1/models/${AI_MODEL}:generateContent?key=${AI_API_KEY}`,
-            {
-              systemInstruction: {
-                parts: [{ text: 'You are a senior clinical nutritionist and food health editor for Fresh Bites Café.' }]
-              },
-              contents: [
-                {
-                  role: 'user',
-                  parts: [{ text: articlePrompt }]
+          const callGeminiArticle = async () => {
+            const res = await axios.post(
+              `https://generativelanguage.googleapis.com/v1/models/${AI_MODEL}:generateContent?key=${AI_API_KEY}`,
+              {
+                systemInstruction: {
+                  parts: [{ text: 'You are a senior clinical nutritionist and food health editor for Fresh Bites Café.' }]
+                },
+                contents: [
+                  {
+                    role: 'user',
+                    parts: [{ text: articlePrompt }]
+                  }
+                ],
+                generationConfig: {
+                  maxOutputTokens: 2048,
+                  temperature: 0.7
                 }
-              ],
-              generationConfig: {
-                maxOutputTokens: 2048,
-                temperature: 0.7
+              },
+              {
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 30000
               }
-            },
-            {
-              headers: { 'Content-Type': 'application/json' },
-              timeout: 30000
-            }
-          )
+            )
+            return res
+          }
+
+          let geminiRes
+          try {
+            geminiRes = await callGeminiArticle()
+          } catch (retryErr) {
+            // Wait 2s and retry once if throttled or rate-limited
+            console.warn('First Gemini article attempt failed, retrying in 2s...', retryErr.message)
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            geminiRes = await callGeminiArticle()
+          }
 
           generatedText = formatAIResponse(geminiRes.data.candidates[0].content.parts.map(p => p.text).join(''))
         } else if (AI_PROVIDER === 'anthropic') {
@@ -2589,34 +2602,39 @@ Formatting rules:
           generatedText = formatAIResponse(openaiRes.data.choices[0].message.content)
         }
       } catch (aiErr) {
-        console.error('Error generating AI article:', aiErr.response?.data || aiErr.message)
+        console.error('Error generating AI article after retry:', aiErr.response?.data || aiErr.message)
       }
     }
 
-    if (!generatedText) {
-      generatedText = `OVERVIEW\n\n${description || 'Nutrition and mindful eating play a foundational role in sustained energy and overall health.'}\n\nKEY INSIGHTS\n\n• Whole ingredients provide clean, slow-burning fuel for your metabolism.\n\n• Hydration and balanced fiber support healthy digestion throughout the day.\n\nRECOMMENDED DISHES AT FRESH BITES CAFÉ\n\n• Explore our fresh café salads and lean protein options crafted daily.\n\nPRACTICAL TAKEAWAYS\n\nFocus on colorful whole foods and balanced portions for long-term vitality.`
+    // If AI generation succeeded, cache and return full article
+    if (generatedText && generatedText.length > 50) {
+      const fullArticle = {
+        id: articleKey,
+        title,
+        description,
+        content: generatedText,
+        url: url || null,
+        image: image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800',
+        category: category || 'Diet & Health',
+        source: source || { name: 'Fresh Bites Diet & Nutrition AI' },
+        publishedAt: publishedAt || new Date().toISOString(),
+        readTime: '4 min read',
+        generatedByAI: true,
+        disclaimer: 'This article is for educational purposes. Consult a certified nutritionist or physician for personalized medical advice.'
+      }
+
+      generatedArticlesCache.set(articleKey, fullArticle)
+
+      return res.json({
+        success: true,
+        article: fullArticle
+      })
     }
 
-    const fullArticle = {
-      id: articleKey,
-      title,
-      description,
-      content: generatedText,
-      url: url || null,
-      image: image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800',
-      category: category || 'Diet & Health',
-      source: source || { name: 'Fresh Bites Diet & Nutrition AI' },
-      publishedAt: publishedAt || new Date().toISOString(),
-      readTime: '4 min read',
-      generatedByAI: true,
-      disclaimer: 'This article is for educational purposes. Consult a certified nutritionist or physician for personalized medical advice.'
-    }
-
-    generatedArticlesCache.set(articleKey, fullArticle)
-
-    res.json({
-      success: true,
-      article: fullArticle
+    // If AI failed, do not cache failure — return informative error with original URL
+    return res.status(500).json({
+      error: 'AI is currently experiencing high demand and could not generate the article. Please try again or view the original source article directly.',
+      url: url || null
     })
   } catch (err) {
     console.error('generate-article error:', err)

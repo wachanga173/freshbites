@@ -1,4 +1,4 @@
-import { ArrowLeft, Clock, Calendar, Sparkles, BookOpen, Utensils, ShieldAlert, Share2, Check, ExternalLink, Globe } from 'lucide-react'
+import { ArrowLeft, Clock, Calendar, Sparkles, Utensils, ShieldAlert, Share2, Check, ExternalLink, Globe } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { getApiUrl } from '../config/api'
 import './ArticleDetail.css'
@@ -213,17 +213,6 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
           />
         </div>
 
-        {/* Article Summary Box */}
-        {article.description && (
-          <div className="article-summary-callout">
-            <div className="callout-header">
-              <BookOpen size={18} className="inline-block mr-2 text-accent" />
-              <span>Article Overview</span>
-            </div>
-            <p>{article.description}</p>
-          </div>
-        )}
-
         {/* Body Content */}
         <div className="article-body">
           {loading ? (
@@ -240,13 +229,40 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
               </div>
             </div>
           ) : error ? (
-            <div className="article-error-box">
-              <p>{error}</p>
-              {sourceUrl && (
-                <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="btn-view-source mt-3 inline-block">
-                  View Article Directly from {article.source?.name || 'Source'} →
-                </a>
+            <div className="article-fallback-source-box">
+              <div className="fallback-header">
+                <Globe size={24} className="text-accent" />
+                <div>
+                  <h3>Viewing Source Summary</h3>
+                  <p>AI deep dive is currently unavailable. You can read the original report directly from the source.</p>
+                </div>
+              </div>
+
+              {article.description && (
+                <div className="fallback-description">
+                  <p>{article.description}</p>
+                </div>
               )}
+
+              <div className="fallback-actions">
+                {sourceUrl ? (
+                  <a 
+                    href={sourceUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="btn-open-source-primary"
+                  >
+                    Read Full Story on {article.source?.name || 'Publisher Website'} <ExternalLink size={16} className="inline-block ml-1" />
+                  </a>
+                ) : null}
+                <button 
+                  type="button"
+                  className="btn-retry-generation" 
+                  onClick={() => window.location.reload()}
+                >
+                  Retry AI Analysis
+                </button>
+              </div>
             </div>
           ) : (
             <div className="article-rendered-text">
