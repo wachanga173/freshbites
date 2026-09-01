@@ -439,6 +439,11 @@ app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
   }
 })
 
+// IPv4-only DNS lookup to strictly prevent IPv6 ENETUNREACH errors on cloud hosts
+function ipv4Lookup(hostname, options, callback) {
+  return dns.lookup(hostname, { family: 4, all: false }, callback)
+}
+
 // Helper to configure Gmail / Custom SMTP Transporter
 function getMailTransporter() {
   const user = process.env.GMAIL_USER || process.env.SMTP_USER
@@ -459,13 +464,14 @@ function getMailTransporter() {
     host,
     port,
     secure,
-    family: 4, // Force IPv4 to prevent ENETUNREACH on Render and cloud hosts
+    lookup: ipv4Lookup, // Guarantees IPv4 socket resolution
     auth: {
       user: cleanUser,
       pass: cleanPass
     },
     tls: {
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
+      servername: host
     },
     connectionTimeout: 15000,
     greetingTimeout: 15000,

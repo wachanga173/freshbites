@@ -2,6 +2,7 @@ import { MessageSquare, Utensils, User, Truck, AlertTriangle, Lightbulb, FileTex
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getApiUrl } from '../config/api'
+import { sendBroadcastEmail } from '../services/emailService'
 import './AdminDashboard.css'
 
 export default function AdminDashboard() {
@@ -563,26 +564,56 @@ export default function AdminDashboard() {
     setBroadcastFeedback(null)
 
     try {
-      const res = await fetch(getApiUrl('/api/admin/broadcast-email'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          audienceType: broadcastAudience,
-          userIds: selectedUserIds,
-          customEmails: customEmailList,
+      let data = null
+
+      try {
+        const res = await fetch(getApiUrl('/api/admin/broadcast-email'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            audienceType: broadcastAudience,
+            userIds: selectedUserIds,
+            customEmails: customEmailList,
+            subject: broadcastSubject,
+            title: broadcastTitle,
+            message: broadcastMessage,
+            ctaLabel: broadcastCtaLabel,
+            ctaUrl: broadcastCtaUrl
+          })
+        })
+
+        if (res.ok) {
+          data = await res.json()
+        }
+      } catch (backendErr) {
+        console.warn('Backend broadcast route unavailable, trying Vercel email service...', backendErr)
+      }
+
+      // If backend failed (e.g. Render free tier port block), seamlessly dispatch via Vercel Serverless Function
+      if (!data || !data.success) {
+        let recipientList = []
+        if (broadcastAudience === 'all') {
+          recipientList = users.map(u => ({ email: u.email, username: u.username })).filter(u => u.email)
+        } else if (broadcastAudience === 'selected') {
+          recipientList = users.filter(u => selectedUserIds.includes(u.id || u._id)).map(u => ({ email: u.email, username: u.username }))
+        } else if (broadcastAudience === 'custom') {
+          recipientList = customEmailList.split(/[,\n;\s]+/).filter(e => e.includes('@')).map(e => ({ email: e.trim() }))
+        }
+
+        data = await sendBroadcastEmail({
+          recipients: recipientList,
           subject: broadcastSubject,
           title: broadcastTitle,
           message: broadcastMessage,
           ctaLabel: broadcastCtaLabel,
           ctaUrl: broadcastCtaUrl
         })
-      })
+      }
 
-      const data = await res.json()
-      if (res.ok && data.success) {
+      if (data && data.success) {
         setBroadcastFeedback({ type: 'success', message: data.message })
         setBroadcastSubject('')
         setBroadcastTitle('')
@@ -592,10 +623,11 @@ export default function AdminDashboard() {
         setSelectedUserIds([])
         setCustomEmailList('')
       } else {
-        setBroadcastFeedback({ type: 'error', message: data.error || 'Failed to send broadcast email.' })
+        setBroadcastFeedback({ type: 'error', message: data?.error || 'Failed to send broadcast email.' })
       }
     } catch (err) {
-      setBroadcastFeedback({ type: 'error', message: 'Connection error while sending broadcast.' })
+      console.error('Broadcast sending error:', err)
+      setBroadcastFeedback({ type: 'error', message: err.message || 'Connection error while sending broadcast.' })
     } finally {
       setSendingBroadcast(false)
     }
