@@ -1,4 +1,4 @@
-import { ArrowLeft, Clock, Calendar, Sparkles, BookOpen, Utensils, ShieldAlert, Share2, Check } from 'lucide-react'
+import { ArrowLeft, Clock, Calendar, Sparkles, BookOpen, Utensils, ShieldAlert, Share2, Check, ExternalLink, Globe } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { getApiUrl } from '../config/api'
 import './ArticleDetail.css'
@@ -34,7 +34,8 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
             category: initialArticle.category,
             image: initialArticle.image,
             source: initialArticle.source,
-            publishedAt: initialArticle.publishedAt
+            publishedAt: initialArticle.publishedAt,
+            url: initialArticle.url
           })
         })
 
@@ -129,6 +130,8 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
     })
   }
 
+  const sourceUrl = article.url || initialArticle.url
+
   return (
     <div className="article-detail-page">
       {/* Top Navigation Bar */}
@@ -138,6 +141,18 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
             <ArrowLeft size={18} className="inline-block mr-1" /> Back to News & Diet
           </button>
           <div className="nav-actions">
+            {sourceUrl && (
+              <a 
+                href={sourceUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="nav-action-btn source-btn"
+                title="View original article on publisher's website"
+              >
+                <ExternalLink size={15} />
+                <span>Original Source</span>
+              </a>
+            )}
             <button className="nav-action-btn" onClick={handleShare} title="Share Article">
               {copied ? <Check size={16} className="text-green-500" /> : <Share2 size={16} />}
               <span>{copied ? 'Link Copied!' : 'Share'}</span>
@@ -151,7 +166,7 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
         <div className="article-badges">
           <span className="badge-category">{article.category?.toUpperCase() || 'DIET & NUTRITION'}</span>
           <span className="badge-ai">
-            <Sparkles size={14} className="inline-block mr-1" /> Fresh Bites AI In-Depth Guide
+            <Sparkles size={14} className="inline-block mr-1" /> Fresh Bites In-Depth Nutrition Guide
           </span>
         </div>
 
@@ -161,16 +176,29 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
         {/* Metadata */}
         <div className="article-meta-row">
           <div className="meta-left">
-            <span className="meta-source">{article.source?.name || 'Fresh Bites Café Health Journal'}</span>
+            <span className="meta-source">{article.source?.name || 'Fresh Bites Health Journal'}</span>
             <span className="meta-dot">•</span>
             <span className="meta-item">
               <Calendar size={14} className="inline-block mr-1" /> {formatDate(article.publishedAt)}
             </span>
             <span className="meta-dot">•</span>
             <span className="meta-item">
-              <Clock size={14} className="inline-block mr-1" /> {article.readTime || '3 min read'}
+              <Clock size={14} className="inline-block mr-1" /> {article.readTime || '4 min read'}
             </span>
           </div>
+
+          {sourceUrl && (
+            <div className="meta-right">
+              <a 
+                href={sourceUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="meta-source-link"
+              >
+                <Globe size={14} className="inline-block mr-1" /> Read on {article.source?.name || 'Publisher'} ↗
+              </a>
+            </div>
+          )}
         </div>
 
         {/* Hero Image */}
@@ -202,7 +230,7 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
             <div className="ai-generating-container">
               <div className="ai-generating-spinner"></div>
               <h3 className="generating-title">Analyzing topic & menu pairings...</h3>
-              <p className="generating-subtitle">Our AI nutritionist is crafting a personalized, comprehensive article with dietary tips and matching café dishes.</p>
+              <p className="generating-subtitle">Our AI nutritionist is conducting an in-depth scientific analysis with practical daily protocols and matching café dishes.</p>
               
               <div className="skeleton-group">
                 <div className="skeleton skeleton-line"></div>
@@ -214,9 +242,11 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
           ) : error ? (
             <div className="article-error-box">
               <p>{error}</p>
-              <button className="btn-retry" onClick={() => window.location.reload()}>
-                Try Again
-              </button>
+              {sourceUrl && (
+                <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="btn-view-source mt-3 inline-block">
+                  View Article Directly from {article.source?.name || 'Source'} →
+                </a>
+              )}
             </div>
           ) : (
             <div className="article-rendered-text">
@@ -224,6 +254,27 @@ export default function ArticleDetail({ article: initialArticle, onBack }) {
             </div>
           )}
         </div>
+
+        {/* Source Reference Card */}
+        {sourceUrl && (
+          <div className="source-reference-card">
+            <div className="source-card-left">
+              <Globe size={24} className="text-accent mr-3 flex-shrink-0" />
+              <div>
+                <h4>Want to read the original source?</h4>
+                <p>Explore the full report directly from <strong>{article.source?.name || 'the original news publisher'}</strong>.</p>
+              </div>
+            </div>
+            <a 
+              href={sourceUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn-visit-source"
+            >
+              Open Original Article <ExternalLink size={16} className="inline-block ml-1" />
+            </a>
+          </div>
+        )}
 
         {/* Live Menu CTA Card */}
         {!loading && (

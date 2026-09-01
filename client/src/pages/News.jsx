@@ -1,4 +1,4 @@
-import { Utensils, Pill, User, Sparkles, BookOpen, ArrowRight } from 'lucide-react'
+import { Utensils, Pill, User, Sparkles, BookOpen, ArrowRight, ExternalLink } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { getApiUrl } from '../config/api'
 import ArticleDetail from './ArticleDetail'
@@ -155,17 +155,32 @@ function News() {
                   <h2 className="news-card-title">{article.title}</h2>
                   <p className="news-card-description">{article.description}</p>
                   
-                  <button 
-                    type="button"
-                    className="news-read-more-btn"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setSelectedArticle(article)
-                    }}
-                  >
-                    Read Full In-Depth Guide
-                    <ArrowRight size={16} className="inline-block ml-1" />
-                  </button>
+                  <div className="news-card-actions">
+                    <button 
+                      type="button"
+                      className="news-read-more-btn"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedArticle(article)
+                      }}
+                    >
+                      Read AI In-Depth Guide
+                      <ArrowRight size={16} className="inline-block ml-1" />
+                    </button>
+                    {article.url && (
+                      <a
+                        href={article.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="news-source-link-btn"
+                        onClick={(e) => e.stopPropagation()}
+                        title="Read original article on publisher's site"
+                      >
+                        <ExternalLink size={15} />
+                        <span>Source</span>
+                      </a>
+                    )}
+                  </div>
                 </div>
               </article>
             ))}

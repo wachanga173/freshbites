@@ -2442,7 +2442,7 @@ app.get('/api/news', async (req, res) => {
 // POST /api/news/generate-article: Use AI to create a full in-depth article
 app.post('/api/news/generate-article', async (req, res) => {
   try {
-    const { id, title, description, category, image, source, publishedAt } = req.body
+    const { id, title, description, category, image, source, publishedAt, url } = req.body
 
     if (!title) {
       return res.status(400).json({ error: 'Article title is required' })
@@ -2465,38 +2465,67 @@ app.post('/api/news/generate-article', async (req, res) => {
 
     const menuContext = await getMenuContextForAI()
 
-    const articlePrompt = `You are an expert nutritionist and culinary journalist writing for the Fresh Bites Café Knowledge & Diet Journal.
-Write a comprehensive, highly informative, and engaging in-depth health & diet article based on this topic:
+    // Fetch and extract the actual article text from the source URL
+    let realArticleText = description || ''
+    if (url && typeof url === 'string' && url.startsWith('http')) {
+      try {
+        const pageRes = await axios.get(url, {
+          timeout: 8000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+          }
+        })
 
-TOPIC TITLE: "${title}"
-SUMMARY: "${description || 'Comprehensive nutrition guide'}"
-CATEGORY: ${category || 'Diet & Nutrition'}
+        if (pageRes.data && typeof pageRes.data === 'string') {
+          // Clean HTML tags and isolate readable body text
+          const extractedText = pageRes.data
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
+            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, ' ')
+            .replace(/<nav\b[^<]*(?:(?!<\/nav>)<[^<]*)*<\/nav>/gi, ' ')
+            .replace(/<footer\b[^<]*(?:(?!<\/footer>)<[^<]*)*<\/footer>/gi, ' ')
+            .replace(/<header\b[^<]*(?:(?!<\/header>)<[^<]*)*<\/header>/gi, ' ')
+            .replace(/<noscript\b[^<]*(?:(?!<\/noscript>)<[^<]*)*<\/noscript>/gi, ' ')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .replace(/&quot;/g, '"')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .slice(0, 10000) // First 10,000 characters of genuine article text
+
+          if (extractedText.length > 250) {
+            realArticleText = extractedText
+          }
+        }
+      } catch (fetchErr) {
+        console.warn('Could not extract full web article content from URL, using snippet:', fetchErr.message)
+      }
+    }
+
+    const articlePrompt = `You are a talented health & nutrition analyst for Fresh Bites Café.
+You are analyzing the following real news article:
+
+ARTICLE TITLE: "${title}"
+SOURCE: ${source?.name || 'News Source'}
+ORIGINAL URL: ${url || 'N/A'}
+
+REAL ARTICLE CONTENT EXTRACTED FROM SOURCE:
+"""
+${realArticleText}
+"""
 
 ${menuContext ? menuContext + '\n' : ''}
 
-Please write a full-length, structured article (about 400-600 words) with the following structure:
-
-1. INTRODUCTION & OVERVIEW
-Explain the background, why this topic matters to everyday health, and the core science or culinary context.
-
-2. KEY NUTRITIONAL & HEALTH INSIGHTS
-Provide 3-4 detailed bullet points explaining the specific benefits (e.g., metabolism, energy, immunity, digestion).
-
-3. DIETARY TIPS & PRACTICAL ADVICE
-Provide actionable daily advice for customers wanting to apply these principles to their meals.
-
-4. RECOMMENDED DISHES AT FRESH BITES CAFÉ
-Recommend 2 to 3 specific dishes from our actual café menu above that align with this topic. Explain why each dish fits (e.g., protein content, fresh greens, balanced nutrients) and state their price in KSH.
-
-5. PRACTICAL TAKEAWAY
-A short concluding takeaway for balanced living.
+Please read and deeply analyze this real article:
+1. Provide a comprehensive, articulate summary of the actual facts, scientific findings, arguments, and takeaways presented in this article.
+2. Discuss the real-world health and dietary implications for everyday people based directly on what the article reports.
+3. Naturally connect these findings to our Fresh Bites Café menu above by recommending 2-3 matching dishes with their prices in KSH.
 
 Formatting rules:
 - Do NOT use markdown asterisks (no **bold**, no *italic*), no hashtags (#).
-- Use clear section titles in UPPERCASE on their own line.
-- Use dashes (-) for bullet items with a blank line between each item.
-- Separate paragraphs with a blank line.
-- Keep the tone professional, welcoming, and scientifically sound.`
+- Use plain text with clean line breaks between paragraphs and dashes (-) for any lists.
+- Be thorough, authentic, and engaging.`
 
     let generatedText = ''
 
@@ -2507,7 +2536,7 @@ Formatting rules:
             `https://generativelanguage.googleapis.com/v1/models/${AI_MODEL}:generateContent?key=${AI_API_KEY}`,
             {
               systemInstruction: {
-                parts: [{ text: 'You are a professional nutrition editor and health writer for Fresh Bites Café.' }]
+                parts: [{ text: 'You are a senior clinical nutritionist and food health editor for Fresh Bites Café.' }]
               },
               contents: [
                 {
@@ -2516,7 +2545,7 @@ Formatting rules:
                 }
               ],
               generationConfig: {
-                maxOutputTokens: 1500,
+                maxOutputTokens: 2048,
                 temperature: 0.7
               }
             },
@@ -2530,7 +2559,7 @@ Formatting rules:
         } else if (AI_PROVIDER === 'anthropic') {
           const claudeRes = await axios.post('https://api.anthropic.com/v1/messages', {
             model: AI_MODEL,
-            max_tokens: 1500,
+            max_tokens: 2048,
             messages: [{ role: 'user', content: articlePrompt }]
           }, {
             headers: {
@@ -2545,10 +2574,10 @@ Formatting rules:
           const openaiRes = await axios.post('https://api.openai.com/v1/chat/completions', {
             model: AI_MODEL,
             messages: [
-              { role: 'system', content: 'You are a professional nutrition editor for Fresh Bites Café.' },
+              { role: 'system', content: 'You are a senior clinical nutritionist for Fresh Bites Café.' },
               { role: 'user', content: articlePrompt }
             ],
-            max_tokens: 1500,
+            max_tokens: 2048,
             temperature: 0.7
           }, {
             headers: {
@@ -2573,11 +2602,12 @@ Formatting rules:
       title,
       description,
       content: generatedText,
+      url: url || null,
       image: image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800',
       category: category || 'Diet & Health',
       source: source || { name: 'Fresh Bites Diet & Nutrition AI' },
       publishedAt: publishedAt || new Date().toISOString(),
-      readTime: '3 min read',
+      readTime: '4 min read',
       generatedByAI: true,
       disclaimer: 'This article is for educational purposes. Consult a certified nutritionist or physician for personalized medical advice.'
     }
