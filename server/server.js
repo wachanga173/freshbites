@@ -2080,7 +2080,7 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
                 }
               ],
               generationConfig: {
-                maxOutputTokens: 300,
+                maxOutputTokens: 1024,
                 temperature: 0.7
               }
             },
@@ -2090,7 +2090,7 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
             }
           )
 
-          response = geminiResponse.data.candidates[0].content.parts[0].text
+          response = geminiResponse.data.candidates[0].content.parts.map(p => p.text).join('')
         } else if (AI_PROVIDER === 'anthropic') {
           // Anthropic Claude API
           const claudeResponse = await axios.post('https://api.anthropic.com/v1/messages', {
