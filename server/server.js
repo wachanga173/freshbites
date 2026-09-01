@@ -2046,13 +2046,14 @@ app.patch('/api/feedback/:feedbackId/status', authenticateToken, requireRole('fe
 // Helper to clean markdown from AI responses for chat display
 function formatAIResponse(text) {
   return text
-    .replace(/\*\*\*(.+?)\*\*\*/g, '$1')     // Remove bold+italic ***text***
-    .replace(/\*\*(.+?)\*\*/g, '$1')         // Remove bold **text**
-    .replace(/\*(.+?)\*/g, '$1')             // Remove italic *text*
-    .replace(/^#{1,6}\s+/gm, '')             // Remove markdown headers
-    .replace(/^[-*]\s+/gm, '• ')           // Convert * or - bullets to •
-    .replace(/^\d+\.\s+/gm, (match) => match) // Keep numbered lists as-is
-    .replace(/\n{3,}/g, '\n\n')              // Collapse excess blank lines
+    .replace(/\*\*\*(.+?)\*\*\*/g, '$1')       // Remove bold+italic ***text***
+    .replace(/\*\*(.+?)\*\*/g, '$1')           // Remove bold **text**
+    .replace(/\*(.+?)\*/g, '$1')               // Remove italic *text*
+    .replace(/^#{1,6}\s+/gm, '')               // Remove markdown headers
+    .replace(/^[-*]\s+/gm, '\n• ')             // Convert bullets to • with spacing
+    .replace(/^(\d+\.)\s+/gm, '\n$1 ')         // Add spacing before numbered items
+    .replace(/\n{3,}/g, '\n\n')                // Collapse excess blank lines
+    .replace(/^\n+/, '')                        // Remove leading blank lines
     .trim()
 }
 
@@ -2080,9 +2081,10 @@ Be concise, friendly, and practical in your responses.
 Formatting rules:
 - Do NOT use markdown formatting (no asterisks, no hashtags, no bold/italic).
 - Use plain text only.
-- Use line breaks to separate sections.
-- Use short paragraphs (2-3 sentences max).
-- Use dashes (-) for bullet lists when listing items.
+- Keep each paragraph short (2-3 sentences max).
+- Put a blank line between each paragraph.
+- When listing items, use dashes (-) with each item on its own line.
+- Put a blank line between each list item for readability.
 - Always remind users to consult healthcare professionals for specific medical advice.`
 
         if (AI_PROVIDER === 'gemini') {
