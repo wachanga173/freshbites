@@ -16,12 +16,14 @@ import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
 import TermsAndConditions from './pages/TermsAndConditions'
 import PrivacyPolicy from './pages/PrivacyPolicy'
+import CookiePolicy from './pages/CookiePolicy'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import ForgotPassword from './pages/ForgotPassword'
 import RoleSwitcher from './components/RoleSwitcher'
 import FeedbackChatbot from './components/FeedbackChatbot'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
+import CookieConsent from './components/CookieConsent'
 import './App.css'
 
 const CART_STORAGE_KEY = 'freshbites-cart'
@@ -81,6 +83,8 @@ function MainApp() {
       setCurrentRoute('terms')
     } else if (path === '/privacy') {
       setCurrentRoute('privacy')
+    } else if (path === '/cookies' || path === '/cookie-policy') {
+      setCurrentRoute('cookies')
     } else if (path === '/about') {
       setCurrentRoute('about')
     } else if (path === '/contact') {
@@ -118,6 +122,10 @@ function MainApp() {
 
   if (currentRoute === 'privacy') {
     return <PrivacyPolicy />
+  }
+
+  if (currentRoute === 'cookies') {
+    return <CookiePolicy />
   }
 
   if (currentRoute === 'about') {
@@ -252,6 +260,7 @@ export default function App() {
       <MainApp />
       <FeedbackChatbot />
       <PWAInstallPrompt />
+      <CookieConsent />
     </AuthProvider>
   )
 }

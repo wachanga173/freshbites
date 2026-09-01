@@ -142,6 +142,7 @@ export default function Footer() {
             <ul className="footer-links">
               <li><a href="/terms" onClick={(e) => { e.preventDefault(); window.location.href = '/terms' }}>Terms & Conditions</a></li>
               <li><a href="/privacy" onClick={(e) => { e.preventDefault(); window.location.href = '/privacy' }}>Privacy Policy</a></li>
+              <li><a href="/cookies" onClick={(e) => { e.preventDefault(); window.location.href = '/cookies' }}>Cookie Policy</a></li>
               <li><a href="/contact" onClick={(e) => { e.preventDefault(); window.location.href = '/contact' }}>Help Center</a></li>
               <li><a href="/contact" onClick={(e) => { e.preventDefault(); window.location.href = '/contact' }}>FAQs</a></li>
             </ul>

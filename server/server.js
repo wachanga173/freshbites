@@ -410,7 +410,8 @@ app.post('/api/auth/login', authLimiter, validateLogin, catchAsync(async (req, r
       roles: user.roles,
       phone: user.phone,
       twoFactorEnabled: user.twoFactorEnabled || false,
-      twoFactorMethod: user.twoFactorMethod || null
+      twoFactorMethod: user.twoFactorMethod || null,
+      hasConfigured2FA: !!(user.twoFactorSecret || user.twoFactorMethod)
     }
   })
 }))
@@ -429,7 +430,8 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
       roles: user.roles,
       phone: user.phone,
       twoFactorEnabled: user.twoFactorEnabled || false,
-      twoFactorMethod: user.twoFactorMethod || null
+      twoFactorMethod: user.twoFactorMethod || null,
+      hasConfigured2FA: !!(user.twoFactorSecret || user.twoFactorMethod)
     })
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch user' })
@@ -938,8 +940,6 @@ app.post('/api/auth/2fa/disable', authenticateToken, async (req, res) => {
     }
 
     user.twoFactorEnabled = false
-    user.twoFactorMethod = null
-    user.twoFactorSecret = null
     user.twoFactorTempSecret = null
     user.twoFactorOTP = null
     user.twoFactorExpires = null
@@ -955,11 +955,103 @@ app.post('/api/auth/2fa/disable', authenticateToken, async (req, res) => {
       success: true,
       message: 'Two-Factor Authentication has been disabled.',
       twoFactorEnabled: false,
-      twoFactorMethod: null
+      twoFactorMethod: user.twoFactorMethod,
+      hasConfigured2FA: !!(user.twoFactorSecret || user.twoFactorMethod)
     })
   } catch (err) {
     console.error('Disable 2FA error:', err)
     res.status(500).json({ error: 'Failed to disable 2FA' })
+  }
+})
+
+// 6. Quick Re-enable Existing Configured 2FA (Authenticated)
+app.post('/api/auth/2fa/re-enable', authenticateToken, async (req, res) => {
+  try {
+    const { token } = req.body
+    const user = await User.findById(req.user.id)
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    if (!user.twoFactorSecret && user.twoFactorMethod !== 'email') {
+      return res.status(400).json({ error: 'No existing 2FA configuration found. Please perform full setup first.' })
+    }
+
+    if (user.twoFactorMethod === 'authenticator') {
+      if (!token) {
+        return res.status(400).json({ error: '6-digit code from your Authenticator app is required to re-enable 2FA' })
+      }
+      const isValid = verifyTOTPToken(token, user.twoFactorSecret)
+      if (!isValid) {
+        return res.status(400).json({ error: 'Invalid 6-digit code. Please check your Authenticator app.' })
+      }
+    }
+
+    user.twoFactorEnabled = true
+    await user.save()
+
+    securityLogger('2fa_re_enabled', {
+      userId: user._id,
+      username: user.username,
+      method: user.twoFactorMethod,
+      ip: req.ip
+    })
+
+    res.json({
+      success: true,
+      message: 'Two-Factor Authentication re-enabled successfully!',
+      twoFactorEnabled: true,
+      twoFactorMethod: user.twoFactorMethod,
+      hasConfigured2FA: true
+    })
+  } catch (err) {
+    console.error('Re-enable 2FA error:', err)
+    res.status(500).json({ error: 'Failed to re-enable 2FA' })
+  }
+})
+
+// 7. Full 2FA Reset / New Device Setup (Authenticated)
+app.post('/api/auth/2fa/reset', authenticateToken, async (req, res) => {
+  try {
+    const { password } = req.body
+    if (!password) {
+      return res.status(400).json({ error: 'Password required to reset 2FA' })
+    }
+
+    const user = await User.findById(req.user.id)
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password)
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Incorrect password. 2FA was not reset.' })
+    }
+
+    user.twoFactorEnabled = false
+    user.twoFactorMethod = null
+    user.twoFactorSecret = null
+    user.twoFactorTempSecret = null
+    user.twoFactorOTP = null
+    user.twoFactorExpires = null
+    await user.save()
+
+    securityLogger('2fa_reset_keys', {
+      userId: user._id,
+      username: user.username,
+      ip: req.ip
+    })
+
+    res.json({
+      success: true,
+      message: '2FA keys have been completely reset. You can now set up a new authenticator.',
+      twoFactorEnabled: false,
+      twoFactorMethod: null,
+      hasConfigured2FA: false
+    })
+  } catch (err) {
+    console.error('Reset 2FA error:', err)
+    res.status(500).json({ error: 'Failed to reset 2FA' })
   }
 })
 

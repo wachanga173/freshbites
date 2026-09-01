@@ -12,15 +12,18 @@ export default function Profile() {
     verifySetupAuthenticator2FA, 
     setupEmail2FA, 
     verifySetupEmail2FA, 
-    disable2FA 
+    disable2FA,
+    reEnable2FA,
+    reset2FA
   } = useAuth()
 
   // 2FA Setup State
-  const [setupModal, setSetupModal] = useState(null) // null | 'authenticator' | 'email' | 'disable'
+  const [setupModal, setSetupModal] = useState(null) // null | 'authenticator' | 'email' | 'disable' | 're-enable' | 'reset'
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState('')
   const [secretKey, setSecretKey] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
   const [disablePassword, setDisablePassword] = useState('')
+  const [resetPassword, setResetPassword] = useState('')
   const [copiedSecret, setCopiedSecret] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
   const [statusMessage, setStatusMessage] = useState('')
@@ -127,7 +130,59 @@ export default function Profile() {
     }
   }
 
-  // Disable 2FA
+  // Quick Re-enable Existing Configured 2FA
+  const handleQuickReEnable = async (e) => {
+    e.preventDefault()
+    if (user.twoFactorMethod === 'authenticator' && (!verificationCode || verificationCode.length !== 6)) {
+      setStatusError('Please enter the 6-digit code from your Authenticator app.')
+      return
+    }
+
+    setActionLoading(true)
+    setStatusError('')
+    try {
+      const data = await reEnable2FA(verificationCode)
+      if (data.success) {
+        setStatusMessage(data.message || 'Two-Factor Authentication re-enabled successfully!')
+        setSetupModal(null)
+        setVerificationCode('')
+      } else {
+        setStatusError(data.error || 'Invalid 6-digit code.')
+      }
+    } catch (err) {
+      setStatusError('Failed to re-enable 2FA.')
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  // Full Reset 2FA Keys
+  const handleConfirmReset = async (e) => {
+    e.preventDefault()
+    if (!resetPassword) {
+      setStatusError('Please enter your account password to confirm reset.')
+      return
+    }
+
+    setActionLoading(true)
+    setStatusError('')
+    try {
+      const data = await reset2FA(resetPassword)
+      if (data.success) {
+        setStatusMessage('2FA configuration has been reset. You can now set up a new Authenticator.')
+        setSetupModal(null)
+        setResetPassword('')
+      } else {
+        setStatusError(data.error || 'Incorrect password.')
+      }
+    } catch (err) {
+      setStatusError('Connection error while resetting 2FA.')
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  // Disable 2FA (Retains existing keys for easy re-enabling)
   const handleConfirmDisable2FA = async (e) => {
     e.preventDefault()
     if (!disablePassword) {
@@ -140,7 +195,7 @@ export default function Profile() {
     try {
       const data = await disable2FA(disablePassword)
       if (data.success) {
-        setStatusMessage('Two-Factor Authentication has been disabled.')
+        setStatusMessage('Two-Factor Authentication has been disabled. Your keys are preserved if you turn it on later.')
         setSetupModal(null)
         setDisablePassword('')
       } else {
@@ -323,36 +378,93 @@ export default function Profile() {
 
                 {user.twoFactorEnabled ? (
                   // Active 2FA State
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-bold text-gray-800">Two-Factor Authentication is Active</h3>
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-300 flex items-center gap-1">
-                          <CheckCircle2 size={12} /> Active
-                        </span>
+                  <div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-200">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-bold text-gray-800">Two-Factor Authentication is Active</h3>
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-300 flex items-center gap-1">
+                            <CheckCircle2 size={12} /> Active
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 max-w-xl">
+                          {user.twoFactorMethod === 'authenticator'
+                            ? 'Your account is secured using an Authenticator app (Google Authenticator, Authy, etc.).'
+                            : `Your account is secured using one-time verification codes delivered to your email (${user.email}).`}
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-600 max-w-xl">
-                        {user.twoFactorMethod === 'authenticator'
-                          ? 'Your account is secured using an Authenticator app (Google Authenticator, Authy, etc.).'
-                          : `Your account is secured using one-time verification codes delivered to your email (${user.email}).`}
-                      </p>
+
+                      <button
+                        onClick={() => { setSetupModal('disable'); setStatusError(''); setDisablePassword('') }}
+                        className="px-5 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-sm bg-white border-2 border-red-500 text-red-600 hover:bg-red-50 flex items-center justify-center gap-2 whitespace-nowrap"
+                      >
+                        <Lock size={16} /> Disable 2FA
+                      </button>
                     </div>
 
-                    <button
-                      onClick={() => { setSetupModal('disable'); setStatusError(''); setDisablePassword('') }}
-                      className="px-5 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-sm bg-white border-2 border-red-500 text-red-600 hover:bg-red-50 flex items-center justify-center gap-2 whitespace-nowrap"
-                    >
-                      <Lock size={16} /> Disable 2FA
-                    </button>
+                    <div className="pt-3 flex justify-between items-center text-xs text-gray-500">
+                      <span>Need to switch phones or re-scan a new QR code?</span>
+                      <button
+                        onClick={() => { setSetupModal('reset'); setStatusError(''); setResetPassword('') }}
+                        className="text-amber-700 hover:underline font-semibold"
+                      >
+                        Reset Keys / Set Up New Device →
+                      </button>
+                    </div>
+                  </div>
+                ) : (user.hasConfigured2FA || user.twoFactorMethod) ? (
+                  // Configured but Paused / Inactive State (Keys exist - NO RE-SCAN NEEDED)
+                  <div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-200">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-bold text-gray-800">2FA Configured (Currently Inactive)</h3>
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                            Inactive / Paused
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 max-w-xl">
+                          Your 2FA is already configured with your {user.twoFactorMethod === 'authenticator' ? 'Authenticator App' : 'Email'}. <strong>You do not need to set up or scan a QR code again.</strong> Simply turn it back on using your existing code.
+                        </p>
+                      </div>
+
+                      <div className="flex gap-2 flex-shrink-0">
+                        <button
+                          onClick={() => {
+                            if (user.twoFactorMethod === 'authenticator') {
+                              setSetupModal('re-enable')
+                              setVerificationCode('')
+                              setStatusError('')
+                            } else {
+                              handleQuickReEnable({ preventDefault: () => {} })
+                            }
+                          }}
+                          disabled={actionLoading}
+                          className="px-5 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-md bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center gap-2 whitespace-nowrap"
+                        >
+                          <Zap size={16} /> Turn 2FA Back On
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 flex justify-between items-center text-xs text-gray-500">
+                      <span>Switched devices and need a brand new QR code?</span>
+                      <button
+                        onClick={() => { setSetupModal('reset'); setStatusError(''); setResetPassword('') }}
+                        className="text-gray-600 hover:text-gray-900 underline font-medium"
+                      >
+                        Reset Keys & Set Up New App
+                      </button>
+                    </div>
                   </div>
                 ) : (
-                  // Disabled / Setup 2FA State
+                  // Brand New / Never Set Up State
                   <div>
                     <div className="mb-4">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="text-lg font-bold text-gray-800">Protect Your Account</h3>
                         <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-200 text-gray-700">
-                          Disabled
+                          Not Set Up
                         </span>
                       </div>
                       <p className="text-sm text-gray-600">
@@ -361,7 +473,7 @@ export default function Profile() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                      {/* Authenticator App Method (Recommended for all, Primary for Admins) */}
+                      {/* Authenticator App Method */}
                       <div className="bg-white p-5 rounded-lg border border-gray-200 hover:border-amber-400 transition-all flex flex-col justify-between">
                         <div>
                           <div className="flex items-center justify-between mb-2">
@@ -569,6 +681,74 @@ export default function Profile() {
               </div>
             )}
 
+            {/* Quick Re-enable 2FA Modal */}
+            {setupModal === 're-enable' && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+                <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto my-auto animate-in fade-in zoom-in-95 duration-200">
+                  <button 
+                    onClick={() => { setSetupModal(null); setStatusError('') }}
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                  >
+                    <X size={20} />
+                  </button>
+
+                  <div className="text-center mb-4">
+                    <div className="w-12 h-12 mx-auto mb-2 bg-amber-50 rounded-full flex items-center justify-center text-amber-600">
+                      <Zap size={24} />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900">Turn 2FA Back On</h3>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Enter the current 6-digit code from your Authenticator app (<strong>{user.username}</strong>) to immediately reactivate 2FA.
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleQuickReEnable}>
+                    <div className="mb-4">
+                      <label className="block text-xs font-bold text-gray-700 mb-1">
+                        6-Digit Code from App
+                      </label>
+                      <div className="relative">
+                        <KeyRound size={16} className="absolute left-3 top-3 text-gray-400" />
+                        <input
+                          type="text"
+                          maxLength={6}
+                          placeholder="123456"
+                          value={verificationCode}
+                          onChange={e => setVerificationCode(e.target.value.replace(/\D/g, ''))}
+                          className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-center font-mono font-bold text-lg tracking-widest focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                          autoFocus
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {statusError && (
+                      <div className="mb-3 p-2 bg-red-50 border border-red-200 text-red-700 text-xs rounded">
+                        {statusError}
+                      </div>
+                    )}
+
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => { setSetupModal(null); setStatusError('') }}
+                        className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={actionLoading || verificationCode.length !== 6}
+                        className="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-semibold disabled:opacity-50"
+                      >
+                        {actionLoading ? 'Re-enabling...' : 'Turn On 2FA'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
             {/* Disable 2FA Password Confirmation Modal */}
             {setupModal === 'disable' && (
               <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
@@ -586,7 +766,7 @@ export default function Profile() {
                     </div>
                     <h3 className="text-xl font-bold text-gray-900">Disable Two-Factor Authentication</h3>
                     <p className="text-xs text-gray-600 mt-1">
-                      For your security, please enter your current account password to disable 2FA.
+                      Enter your password to disable 2FA. Your key is safely retained so you can turn it back on later without scanning a new QR code.
                     </p>
                   </div>
 
@@ -626,6 +806,70 @@ export default function Profile() {
                         className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold disabled:opacity-50"
                       >
                         {actionLoading ? 'Disabling...' : 'Confirm Disable'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* Reset 2FA Keys Modal */}
+            {setupModal === 'reset' && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+                <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto my-auto animate-in fade-in zoom-in-95 duration-200">
+                  <button 
+                    onClick={() => { setSetupModal(null); setStatusError('') }}
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                  >
+                    <X size={20} />
+                  </button>
+
+                  <div className="text-center mb-4">
+                    <div className="w-12 h-12 mx-auto mb-2 bg-gray-100 rounded-full flex items-center justify-center text-gray-700">
+                      <QrCode size={24} />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900">Reset 2FA & Set Up New App</h3>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Enter your password to erase existing 2FA keys from your account so you can configure a brand new device or Authenticator app.
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleConfirmReset}>
+                    <div className="mb-4">
+                      <label className="block text-xs font-bold text-gray-700 mb-1">
+                        Current Account Password
+                      </label>
+                      <input
+                        type="password"
+                        placeholder="Enter your password"
+                        value={resetPassword}
+                        onChange={e => setResetPassword(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                        autoFocus
+                        required
+                      />
+                    </div>
+
+                    {statusError && (
+                      <div className="mb-3 p-2 bg-red-50 border border-red-200 text-red-700 text-xs rounded">
+                        {statusError}
+                      </div>
+                    )}
+
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => { setSetupModal(null); setStatusError('') }}
+                        className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={actionLoading || !resetPassword}
+                        className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold disabled:opacity-50"
+                      >
+                        {actionLoading ? 'Resetting...' : 'Confirm Reset'}
                       </button>
                     </div>
                   </form>

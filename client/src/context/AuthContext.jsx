@@ -148,7 +148,54 @@ export function AuthProvider({ children }) {
     })
     const data = await res.json()
     if (res.ok && data.success) {
-      setUser(prev => ({ ...prev, twoFactorEnabled: false, twoFactorMethod: null }))
+      setUser(prev => ({ 
+        ...prev, 
+        twoFactorEnabled: false, 
+        twoFactorMethod: data.twoFactorMethod || prev.twoFactorMethod,
+        hasConfigured2FA: data.hasConfigured2FA !== undefined ? data.hasConfigured2FA : true
+      }))
+    }
+    return data
+  }
+
+  async function reEnable2FA(tokenCode) {
+    const res = await fetch(getApiUrl('/api/auth/2fa/re-enable'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ token: tokenCode })
+    })
+    const data = await res.json()
+    if (res.ok && data.success) {
+      setUser(prev => ({ 
+        ...prev, 
+        twoFactorEnabled: true, 
+        twoFactorMethod: data.twoFactorMethod || prev.twoFactorMethod,
+        hasConfigured2FA: true
+      }))
+    }
+    return data
+  }
+
+  async function reset2FA(password) {
+    const res = await fetch(getApiUrl('/api/auth/2fa/reset'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ password })
+    })
+    const data = await res.json()
+    if (res.ok && data.success) {
+      setUser(prev => ({ 
+        ...prev, 
+        twoFactorEnabled: false, 
+        twoFactorMethod: null,
+        hasConfigured2FA: false
+      }))
     }
     return data
   }
@@ -179,14 +226,12 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
-  // Helper function to check if user has a specific role
   function hasRole(role) {
     if (!user) return false
     const userRoles = Array.isArray(user.roles) ? user.roles : (user.role ? [user.role] : [])
     return userRoles.includes(role)
   }
 
-  // Helper function to check if user has any of the specified roles
   function hasAnyRole(roles) {
     if (!user) return false
     const userRoles = Array.isArray(user.roles) ? user.roles : (user.role ? [user.role] : [])
@@ -204,6 +249,8 @@ export function AuthProvider({ children }) {
     setupEmail2FA,
     verifySetupEmail2FA,
     disable2FA,
+    reEnable2FA,
+    reset2FA,
     register,
     logout,
     hasRole,
