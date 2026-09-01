@@ -1764,3 +1764,94 @@
   margin: 0 0 4px 0;
 }
 
+/* ========================================
+   ADMIN DASHBOARD RESPONSIVE ADAPTATION
+   ======================================== */
+@media (max-width: 1024px) {
+  .admin-nav {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .admin-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-nav button {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+
+  .admin-content {
+    padding: 24px 16px;
+  }
+
+  .marketing-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px;
+  }
+
+  .marketing-preview-card {
+    position: static !important;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-header {
+    padding: 24px 16px;
+  }
+
+  .admin-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .admin-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .admin-toolbar select,
+  .admin-toolbar .add-btn {
+    width: 100%;
+  }
+
+  .menu-items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 16px;
+  }
+
+  .admin-modal,
+  .modal-content {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    max-height: 90vh;
+    padding: 20px 16px !important;
+    margin: 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-nav button {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .menu-items-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .marketing-audience-control {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+

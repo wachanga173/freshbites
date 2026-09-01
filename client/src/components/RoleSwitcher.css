@@ -119,13 +119,39 @@
 
 @media (max-width: 768px) {
   .role-switcher {
-    top: 10px;
-    right: 10px;
+    top: 12px;
+    right: 56px;
+    z-index: 55;
   }
 
   .current-role-btn {
-    padding: 10px 15px;
+    padding: 6px 12px;
     font-size: 12px;
+    border-radius: 20px;
+    gap: 6px;
+  }
+
+  .role-icon {
+    font-size: 16px;
+  }
+
+  .role-text {
+    font-size: 11px;
+    display: inline;
+  }
+
+  .role-dropdown {
+    min-width: 220px;
+    right: -40px;
+    top: 44px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+  }
+}
+
+@media (max-width: 480px) {
+  .role-switcher {
+    top: 14px;
+    right: 50px;
   }
 
   .role-text {
@@ -133,6 +159,8 @@
   }
 
   .role-dropdown {
-    min-width: 200px;
+    right: -40px;
+    width: calc(100vw - 40px);
+    max-width: 260px;
   }
 }

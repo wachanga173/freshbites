@@ -415,8 +415,8 @@ export default function Profile() {
 
             {/* Authenticator Setup Modal */}
             {setupModal === 'authenticator' && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+                <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto my-auto animate-in fade-in zoom-in-95 duration-200">
                   <button 
                     onClick={() => { setSetupModal(null); setStatusError('') }}
                     className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -435,8 +435,8 @@ export default function Profile() {
                   </div>
 
                   {qrCodeDataUrl && (
-                    <div className="flex justify-center my-4 p-3 bg-white border border-gray-200 rounded-xl shadow-inner">
-                      <img src={qrCodeDataUrl} alt="2FA QR Code" className="w-48 h-48" />
+                    <div className="flex justify-center my-3 p-3 bg-white border border-gray-200 rounded-xl shadow-inner">
+                      <img src={qrCodeDataUrl} alt="2FA QR Code" className="w-40 h-40 sm:w-48 sm:h-48" />
                     </div>
                   )}
 
@@ -503,8 +503,8 @@ export default function Profile() {
 
             {/* Email 2FA Setup Modal */}
             {setupModal === 'email' && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+                <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto my-auto animate-in fade-in zoom-in-95 duration-200">
                   <button 
                     onClick={() => { setSetupModal(null); setStatusError('') }}
                     className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -571,8 +571,8 @@ export default function Profile() {
 
             {/* Disable 2FA Password Confirmation Modal */}
             {setupModal === 'disable' && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+                <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto my-auto animate-in fade-in zoom-in-95 duration-200">
                   <button 
                     onClick={() => { setSetupModal(null); setStatusError('') }}
                     className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"

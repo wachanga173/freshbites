@@ -167,3 +167,23 @@
   color: var(--color-accent-dark);
   text-decoration: underline;
 }
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 12px;
+  }
+
+  .auth-card {
+    padding: 28px 20px;
+    border-radius: var(--radius-lg);
+  }
+
+  .auth-card h2 {
+    font-size: 24px;
+  }
+
+  .auth-subtitle {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+}
