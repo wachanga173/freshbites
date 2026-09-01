@@ -63,6 +63,14 @@
   letter-spacing: -0.02em;
 }
 
+.hamburger-toggle {
+  display: none;
+}
+
+.mobile-nav-dropdown {
+  display: none;
+}
+
 .nav-link {
   padding: 8px 14px;
   font-size: 0.9rem;
