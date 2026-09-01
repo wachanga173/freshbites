@@ -14,8 +14,18 @@ const compression = require('compression')
 const morgan = require('morgan')
 const nodemailer = require('nodemailer')
 const crypto = require('crypto')
-const { authenticator } = require('otplib')
+const { generateSecret, generateURI, verifySync } = require('otplib')
 const qrcode = require('qrcode')
+
+// Helper for validating TOTP Authenticator tokens
+function verifyTOTPToken(token, secret) {
+  try {
+    const res = verifySync({ token: token.toString().trim(), secret })
+    return Boolean(res && res.valid)
+  } catch (err) {
+    return false
+  }
+}
 
 // Database and Models
 const connectDB = require('./config/database')
@@ -682,14 +692,14 @@ app.post('/api/auth/verify-2fa', authLimiter, async (req, res) => {
         return res.status(400).json({ error: 'Authenticator 2FA secret is not configured' })
       }
 
-      const isValid = authenticator.check(cleanOtp, user.twoFactorSecret)
+      const isValid = verifyTOTPToken(cleanOtp, user.twoFactorSecret)
       if (!isValid) {
         securityLogger('2fa_verification_failed', {
           userId: user._id,
           method: 'authenticator',
           ip: req.ip
         })
-        return res.status(400).json({ error: 'Invalid 6-digit code from authenticator app. Please ensure your time is synchronized and try again.' })
+        return res.status(400).json({ error: 'Invalid 6-digit code from authenticator app. Please check your app and try again.' })
       }
     } else {
       // Email OTP verification
@@ -761,8 +771,8 @@ app.post('/api/auth/2fa/setup/authenticator', authenticateToken, async (req, res
       return res.status(404).json({ error: 'User not found' })
     }
 
-    const secret = authenticator.generateSecret()
-    const otpauthUrl = authenticator.keyuri(user.username, 'Fresh Bites Café', secret)
+    const secret = generateSecret()
+    const otpauthUrl = generateURI({ label: user.username, issuer: 'Fresh Bites Cafe', secret })
     const qrCodeDataUrl = await qrcode.toDataURL(otpauthUrl)
 
     user.twoFactorTempSecret = secret
@@ -793,7 +803,7 @@ app.post('/api/auth/2fa/verify-setup/authenticator', authenticateToken, async (r
       return res.status(400).json({ error: 'No Authenticator 2FA setup in progress' })
     }
 
-    const isValid = authenticator.check(token.toString().trim(), user.twoFactorTempSecret)
+    const isValid = verifyTOTPToken(token, user.twoFactorTempSecret)
     if (!isValid) {
       return res.status(400).json({ error: 'Invalid 6-digit code. Please check your Authenticator app and try again.' })
     }
