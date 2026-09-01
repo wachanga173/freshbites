@@ -2065,7 +2065,29 @@ app.post('/api/ai/diet-assistant', authenticateToken, async (req, res) => {
         Be concise, friendly, and practical in your responses. Always remind users to consult healthcare professionals for specific medical advice.
         Base your answers on general nutritional knowledge and common dietary guidelines.`
 
-        if (AI_PROVIDER === 'anthropic') {
+        if (AI_PROVIDER === 'gemini') {
+          // Google Gemini API
+          const geminiResponse = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/${AI_MODEL}:generateContent?key=${AI_API_KEY}`,
+            {
+              contents: [
+                {
+                  role: 'user',
+                  parts: [{ text: `${systemPrompt}\n\nUser question: ${question}` }]
+                }
+              ],
+              generationConfig: {
+                maxOutputTokens: 500,
+                temperature: 0.7
+              }
+            },
+            {
+              headers: { 'Content-Type': 'application/json' }
+            }
+          )
+
+          response = geminiResponse.data.candidates[0].content.parts[0].text
+        } else if (AI_PROVIDER === 'anthropic') {
           // Anthropic Claude API
           const claudeResponse = await axios.post('https://api.anthropic.com/v1/messages', {
             model: AI_MODEL,
