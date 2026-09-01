@@ -135,7 +135,7 @@ export default function Menu() {
             <div className="nav-brand">Fresh Bites Café</div>
             
             <button 
-              className="hamburger-toggle ml-auto"
+              className={`hamburger-toggle ml-auto ${showMobileNav ? 'active' : ''}`}
               onClick={() => setShowMobileNav(!showMobileNav)}
               aria-label="Toggle menu"
             >
