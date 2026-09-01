@@ -2257,6 +2257,343 @@ Formatting rules:
   }
 })
 
+// ========== FOOD & DIET NEWS & AI ARTICLE GENERATOR ==========
+
+// In-memory cache for news feed (30 min TTL)
+const newsCache = new Map()
+const NEWS_CACHE_TTL = 30 * 60 * 1000
+
+// In-memory cache for generated AI articles
+const generatedArticlesCache = new Map()
+
+const DEFAULT_MOCK_NEWS = {
+  food: [
+    {
+      id: 'food-1',
+      title: 'The Rise of Sustainable Food Practices in Modern Cafés',
+      description: 'How contemporary eateries are adopting eco-friendly sourcing and local ingredients to elevate flavor and reduce environmental impact.',
+      image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
+      publishedAt: new Date().toISOString(),
+      source: { name: 'Food Industry Insights' },
+      category: 'food'
+    },
+    {
+      id: 'food-2',
+      title: 'Global Culinary Trends: Superfoods and Functional Meals',
+      description: 'From nutrient-dense grains to botanical beverages, discover the functional ingredients transforming modern everyday dining.',
+      image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800',
+      publishedAt: new Date().toISOString(),
+      source: { name: 'Culinary Science Digest' },
+      category: 'food'
+    },
+    {
+      id: 'food-3',
+      title: 'Artisanal Breakfasts: Fueling Your Day with High-Energy Whole Foods',
+      description: 'Why nutrient-rich morning meals with healthy fats and complex carbs boost sustained focus throughout the workday.',
+      image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800',
+      publishedAt: new Date().toISOString(),
+      source: { name: 'Daily Nutrition Today' },
+      category: 'food'
+    }
+  ],
+  diet: [
+    {
+      id: 'diet-1',
+      title: 'Intermittent Fasting & Meal Timing: What the Science Shows',
+      description: 'An evidence-based look at meal frequency, insulin sensitivity, and how to structure your daily eating window safely.',
+      image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800',
+      publishedAt: new Date().toISOString(),
+      source: { name: 'Diet & Wellness Journal' },
+      category: 'diet'
+    },
+    {
+      id: 'diet-2',
+      title: 'The Flexitarian Lifestyle: Balancing Plant-Forward Eating and Quality Proteins',
+      description: 'How adopting a flexible, mostly plant-based routine supports cardiovascular health without rigid diet restrictions.',
+      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
+      publishedAt: new Date().toISOString(),
+      source: { name: 'Nutrition Horizons' },
+      category: 'diet'
+    },
+    {
+      id: 'diet-3',
+      title: 'Debunking Popular Diet Myths: Carbs, Fats, and Calorie Balance',
+      description: 'Separating clinical dietary facts from viral social media trends to build sustainable lifelong eating habits.',
+      image: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800',
+      publishedAt: new Date().toISOString(),
+      source: { name: 'Science of Nutrition' },
+      category: 'diet'
+    }
+  ],
+  nutrition: [
+    {
+      id: 'nutrition-1',
+      title: 'Microbiome & Immunity: The Powerful Link Between Gut Health and Energy',
+      description: 'Understanding prebiotic fiber, fermented foods, and how a diverse microbiome powers your daily vitality and mood.',
+      image: 'https://images.unsplash.com/photo-1543362906-acfc16c67564?w=800',
+      publishedAt: new Date().toISOString(),
+      source: { name: 'Clinical Nutrition Review' },
+      category: 'nutrition'
+    },
+    {
+      id: 'nutrition-2',
+      title: 'Daily Protein Optimization: Finding Your Ideal Target for Health and Recovery',
+      description: 'A comprehensive guide to distributing protein intake evenly across breakfast, lunch, and dinner.',
+      image: 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=800',
+      publishedAt: new Date().toISOString(),
+      source: { name: 'Dietitian Today' },
+      category: 'nutrition'
+    }
+  ],
+  'healthy eating': [
+    {
+      id: 'healthy-1',
+      title: 'The Rainbow Plate: Maximizing Antioxidants with Colorful Fresh Foods',
+      description: 'Why eating a vibrant spectrum of vegetables, fruits, and whole grains ensures comprehensive micronutrient coverage.',
+      image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800',
+      publishedAt: new Date().toISOString(),
+      source: { name: 'Wellness Weekly' },
+      category: 'healthy eating'
+    },
+    {
+      id: 'healthy-2',
+      title: 'Smart Snacking Strategies: Sustained Energy Without the Sugar Crash',
+      description: 'How pairing complex carbohydrates with healthy fats keeps hunger at bay between café visits.',
+      image: 'https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=800',
+      publishedAt: new Date().toISOString(),
+      source: { name: 'Smart Nutrition' },
+      category: 'healthy eating'
+    }
+  ],
+  recipes: [
+    {
+      id: 'recipes-1',
+      title: 'Mediterranean Meal Concepts: Fresh, Flavorful, and Heart-Healthy',
+      description: 'Incorporating extra virgin olive oil, crisp herbs, lean proteins, and sun-ripened produce into your routine.',
+      image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=800',
+      publishedAt: new Date().toISOString(),
+      source: { name: 'Culinary Express' },
+      category: 'recipes'
+    }
+  ]
+}
+
+// GET /api/news: Fetch live news via GNews API with caching & fallback
+app.get('/api/news', async (req, res) => {
+  try {
+    const category = (req.query.category || 'food').toLowerCase()
+    const now = Date.now()
+
+    // Check in-memory cache
+    if (newsCache.has(category)) {
+      const cached = newsCache.get(category)
+      if (now - cached.timestamp < NEWS_CACHE_TTL) {
+        return res.json({ success: true, articles: cached.articles, cached: true })
+      }
+    }
+
+    const GNEWS_KEY = process.env.GNEWS_API_KEY || process.env.GNEWS_API || process.env.VITE_GNEWS_API_KEY || '4fd5ac21e9d5dd3166cd51dcb9a5efdb'
+
+    const searchQueries = {
+      'food': 'food OR restaurant OR culinary OR cuisine',
+      'diet': 'diet OR nutrition OR dieting OR healthy diet',
+      'nutrition': 'nutrition OR vitamins OR microbiome OR nutrients',
+      'healthy eating': 'healthy eating OR wellness food OR wholesome diet',
+      'recipes': 'recipes OR culinary cooking OR healthy meal'
+    }
+
+    const query = searchQueries[category] || searchQueries.food
+    const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&max=10&apikey=${GNEWS_KEY}`
+
+    let articles = []
+
+    try {
+      const gnewsRes = await axios.get(url, { timeout: 10000 })
+      if (gnewsRes.data && Array.isArray(gnewsRes.data.articles) && gnewsRes.data.articles.length > 0) {
+        articles = gnewsRes.data.articles.map((item, idx) => ({
+          id: `${category}-${idx}-${Buffer.from(item.title || 'art').toString('hex').slice(0, 10)}`,
+          title: item.title,
+          description: item.description || item.content || 'Explore this nutrition guide and its health insights.',
+          url: item.url,
+          image: item.image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800',
+          publishedAt: item.publishedAt || new Date().toISOString(),
+          source: item.source || { name: 'Health & Nutrition News' },
+          category: category
+        }))
+      }
+    } catch (apiErr) {
+      console.warn('GNews API call failed, using fallback articles:', apiErr.message)
+    }
+
+    // Fallback if GNews returned nothing or failed
+    if (articles.length === 0) {
+      articles = DEFAULT_MOCK_NEWS[category] || DEFAULT_MOCK_NEWS.food
+    }
+
+    newsCache.set(category, { articles, timestamp: now })
+    res.json({ success: true, articles })
+  } catch (err) {
+    console.error('Error in /api/news:', err)
+    const category = (req.query.category || 'food').toLowerCase()
+    res.json({ success: true, articles: DEFAULT_MOCK_NEWS[category] || DEFAULT_MOCK_NEWS.food, fallback: true })
+  }
+})
+
+// POST /api/news/generate-article: Use AI to create a full in-depth article
+app.post('/api/news/generate-article', async (req, res) => {
+  try {
+    const { id, title, description, category, image, source, publishedAt } = req.body
+
+    if (!title) {
+      return res.status(400).json({ error: 'Article title is required' })
+    }
+
+    const articleKey = id || Buffer.from(title).toString('hex').slice(0, 20)
+
+    // Check if full article already generated & cached
+    if (generatedArticlesCache.has(articleKey)) {
+      return res.json({
+        success: true,
+        article: generatedArticlesCache.get(articleKey),
+        cached: true
+      })
+    }
+
+    const AI_API_KEY = process.env.AI_API_KEY
+    const AI_PROVIDER = process.env.AI_PROVIDER || 'openai'
+    const AI_MODEL = process.env.AI_MODEL || (AI_PROVIDER === 'gemini' ? 'gemini-3.6-flash' : 'gpt-3.5-turbo')
+
+    const menuContext = await getMenuContextForAI()
+
+    const articlePrompt = `You are an expert nutritionist and culinary journalist writing for the Fresh Bites Café Knowledge & Diet Journal.
+Write a comprehensive, highly informative, and engaging in-depth health & diet article based on this topic:
+
+TOPIC TITLE: "${title}"
+SUMMARY: "${description || 'Comprehensive nutrition guide'}"
+CATEGORY: ${category || 'Diet & Nutrition'}
+
+${menuContext ? menuContext + '\n' : ''}
+
+Please write a full-length, structured article (about 400-600 words) with the following structure:
+
+1. INTRODUCTION & OVERVIEW
+Explain the background, why this topic matters to everyday health, and the core science or culinary context.
+
+2. KEY NUTRITIONAL & HEALTH INSIGHTS
+Provide 3-4 detailed bullet points explaining the specific benefits (e.g., metabolism, energy, immunity, digestion).
+
+3. DIETARY TIPS & PRACTICAL ADVICE
+Provide actionable daily advice for customers wanting to apply these principles to their meals.
+
+4. RECOMMENDED DISHES AT FRESH BITES CAFÉ
+Recommend 2 to 3 specific dishes from our actual café menu above that align with this topic. Explain why each dish fits (e.g., protein content, fresh greens, balanced nutrients) and state their price in KSH.
+
+5. PRACTICAL TAKEAWAY
+A short concluding takeaway for balanced living.
+
+Formatting rules:
+- Do NOT use markdown asterisks (no **bold**, no *italic*), no hashtags (#).
+- Use clear section titles in UPPERCASE on their own line.
+- Use dashes (-) for bullet items with a blank line between each item.
+- Separate paragraphs with a blank line.
+- Keep the tone professional, welcoming, and scientifically sound.`
+
+    let generatedText = ''
+
+    if (AI_API_KEY && AI_API_KEY.length > 10 && !AI_API_KEY.includes('your-')) {
+      try {
+        if (AI_PROVIDER === 'gemini') {
+          const geminiRes = await axios.post(
+            `https://generativelanguage.googleapis.com/v1/models/${AI_MODEL}:generateContent?key=${AI_API_KEY}`,
+            {
+              systemInstruction: {
+                parts: [{ text: 'You are a professional nutrition editor and health writer for Fresh Bites Café.' }]
+              },
+              contents: [
+                {
+                  role: 'user',
+                  parts: [{ text: articlePrompt }]
+                }
+              ],
+              generationConfig: {
+                maxOutputTokens: 1500,
+                temperature: 0.7
+              }
+            },
+            {
+              headers: { 'Content-Type': 'application/json' },
+              timeout: 30000
+            }
+          )
+
+          generatedText = formatAIResponse(geminiRes.data.candidates[0].content.parts.map(p => p.text).join(''))
+        } else if (AI_PROVIDER === 'anthropic') {
+          const claudeRes = await axios.post('https://api.anthropic.com/v1/messages', {
+            model: AI_MODEL,
+            max_tokens: 1500,
+            messages: [{ role: 'user', content: articlePrompt }]
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': AI_API_KEY,
+              'anthropic-version': '2023-06-01'
+            },
+            timeout: 30000
+          })
+          generatedText = formatAIResponse(claudeRes.data.content[0].text)
+        } else {
+          const openaiRes = await axios.post('https://api.openai.com/v1/chat/completions', {
+            model: AI_MODEL,
+            messages: [
+              { role: 'system', content: 'You are a professional nutrition editor for Fresh Bites Café.' },
+              { role: 'user', content: articlePrompt }
+            ],
+            max_tokens: 1500,
+            temperature: 0.7
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${AI_API_KEY}`
+            },
+            timeout: 30000
+          })
+          generatedText = formatAIResponse(openaiRes.data.choices[0].message.content)
+        }
+      } catch (aiErr) {
+        console.error('Error generating AI article:', aiErr.response?.data || aiErr.message)
+      }
+    }
+
+    if (!generatedText) {
+      generatedText = `OVERVIEW\n\n${description || 'Nutrition and mindful eating play a foundational role in sustained energy and overall health.'}\n\nKEY INSIGHTS\n\n• Whole ingredients provide clean, slow-burning fuel for your metabolism.\n\n• Hydration and balanced fiber support healthy digestion throughout the day.\n\nRECOMMENDED DISHES AT FRESH BITES CAFÉ\n\n• Explore our fresh café salads and lean protein options crafted daily.\n\nPRACTICAL TAKEAWAYS\n\nFocus on colorful whole foods and balanced portions for long-term vitality.`
+    }
+
+    const fullArticle = {
+      id: articleKey,
+      title,
+      description,
+      content: generatedText,
+      image: image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800',
+      category: category || 'Diet & Health',
+      source: source || { name: 'Fresh Bites Diet & Nutrition AI' },
+      publishedAt: publishedAt || new Date().toISOString(),
+      readTime: '3 min read',
+      generatedByAI: true,
+      disclaimer: 'This article is for educational purposes. Consult a certified nutritionist or physician for personalized medical advice.'
+    }
+
+    generatedArticlesCache.set(articleKey, fullArticle)
+
+    res.json({
+      success: true,
+      article: fullArticle
+    })
+  } catch (err) {
+    console.error('generate-article error:', err)
+    res.status(500).json({ error: 'Failed to generate article', details: err.message })
+  }
+})
+
 // Fallback response function for when AI is not configured
 function getFallbackResponse(question) {
   const lowerQuestion = question.toLowerCase()
