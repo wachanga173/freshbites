@@ -1353,48 +1353,28 @@ export default function AdminDashboard() {
               <form onSubmit={handleSendBroadcast}>
                 <div className="form-group">
                   <label className="font-semibold">Target Audience</label>
-                  <div className="audience-options">
-                    <label className={`audience-radio-card ${broadcastAudience === 'all' ? 'active' : ''}`}>
-                      <input 
-                        type="radio" 
-                        name="audience" 
-                        value="all" 
-                        checked={broadcastAudience === 'all'} 
-                        onChange={() => setBroadcastAudience('all')} 
-                      />
-                      <div>
-                        <strong>All Registered Customers</strong>
-                        <p>Deliver to all customer emails ({users.filter(u => u.email).length} registered)</p>
-                      </div>
-                    </label>
-
-                    <label className={`audience-radio-card ${broadcastAudience === 'selected' ? 'active' : ''}`}>
-                      <input 
-                        type="radio" 
-                        name="audience" 
-                        value="selected" 
-                        checked={broadcastAudience === 'selected'} 
-                        onChange={() => setBroadcastAudience('selected')} 
-                      />
-                      <div>
-                        <strong>Select Specific Users</strong>
-                        <p>Pick specific recipients from your customer list ({selectedUserIds.length} selected)</p>
-                      </div>
-                    </label>
-
-                    <label className={`audience-radio-card ${broadcastAudience === 'custom' ? 'active' : ''}`}>
-                      <input 
-                        type="radio" 
-                        name="audience" 
-                        value="custom" 
-                        checked={broadcastAudience === 'custom'} 
-                        onChange={() => setBroadcastAudience('custom')} 
-                      />
-                      <div>
-                        <strong>Custom Email Addresses</strong>
-                        <p>Enter specific comma-separated email addresses</p>
-                      </div>
-                    </label>
+                  <div className="audience-segmented-bar">
+                    <button
+                      type="button"
+                      className={`audience-segment-btn ${broadcastAudience === 'all' ? 'active' : ''}`}
+                      onClick={() => setBroadcastAudience('all')}
+                    >
+                      👥 All Customers ({users.filter(u => u.email).length})
+                    </button>
+                    <button
+                      type="button"
+                      className={`audience-segment-btn ${broadcastAudience === 'selected' ? 'active' : ''}`}
+                      onClick={() => setBroadcastAudience('selected')}
+                    >
+                      🎯 Select Users ({selectedUserIds.length})
+                    </button>
+                    <button
+                      type="button"
+                      className={`audience-segment-btn ${broadcastAudience === 'custom' ? 'active' : ''}`}
+                      onClick={() => setBroadcastAudience('custom')}
+                    >
+                      ✉️ Custom Emails
+                    </button>
                   </div>
                 </div>
 

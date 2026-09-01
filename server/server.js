@@ -1,4 +1,8 @@
 require('dotenv').config()
+const dns = require('dns')
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first')
+}
 const express = require('express')
 const cors = require('cors')
 const path = require('path')
@@ -447,20 +451,6 @@ function getMailTransporter() {
   const cleanUser = user.trim()
   const cleanPass = pass.replace(/\s+/g, '') // Remove any spaces in Google App Password
 
-  // If using Gmail address, use Nodemailer's optimized Gmail service configuration
-  if (cleanUser.includes('@gmail.com') || process.env.GMAIL_USER) {
-    return nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: cleanUser,
-        pass: cleanPass
-      },
-      connectionTimeout: 12000,
-      greetingTimeout: 12000,
-      socketTimeout: 15000
-    })
-  }
-
   const host = process.env.SMTP_HOST || 'smtp.gmail.com'
   const port = parseInt(process.env.SMTP_PORT || '465', 10)
   const secure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : (port === 465)
@@ -469,13 +459,17 @@ function getMailTransporter() {
     host,
     port,
     secure,
+    family: 4, // Force IPv4 to prevent ENETUNREACH on Render and cloud hosts
     auth: {
       user: cleanUser,
       pass: cleanPass
     },
-    connectionTimeout: 12000,
-    greetingTimeout: 12000,
-    socketTimeout: 15000
+    tls: {
+      rejectUnauthorized: false
+    },
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000
   })
 }
 
