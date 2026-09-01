@@ -444,6 +444,23 @@ function getMailTransporter() {
     return null
   }
 
+  const cleanUser = user.trim()
+  const cleanPass = pass.replace(/\s+/g, '') // Remove any spaces in Google App Password
+
+  // If using Gmail address, use Nodemailer's optimized Gmail service configuration
+  if (cleanUser.includes('@gmail.com') || process.env.GMAIL_USER) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: cleanUser,
+        pass: cleanPass
+      },
+      connectionTimeout: 12000,
+      greetingTimeout: 12000,
+      socketTimeout: 15000
+    })
+  }
+
   const host = process.env.SMTP_HOST || 'smtp.gmail.com'
   const port = parseInt(process.env.SMTP_PORT || '465', 10)
   const secure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : (port === 465)
@@ -453,9 +470,12 @@ function getMailTransporter() {
     port,
     secure,
     auth: {
-      user: user.trim(),
-      pass: pass.replace(/\s+/g, '') // Remove any accidental spaces in Google App Password
-    }
+      user: cleanUser,
+      pass: cleanPass
+    },
+    connectionTimeout: 12000,
+    greetingTimeout: 12000,
+    socketTimeout: 15000
   })
 }
 
@@ -745,9 +765,9 @@ app.post('/api/admin/broadcast-email', authenticateToken, requireRole('admin', '
       const users = await User.find({ _id: { $in: userIds } }).select('email username')
       recipients = users.map(u => ({ email: u.email, username: u.username }))
     } else if (audienceType === 'custom' && customEmails) {
-      const emailList = (typeof customEmails === 'string' ? customEmails.split(/[,\n]/) : customEmails)
+      const emailList = (typeof customEmails === 'string' ? customEmails.split(/[,\n;\s]+/) : customEmails)
         .map(e => e.trim().toLowerCase())
-        .filter(e => e.includes('@'))
+        .filter(e => e.includes('@') && e.length > 5)
       recipients = emailList.map(email => ({ email, username: email.split('@')[0] }))
     }
 
@@ -766,6 +786,8 @@ app.post('/api/admin/broadcast-email', authenticateToken, requireRole('admin', '
 
     // Send emails in chunks / batches
     let successCount = 0
+    let lastErrorMessage = ''
+
     for (const r of recipients) {
       try {
         await transporter.sendMail({
@@ -797,8 +819,15 @@ app.post('/api/admin/broadcast-email', authenticateToken, requireRole('admin', '
         })
         successCount++
       } catch (sendErr) {
+        lastErrorMessage = sendErr.message
         console.warn(`Failed to send broadcast email to ${r.email}:`, sendErr.message)
       }
+    }
+
+    if (successCount === 0) {
+      return res.status(500).json({
+        error: `Email sending failed: ${lastErrorMessage || 'Unable to connect to Gmail SMTP. Please verify GMAIL_USER and GMAIL_APP_PASSWORD.'}`
+      })
     }
 
     logger.info(`Admin broadcast email "${subject}" sent to ${successCount}/${recipients.length} recipients by ${req.user.username}`)
