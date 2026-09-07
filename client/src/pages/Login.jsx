@@ -3,7 +3,7 @@ import { ShieldCheck, KeyRound, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import './Auth.css'
 
-export default function Login({ onSwitch, onForgotPassword }) {
+export default function Login({ onSwitch, onForgotPassword, onSuccess }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -31,6 +31,8 @@ export default function Login({ onSwitch, onForgotPassword }) {
       setTwoFactorMethod(result.twoFactorMethod || 'authenticator')
       setUserId(result.userId)
       setUserEmail(result.email || '')
+    } else if (onSuccess) {
+      onSuccess()
     }
     setLoading(false)
   }
@@ -43,6 +45,8 @@ export default function Login({ onSwitch, onForgotPassword }) {
     const result = await verify2FA(userId, otp)
     if (!result.success) {
       setError(result.error || 'Invalid 2FA code. Please check and try again.')
+    } else if (onSuccess) {
+      onSuccess()
     }
     setLoading(false)
   }

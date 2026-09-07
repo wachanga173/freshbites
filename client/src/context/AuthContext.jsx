@@ -1,35 +1,59 @@
 import { createContext, useState, useContext, useEffect } from 'react'
 import { getApiUrl } from '../config/api'
+import { navigateTo } from '../utils/navigation'
 
 const AuthContext = createContext(null)
 
+function getStoredUser() {
+  try {
+    const raw = localStorage.getItem('user')
+    return raw ? JSON.parse(raw) : null
+  } catch (err) {
+    console.error('Failed to parse cached user:', err)
+    return null
+  }
+}
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [token, setToken] = useState(localStorage.getItem('token'))
-  const [loading, setLoading] = useState(true)
+  const [token, setToken] = useState(() => localStorage.getItem('token'))
+  const [user, setUser] = useState(() => getStoredUser())
+  // Only show full loading spinner if we have a token but haven't cached the user yet
+  const [loading, setLoading] = useState(() => !getStoredUser() && !!localStorage.getItem('token'))
 
   useEffect(() => {
     if (token) {
-      fetchUser()
+      fetchUser(token)
     } else {
+      setUser(null)
+      localStorage.removeItem('user')
       setLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
-  async function fetchUser() {
+  async function fetchUser(activeToken = token) {
+    if (!activeToken) {
+      setLoading(false)
+      return
+    }
+
     try {
       const res = await fetch(getApiUrl('/api/auth/me'), {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${activeToken}` }
       })
       if (res.ok) {
         const data = await res.json()
         setUser(data)
-      } else {
+        localStorage.setItem('user', JSON.stringify(data))
+      } else if (res.status === 401 || res.status === 403) {
+        // Token is genuinely invalid or expired
         logout()
+      } else {
+        console.warn(`Auth check returned HTTP ${res.status}; retaining cached session.`)
       }
     } catch (err) {
-      logout()
+      // Network failure, offline mode, or aborted request - do not destroy active session
+      console.warn('Network issue during auth verification; retaining cached session:', err.message)
     } finally {
       setLoading(false)
     }
@@ -53,12 +77,11 @@ export function AuthProvider({ children }) {
         }
       }
       localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
       setToken(data.token)
       setUser(data.user)
-      // Redirect to home page after successful login
-      setTimeout(() => {
-        window.location.href = '/'
-      }, 100)
+      setLoading(false)
+      navigateTo('/')
       return { success: true }
     }
     return { success: false, error: data.error }
@@ -73,11 +96,11 @@ export function AuthProvider({ children }) {
     const data = await res.json()
     if (data.success) {
       localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
       setToken(data.token)
       setUser(data.user)
-      setTimeout(() => {
-        window.location.href = '/'
-      }, 100)
+      setLoading(false)
+      navigateTo('/')
       return { success: true }
     }
     return { success: false, error: data.error }
@@ -105,7 +128,11 @@ export function AuthProvider({ children }) {
     })
     const data = await res.json()
     if (res.ok && data.success) {
-      setUser(prev => ({ ...prev, twoFactorEnabled: true, twoFactorMethod: 'authenticator' }))
+      setUser(prev => {
+        const updated = { ...prev, twoFactorEnabled: true, twoFactorMethod: 'authenticator' }
+        localStorage.setItem('user', JSON.stringify(updated))
+        return updated
+      })
     }
     return data
   }
@@ -132,7 +159,11 @@ export function AuthProvider({ children }) {
     })
     const data = await res.json()
     if (res.ok && data.success) {
-      setUser(prev => ({ ...prev, twoFactorEnabled: true, twoFactorMethod: 'email' }))
+      setUser(prev => {
+        const updated = { ...prev, twoFactorEnabled: true, twoFactorMethod: 'email' }
+        localStorage.setItem('user', JSON.stringify(updated))
+        return updated
+      })
     }
     return data
   }
@@ -148,12 +179,16 @@ export function AuthProvider({ children }) {
     })
     const data = await res.json()
     if (res.ok && data.success) {
-      setUser(prev => ({ 
-        ...prev, 
-        twoFactorEnabled: false, 
-        twoFactorMethod: data.twoFactorMethod || prev.twoFactorMethod,
-        hasConfigured2FA: data.hasConfigured2FA !== undefined ? data.hasConfigured2FA : true
-      }))
+      setUser(prev => {
+        const updated = { 
+          ...prev, 
+          twoFactorEnabled: false, 
+          twoFactorMethod: data.twoFactorMethod || prev?.twoFactorMethod,
+          hasConfigured2FA: data.hasConfigured2FA !== undefined ? data.hasConfigured2FA : true
+        }
+        localStorage.setItem('user', JSON.stringify(updated))
+        return updated
+      })
     }
     return data
   }
@@ -169,12 +204,16 @@ export function AuthProvider({ children }) {
     })
     const data = await res.json()
     if (res.ok && data.success) {
-      setUser(prev => ({ 
-        ...prev, 
-        twoFactorEnabled: true, 
-        twoFactorMethod: data.twoFactorMethod || prev.twoFactorMethod,
-        hasConfigured2FA: true
-      }))
+      setUser(prev => {
+        const updated = { 
+          ...prev, 
+          twoFactorEnabled: true, 
+          twoFactorMethod: data.twoFactorMethod || prev?.twoFactorMethod,
+          hasConfigured2FA: true
+        }
+        localStorage.setItem('user', JSON.stringify(updated))
+        return updated
+      })
     }
     return data
   }
@@ -190,12 +229,16 @@ export function AuthProvider({ children }) {
     })
     const data = await res.json()
     if (res.ok && data.success) {
-      setUser(prev => ({ 
-        ...prev, 
-        twoFactorEnabled: false, 
-        twoFactorMethod: null,
-        hasConfigured2FA: false
-      }))
+      setUser(prev => {
+        const updated = { 
+          ...prev, 
+          twoFactorEnabled: false, 
+          twoFactorMethod: null,
+          hasConfigured2FA: false
+        }
+        localStorage.setItem('user', JSON.stringify(updated))
+        return updated
+      })
     }
     return data
   }
@@ -209,12 +252,11 @@ export function AuthProvider({ children }) {
     const data = await res.json()
     if (data.success) {
       localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
       setToken(data.token)
       setUser(data.user)
-      // Redirect to home page after successful registration
-      setTimeout(() => {
-        window.location.href = '/'
-      }, 100)
+      setLoading(false)
+      navigateTo('/')
       return { success: true }
     }
     return { success: false, error: data.error }
@@ -222,8 +264,10 @@ export function AuthProvider({ children }) {
 
   function logout() {
     localStorage.removeItem('token')
+    localStorage.removeItem('user')
     setToken(null)
     setUser(null)
+    navigateTo('/')
   }
 
   function hasRole(role) {

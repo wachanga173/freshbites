@@ -53,49 +53,55 @@ function MainApp() {
   }
 
   useEffect(() => {
-    // Simple routing based on URL path
-    const path = window.location.pathname
-    if (path.includes('/payment/success')) {
-      setCurrentRoute('payment-success')
-    } else if (path.includes('/payment/cancel')) {
-      setCurrentRoute('payment-cancel')
-    } else if (path === '/login') {
-      setCurrentRoute('login')
-    } else if (path === '/forgot-password') {
-      setCurrentRoute('forgot-password')
-    } else if (path === '/register') {
-      setCurrentRoute('register')
-    } else if (path === '/profile') {
-      setCurrentRoute('profile')
-    } else if (path === '/admin') {
-      setCurrentRoute('admin')
-    } else if (path === '/order-management') {
-      setCurrentRoute('order-management')
-    } else if (path === '/delivery') {
-      setCurrentRoute('delivery')
-    } else if (path === '/my-orders') {
-      setCurrentRoute('my-orders')
-    } else if (path === '/feedback-management') {
-      setCurrentRoute('feedback-management')
-    } else if (path === '/checkout') {
-      setCurrentRoute('checkout')
-    } else if (path === '/terms') {
-      setCurrentRoute('terms')
-    } else if (path === '/privacy') {
-      setCurrentRoute('privacy')
-    } else if (path === '/cookies' || path === '/cookie-policy') {
-      setCurrentRoute('cookies')
-    } else if (path === '/about') {
-      setCurrentRoute('about')
-    } else if (path === '/contact') {
-      setCurrentRoute('contact')
-    } else if (path === '/news') {
-      setCurrentRoute('news')
-    } else if (path === '/menu') {
-      setCurrentRoute('menu')
-    } else {
-      setCurrentRoute('home')
+    // Simple routing based on URL path with popstate support
+    const handleLocationChange = () => {
+      const path = window.location.pathname
+      if (path.includes('/payment/success')) {
+        setCurrentRoute('payment-success')
+      } else if (path.includes('/payment/cancel')) {
+        setCurrentRoute('payment-cancel')
+      } else if (path === '/login') {
+        setCurrentRoute('login')
+      } else if (path === '/forgot-password') {
+        setCurrentRoute('forgot-password')
+      } else if (path === '/register') {
+        setCurrentRoute('register')
+      } else if (path === '/profile') {
+        setCurrentRoute('profile')
+      } else if (path === '/admin') {
+        setCurrentRoute('admin')
+      } else if (path === '/order-management') {
+        setCurrentRoute('order-management')
+      } else if (path === '/delivery') {
+        setCurrentRoute('delivery')
+      } else if (path === '/my-orders') {
+        setCurrentRoute('my-orders')
+      } else if (path === '/feedback-management') {
+        setCurrentRoute('feedback-management')
+      } else if (path === '/checkout') {
+        setCurrentRoute('checkout')
+      } else if (path === '/terms') {
+        setCurrentRoute('terms')
+      } else if (path === '/privacy') {
+        setCurrentRoute('privacy')
+      } else if (path === '/cookies' || path === '/cookie-policy') {
+        setCurrentRoute('cookies')
+      } else if (path === '/about') {
+        setCurrentRoute('about')
+      } else if (path === '/contact') {
+        setCurrentRoute('contact')
+      } else if (path === '/news') {
+        setCurrentRoute('news')
+      } else if (path === '/menu') {
+        setCurrentRoute('menu')
+      } else {
+        setCurrentRoute('home')
+      }
     }
+
+    handleLocationChange()
+    window.addEventListener('popstate', handleLocationChange)
+    return () => window.removeEventListener('popstate', handleLocationChange)
   }, [])
   if (loading) {
     return (
@@ -144,18 +150,46 @@ function MainApp() {
   if (currentRoute === 'login') {
     return (
       <Login 
-        onSwitch={() => setCurrentRoute('register')} 
-        onForgotPassword={() => setCurrentRoute('forgot-password')} 
+        onSwitch={() => {
+          window.history.pushState({}, '', '/register')
+          setCurrentRoute('register')
+        }} 
+        onForgotPassword={() => {
+          window.history.pushState({}, '', '/forgot-password')
+          setCurrentRoute('forgot-password')
+        }} 
+        onSuccess={() => {
+          window.history.pushState({}, '', '/')
+          setCurrentRoute('home')
+        }}
       />
     )
   }
 
   if (currentRoute === 'register') {
-    return <Register onSwitch={() => setCurrentRoute('login')} />
+    return (
+      <Register 
+        onSwitch={() => {
+          window.history.pushState({}, '', '/login')
+          setCurrentRoute('login')
+        }} 
+        onSuccess={() => {
+          window.history.pushState({}, '', '/')
+          setCurrentRoute('home')
+        }}
+      />
+    )
   }
 
   if (currentRoute === 'forgot-password') {
-    return <ForgotPassword onBackToLogin={() => setCurrentRoute('login')} />
+    return (
+      <ForgotPassword 
+        onBackToLogin={() => {
+          window.history.pushState({}, '', '/login')
+          setCurrentRoute('login')
+        }} 
+      />
+    )
   }
 
   // Profile

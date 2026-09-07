@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import './Auth.css'
 
-export default function Register({ onSwitch }) {
+export default function Register({ onSwitch, onSuccess }) {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -18,6 +18,8 @@ export default function Register({ onSwitch }) {
     const result = await register(username, email, password)
     if (!result.success) {
       setError(result.error || 'Registration failed')
+    } else if (onSuccess) {
+      onSuccess()
     }
     setLoading(false)
   }

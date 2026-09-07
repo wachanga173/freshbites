@@ -3,29 +3,16 @@ import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 import Footer from '../components/Footer'
 import RoleSwitcher from '../components/RoleSwitcher'
+import { navigateTo } from '../utils/navigation'
 
 export default function Home() {
   const { user, logout } = useAuth()
   const [showMobileNav, setShowMobileNav] = useState(false)
 
-  const handleMenuClick = () => {
-    window.history.pushState({}, '', '/menu')
-    window.location.reload()
-  }
-
-  const handleContactClick = () => {
-    window.history.pushState({}, '', '/contact')
-    window.location.reload()
-  }
-
-  const handleAboutClick = () => {
-    window.history.pushState({}, '', '/about')
-    window.location.reload()
-  }
-
-  const handleLoginClick = () => {
-    window.location.href = '/login'
-  }
+  const handleMenuClick = () => navigateTo('/menu')
+  const handleContactClick = () => navigateTo('/contact')
+  const handleAboutClick = () => navigateTo('/about')
+  const handleLoginClick = () => navigateTo('/login')
 
   return (
     <div className="min-h-screen" style={{background: 'var(--color-bg-light)'}}>
@@ -48,14 +35,14 @@ export default function Home() {
             </button>
 
             <div className="hidden md:flex items-center gap-1 lg:gap-2 overflow-x-auto flex-1 pb-1">
-              <button onClick={() => window.location.href = '/'} className="nav-link active">Home</button>
+              <button onClick={() => navigateTo('/')} className="nav-link active">Home</button>
               <button onClick={handleMenuClick} className="nav-link">Menu</button>
               <button onClick={handleAboutClick} className="nav-link">About</button>
               <button onClick={handleContactClick} className="nav-link">Contact</button>
               {user && (
                 <>
-                  <button onClick={() => window.location.href = '/my-orders'} className="nav-link">My Orders</button>
-                  <button onClick={() => window.location.href = '/profile'} className="nav-profile-btn"><User size={18} className="inline-block mr-1" /> Profile</button>
+                  <button onClick={() => navigateTo('/my-orders')} className="nav-link">My Orders</button>
+                  <button onClick={() => navigateTo('/profile')} className="nav-profile-btn"><User size={18} className="inline-block mr-1" /> Profile</button>
                 </>
               )}
             </div>
@@ -66,7 +53,7 @@ export default function Home() {
               ) : (
                 <>
                   <button onClick={handleLoginClick} className="nav-btn-outline">Login</button>
-                  <button onClick={() => window.location.href = '/register'} className="nav-btn-solid">Sign Up</button>
+                  <button onClick={() => navigateTo('/register')} className="nav-btn-solid">Sign Up</button>
                 </>
               )}
             </div>
@@ -74,20 +61,20 @@ export default function Home() {
 
           {showMobileNav && (
             <div className="mobile-nav-dropdown">
-              <button onClick={() => { window.location.href = '/'; setShowMobileNav(false) }} className="nav-link active">Home</button>
+              <button onClick={() => { navigateTo('/'); setShowMobileNav(false) }} className="nav-link active">Home</button>
               <button onClick={() => { handleMenuClick(); setShowMobileNav(false) }} className="nav-link">Menu</button>
               <button onClick={() => { handleAboutClick(); setShowMobileNav(false) }} className="nav-link">About</button>
               <button onClick={() => { handleContactClick(); setShowMobileNav(false) }} className="nav-link">Contact</button>
               {user ? (
                 <>
-                  <button onClick={() => { window.location.href = '/my-orders'; setShowMobileNav(false) }} className="nav-link"><Package size={18} className="inline-block mr-1" /> My Orders</button>
-                  <button onClick={() => { window.location.href = '/profile'; setShowMobileNav(false) }} className="nav-profile-btn"><User size={18} className="inline-block mr-1" /> My Profile</button>
+                  <button onClick={() => { navigateTo('/my-orders'); setShowMobileNav(false) }} className="nav-link"><Package size={18} className="inline-block mr-1" /> My Orders</button>
+                  <button onClick={() => { navigateTo('/profile'); setShowMobileNav(false) }} className="nav-profile-btn"><User size={18} className="inline-block mr-1" /> My Profile</button>
                   <button onClick={() => { logout(); setShowMobileNav(false) }} className="nav-btn-solid" style={{width: '100%', marginTop: '8px'}}>Logout</button>
                 </>
               ) : (
                 <>
                   <button onClick={() => { handleLoginClick(); setShowMobileNav(false) }} className="nav-btn-outline" style={{width: '100%', marginTop: '8px'}}>Login</button>
-                  <button onClick={() => { window.location.href = '/register'; setShowMobileNav(false) }} className="nav-btn-solid" style={{width: '100%'}}>Sign Up</button>
+                  <button onClick={() => { navigateTo('/register'); setShowMobileNav(false) }} className="nav-btn-solid" style={{width: '100%'}}>Sign Up</button>
                 </>
               )}
             </div>

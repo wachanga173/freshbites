@@ -38,7 +38,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 // Middleware
-const { authenticateToken, requireRole } = require('./auth')
+const { authenticateToken, requireRole, JWT_SECRET } = require('./auth')
 const {
   securityHeaders,
   corsOptions,
@@ -268,7 +268,7 @@ app.post('/api/auth/register', authLimiter, validateRegister, catchAsync(async (
 
   const token = jwt.sign(
     { id: user._id, username: user.username, roles: user.roles, role: user.role },
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     { expiresIn: '7d' }
   )
 
@@ -297,7 +297,12 @@ app.post('/api/auth/register', authLimiter, validateRegister, catchAsync(async (
 app.post('/api/auth/login', authLimiter, validateLogin, catchAsync(async (req, res) => {
   const { username, password } = req.body
 
-  const user = await User.findOne({ username })
+  const user = await User.findOne({
+    $or: [
+      { username },
+      { email: typeof username === 'string' ? username.toLowerCase() : username }
+    ]
+  })
   if (!user) {
     securityLogger('login_failed', {
       username,
@@ -388,7 +393,7 @@ app.post('/api/auth/login', authLimiter, validateLogin, catchAsync(async (req, r
 
   const token = jwt.sign(
     { id: user._id, username: user.username, roles: user.roles, role: user.role },
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     { expiresIn: '7d' }
   )
 
@@ -419,7 +424,13 @@ app.post('/api/auth/login', authLimiter, validateLogin, catchAsync(async (req, r
 // Get current user
 app.get('/api/auth/me', authenticateToken, async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.user.username }).select('-password')
+    let user = null
+    if (req.user && req.user.id) {
+      user = await User.findById(req.user.id).select('-password')
+    }
+    if (!user && req.user && req.user.username) {
+      user = await User.findOne({ username: req.user.username }).select('-password')
+    }
     if (!user) {
       return res.status(404).json({ error: 'User not found' })
     }
@@ -733,7 +744,7 @@ app.post('/api/auth/verify-2fa', authLimiter, async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, username: user.username, roles: user.roles, role: user.role },
-      process.env.JWT_SECRET,
+      JWT_SECRET,
       { expiresIn: '7d' }
     )
 
